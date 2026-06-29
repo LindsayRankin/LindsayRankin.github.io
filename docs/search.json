@@ -1,16 +1,23 @@
 [
   {
+    "objectID": "resume.html",
+    "href": "resume.html",
+    "title": "Resume",
+    "section": "",
+    "text": "Placeholder…"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "LindsayRankin.github.io",
+    "title": "Lindsay Rankin",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "Hi there!\nI’m Lindsay Rankin.\n(Sometimes Lindsay E Rankin)\nI work in data science, data analysis, statistics, and research.\nI have a PhD in social psychology (both experimental and survey research) with a quantitative methods concentration. After my formal education, I continued building my statistics and data skills, particularly a specialization in R programming.\nWelcome, see more in my About, and poke around!"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "text": "Now\n(Updated as of July 2026:) I have worked freelance for many years, but am interested in transitioning to an ongoing, full time role.\n\n\nProfessionally\nI love data and research. I lean more toward the analytics and decision science parts of data science. R is my preferred programming language, although I’m always interested in learning new skills. I have been a freelancer in various areas of data, statistics, research - in doing, consulting, and teaching - for over a decade.\nMy educational background is a PhD (and MA) in social psychology (both experimental research and cross-sectional/survey methods) with a quantitative methods concentration from New York University. I previously earned a psychology BA from Northwestern University.\nSee my Resume for more details.\n\n\nPersonally\nOutside of work, I enjoy surfing, cooking, reading (news, non-fiction, and fiction), learning, and traveling."
   }
 ]

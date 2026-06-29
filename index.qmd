@@ -1,11 +1,30 @@
 ---
-title: "LindsayRankin.github.io"
+#title: "Lindsay Rankin"
+image: images/headshot.jpeg
+toc: false
+about:
+  template: broadside
+  image-shape: rounded
+  image-width: 15em
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/lindsayerankin/
+    - icon: github
+      text: Github
+      href: https://github.com/LindsayRankin
+    - icon: envelope
+      text: Email
+      href: mailto:LindsayRankin@gmail.com
 ---
 
-This is a Quarto website.
+Hi there!
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+I'm Lindsay Rankin. \
+(Sometimes Lindsay E Rankin)
 
-```{r}
-1 + 1
-```
+I work in data science, data analysis, statistics, and research.
+
+I have a PhD in social psychology (both experimental and survey research) with a quantitative methods concentration. After my formal education, I continued building my statistics and data skills, particularly a specialization in R programming.
+
+Welcome, see more in my About, and poke around!

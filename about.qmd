@@ -1,9 +1,22 @@
 ---
 title: "About"
 ---
+### Now
 
-About this site
+(Updated as of July 2026:) I have worked freelance for many years, but am interested in transitioning to an ongoing, full time role.
 
-```{r}
-1 + 1
-```
+
+### Professionally
+
+I love data and research. I lean more toward the analytics and decision science parts of data science. R is my preferred programming language, although I'm always interested in learning new skills. I have been a freelancer in various areas of data, statistics, research - in doing, consulting, and teaching - for over a decade.
+
+My educational background is a PhD (and MA) in social psychology (both experimental research and cross-sectional/survey methods) with a quantitative methods concentration from New York University. I previously earned a psychology BA from Northwestern University.
+
+See my Resume for more details.
+
+
+### Personally
+
+Outside of work, I enjoy surfing, cooking, reading (news, non-fiction, and fiction), learning, and traveling.
+
+
