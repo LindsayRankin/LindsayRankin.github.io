@@ -1,0 +1,736 @@
+---
+title: "Are World Cup Squads Getting Older?"
+#subtitle: "Are World Cup players getting older?"
+description: "Is it just a few headliners (i.e., Ronaldo, Messi), or is there a broader trend towards longevity in World Cup players?"
+date: 07-09-2026
+#categories: [Fun, Sports, Soccer, Age]
+citation:
+  url: https://lindsayrankin.github.io/projects/2026-07-01-m-world-cup-age
+#image: preview-image.png
+#draft: true # Set draft: true while you’re still working on your blog post to prevent it from showing up on your listing page, site map, or site search (it will still be available at a searchable URL). When you’re ready to publish, just remove draft: true from your YAML (or set to false), then render your post. 
+execute:
+  echo: false
+  warning: false
+---
+
+```{r}
+library(glue)
+library(gt)
+library(ggthemes)
+library(ggrepel)
+library(broom)
+library(tidyverse)
+
+#----------------------------------- 
+########## Data load, contains all years
+#----------------------------------- 
+dfsquads_1930_2026 <- readRDS("data_prepared/dfsquads_final_1930_2026.rds") %>% 
+  # For graphing purposes, I like them in this order
+  mutate(squad_position_name = 
+           factor(squad_position_name,
+                  levels = c("goal keeper", "defender", 
+                             "midfielder", "forward"), 
+                  labels = c("Goal keeper", "Defender", 
+                             "Midfielder", "Forward"),
+                  ordered = TRUE))
+
+#----------------------------------- 
+########## Data filtering for primary analysis
+#----------------------------------- 
+# Expansion era of 1982 onwards
+year_start <- 1982
+
+dfsquads <- dfsquads_1930_2026 %>% 
+  filter(year >= year_start) 
+
+#----------------------------------- 
+########## Setting colors
+#----------------------------------- 
+# paletteer_d("RColorBrewer::Set1")
+# paletteer_d("RColorBrewer::Spectral")
+
+palette_red <- "#E41A1CFF"
+palette_blue <- "#377EB8FF"
+palette_green <- "#4DAF4AFF"
+
+```
+
+The 2026 Men's World Cup will be the first time any player has made it to [six World Cup squads - and three veterans will accomplish this feat](https://www.instagram.com/p/DZF1JPknN5Q/). The tournament will also feature [more players over age 40 than all prior World Cups combined](https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over).
+
+Are we witnessing [increases in athletic longevity](https://www.nytimes.com/2026/05/06/magazine/pro-athletes-longevity-secrets-age.html)? Or is it just a bias in attention to a few stars that happen to be closing their careers at the same tournament?
+
+We'll narrow this down to answerable questions about the ages of players selected to represent their country's team (the "squad") at men's World Cups: Are men's World Cup squads getting older, is there an increase in longevity? 
+
+::: column-margin
+This was just a fun mini-project. I am actually an NFL-football fan ([Bear Down!](https://www.chicagobears.com/)), and just an every-4-years-bandwagon-World Cup fan - so please let me know if you think there's any soccer/football knowledge I am missing!
+:::
+
+
+
+# 1930-2026: Are men's World Cup squads getting older?
+
+As noted, there were seven men 40+ at the start of the 2026 tournament - compared to just nine total in all prior years. 
+
+```{r}
+#| output: true
+
+dfsquads_1930_2026 %>%
+  filter(age >=40, year == 2026) %>% 
+  arrange(desc(age)) %>% 
+  mutate(Name = paste0(ifelse(is.na(given_name), 
+                              "", # no given_name Vozinha
+                              given_name), 
+                       " ", family_name),
+         Age = round(age, 1)) %>% # use fmt_number
+  select(Name,
+         Team = team_name,
+         Position = squad_position_name,
+         Age) %>% 
+  gt() %>%   
+  fmt_number(
+    columns = Age,
+    decimals = 1
+  ) %>% 
+  tab_header(title = "2026 World Cup Players Over 40 Years Old")
+  
+```
+Although there is great variability in individual player ages, the trend line is going up.
+```{r}
+#| output: true
+
+#----------------------------------- 
+# Main overall age graph
+#----------------------------------- 
+# # Label some individual players
+  # First over 40 and oldest ever
+labels_oldest <- dfsquads_1930_2026 %>%
+  filter(year < 2026, age > 40,
+         family_name %in% c("Yashin", "El Hadary"))
+
+# Overall main player age graph
+dfsquads_1930_2026 %>% 
+  ggplot(aes(x = year, y = age)) +
+  geom_jitter(aes(color = age > 40),
+              height = 0, width = .8, alpha=.3) +
+  scale_color_manual(
+    values = c(
+      "FALSE" = palette_green,
+      "TRUE"  = palette_red
+    ),
+    # name = "Age > 40"
+    guide = "none"
+  ) + 
+  geom_text_repel(
+    data = labels_oldest,
+    aes(label = paste0(family_name, ", ", team_name, " ", year," (Age ", round(age, 1), ")")),
+    size = 2.5,
+    # The label to data connector
+    segment.color = "grey",
+    segment.size = 0.5,
+    segment.alpha = 1,
+    min.segment.length = 0
+  ) +
+  geom_hline(
+    yintercept = 40,
+    color = palette_red,
+    linewidth = .5,
+    linetype = "dashed"
+  ) +
+  geom_smooth(se=FALSE, color = "darkgrey") + 
+  # To only show actual years in the data
+  scale_x_continuous(
+    breaks = sort(unique(dfsquads_1930_2026$year)), 
+    guide = guide_axis(angle = 45), 
+    expand = expansion(mult = c(0.02, 0.02)) # extra space on the right
+  ) +
+  labs(title = "Men's World Cup (1930-2026) Player Ages",
+       subtitle = "Players 40+ Years Old (red)",
+       x = "Year", y = "Player Age (Years)") + 
+  theme_minimal()
+```
+
+With so many players, it can be easier to visualize this increase in age over time by focusing on the average squad age.^[As nearly all teams use their full squad size allowed, the trend of individual players or squad averages over time should be nearly identical, it simply reduces the amount and variability of data points shown to help visualize the trend.]
+
+```{r}
+#| output: true
+
+dfsquads_1930_2026 %>% 
+  group_by(year, team_name) %>% 
+  summarize(age = mean(age, na.rm=TRUE),
+            .groups = "drop") %>% 
+  ggplot(aes(x = year, y = age)) +
+  geom_jitter(aes(color = age >= 30),
+              height = 0, width = .8, alpha=.4) +
+  geom_smooth(se=FALSE, color = "darkgrey") +
+  scale_color_manual(
+    values = c(
+      "FALSE" = palette_green,
+      "TRUE"  = palette_red),
+    # name = "Age > 40"
+    guide = "none"
+  ) + 
+  geom_hline(
+    yintercept = 30,
+    color = palette_red,
+    linewidth = .5,
+    linetype = "dashed"
+  ) +
+  # To only show actual years in the data
+  scale_x_continuous(
+    breaks = sort(unique(dfsquads_1930_2026$year)), 
+    guide = guide_axis(angle = 45), 
+    expand = expansion(mult = c(0.02, 0.02)) # extra space on the right
+  ) +
+  labs(title = "Men's World Cup (1982-2026) Squad Mean Ages",
+       subtitle = "Squads 30+ Years Old (red)",
+       x = "Year", y = "Mean Squad Age (Years)") + 
+  theme_minimal()
+```
+
+Notably, three out of the five squad with an average age over 30 are in the current 2026 World Cup - including the top two oldest of all time.
+
+```{r}
+#| output: true
+
+dfsquads_1930_2026 %>% 
+  group_by(year, team_name) %>% 
+  summarize(mean_age = mean(age, na.rm = TRUE), # %>% round(1),
+            .groups = "drop") %>% 
+  arrange(desc(mean_age)) %>% 
+  filter(mean_age >= 30) %>% 
+  select(Year = year, 
+         Team = team_name,
+         `Mean Age` = mean_age) %>% 
+  gt() %>% 
+  fmt_number(
+    columns = `Mean Age`,
+    decimals = 1
+  ) %>% 
+  tab_header(title = "World Cup Squads Average Age Over 30 Years Old")
+  
+```
+
+# Expansion Era (1982-2026): Are men's World Cup squads getting older?
+
+I will primarily focus the rest of my analyses on the World Cups since 1982, when the World Cup expanded to 24 teams and 526 players. Since then the number of teams has increased twice more, and the squad size has increased twice as well, leading to 1248 players in the 2026 tournament.^[Specifically, the World Cup moved from 16 to 24 teams in 1982, further increased to 32 teams in 1998, and 48 teams in 2026. There were also increases in squad size, that is the number of players per team, from 22 to 23 in 2002, and to 26 in 2022.] A priori / before looking at the data, I had decided to avoid analyses on male ages in the decades after the end of World War II, and this expansion era began 37 years later and thus serves as a reasonable starting point.^[The World Cup was suspended during WWII, and it seemed reasonable to suspect that in the countries involved in the war it may have suppressed the number of older players that otherwise may have been seen in the decades following: There would have been greater injury and mortality among military-aged men during the war that would have left fewer able-bodied men in their 20's-40's for the next couple decades when World Cup tournaments resumed. It may also be reasonable to suspect other influences, such as those generations being able to devote less time and energy to sports during their developmental years compared to younger generation coming after the war. I was initially planning to use data starting at some point in the mid-70's, but when I realized there was a new "Expansion Era" starting in 1982, that seemed like a reasonable conceptual cut point.]
+
+```{r}
+#| include: false
+
+#----------------------------------- 
+############ Sample sizes 
+#----------------------------------- 
+# Table display of sample sizes 
+dfsquads %>% 
+  group_by(year, team_code) %>% 
+  summarize(`Players per Team` = n()) %>% 
+  group_by(year) %>% 
+  summarize(`Total Teams` = n(),
+            `Total Players` = sum(`Players per Team`)) %>% 
+  rename(Year = year) # %>% filter(Year %in% c(1982, 2026))
+
+```
+
+
+```{r}
+#| include: false
+
+### Coefficient
+# Nice to show meaningful coefficients, center year at start
+dfsquads <- dfsquads %>% mutate(`Years Since 1982` = year - year_start)
+model_year <- lm(age ~ `Years Since 1982`, data = dfsquads) 
+model_year %>% tidy() %>% select(term, estimate)
+
+# 
+(model_year$coefficients[2]) %>% round(4) # age increase per year
+# Every World Cup (4 years), average age increases by  
+(model_year$coefficients[2]*4) %>% round(2) # years
+((model_year$coefficients[2]*4)*365.25) %>% round(2)   # translated to days
+```
+
+Using a regression fit line during the expansion era, we can see that at every tournament predicted mean player age was increasing by .07 years or 25 days.^[Coefficient .0174 per year \* 4 years for each tournament = .07 years increase in age per tournament
+.0174 per year \* 4 years for each tournament \* 365.25 days per year =  25.36 days increase per tournament]
+
+
+```{r}
+#| output: true
+
+#----------------------------------- 
+# Main overall age graph, limit to Expansion Era - with regression line 
+#----------------------------------- 
+
+### Coefficient
+# Nice to show meaningful coefficients, center year at start
+dfsquads <- dfsquads %>% mutate(`Years Since 1982` = year - year_start)
+b <- lm(age ~ `Years Since 1982`, data = dfsquads) %>% coef()
+eq_label <- glue(
+  "Predicted Mean Player Age = {round(b[1], 3)} + {round(b[2], 3)} × (Years Since 1982)"
+)
+
+# Overall main player age graph
+dfsquads %>% 
+  ggplot(aes(x = year, y = age)) +
+  geom_jitter(color = palette_green,
+              height = 0, width = .8, alpha=.3) +
+  #geom_smooth(se=FALSE, color = "darkgrey") + 
+  geom_smooth(
+    method = "lm",
+    color = palette_red) +
+  annotate(
+    "text",
+    x = 1982,
+    y = 44,
+    label = eq_label,
+    hjust = 0,
+    size = 3,
+    colour = palette_red
+    ) + 
+  # To only show actual years in the data
+  scale_x_continuous(
+    breaks = sort(unique(dfsquads$year)), 
+    guide = guide_axis(angle = 45), 
+    expand = expansion(mult = c(0.02, 0.02)) # extra space on the right
+  ) +
+  labs(title = "Men's World Cup (1982-2026) Player Ages",
+       subtitle = "Expansion Era Regression Fit Line",
+       x = "Year", y = "Player Age (Years)") + 
+  theme_minimal()
+```
+
+Because I'm primarily interested in older players, I wouldn't want the mean ages to be increasing just because *younger* players are being left off squads. To rule this out, I examined the trends in selecting younger players to squads. By focusing on the minimum age at each tournament (which does jump around a bit as it focuses on a single extreme individual) but also a number of lower percentiles, we can see that there is not any general increase in the younger end of players and might be a slight tendency to giving youth more of a chance. So changes in the mean are not being driven by the selection of fewer younger players.
+
+```{r}
+#| include: false
+
+#----------------------------------- 
+########## Age over time
+#----------------------------------- 
+### summarydf used for visuals, 
+  # so choosing names for display rather than tidy name formats
+summarydf <- dfsquads %>%
+  group_by(year) %>%
+  summarize(
+    Mean = mean(age, na.rm = TRUE),
+    Median = median(age, na.rm = TRUE),
+    SD   = sd(age, na.rm = TRUE),
+    IQR = IQR(age, na.rm = TRUE),
+    Min  = min(age, na.rm = TRUE),
+    Max  = max(age, na.rm = TRUE),
+    `99th` = quantile(age, probs = .99, na.rm = TRUE),
+    `95th` = quantile(age, probs = .95, na.rm = TRUE),
+    `90th` = quantile(age, probs = .90, na.rm = TRUE),
+    `85th` = quantile(age, probs = .85, na.rm = TRUE),
+    `80th` = quantile(age, probs = .80, na.rm = TRUE),
+    # any movement on the lower end?
+    `20th` = quantile(age, probs = .20, na.rm = TRUE),
+    `15th` = quantile(age, probs = .15, na.rm = TRUE),
+    `10th` = quantile(age, probs = .10, na.rm = TRUE),
+    `05th` = quantile(age, probs = .05, na.rm = TRUE),
+    `01st` = quantile(age, probs = .01, na.rm = TRUE)
+  ) 
+
+```
+
+
+```{r}
+#| output: true
+
+# YOUNGER summary stats
+stats_to_plot <- c("Min", "01st", "05th", "10th", "15th", "20th")
+
+### Plotting selected stats_to_plot
+summarydf %>%
+  pivot_longer(
+    -year,
+  ) %>% 
+  filter(name %in% stats_to_plot) %>% 
+  # to control order/placement of plots
+  mutate(name = factor(name, 
+                       levels = stats_to_plot
+                       )) %>% 
+  ggplot(aes(year, value)) +
+  geom_line(color=palette_green) +
+  geom_smooth(method = "lm", se=FALSE, color = palette_red) +
+  geom_point(color=palette_green) +
+  facet_wrap(~ name , scales = "free_y"
+  ) + # nrow=
+  # To only show actual years in the data
+  scale_x_continuous(
+    breaks = sort(unique(summarydf$year)), 
+    guide = guide_axis(angle = 45), 
+    expand = expansion(mult = c(0.02, 0.02)) # extra space on the right
+  ) +
+  labs(title = "Men's World Cup (1982-2026) Player Ages Percentiles", 
+       x = "Year", y = "Age (Years)") + 
+  theme_minimal()
+
+summarydf %>%
+  filter(year %in% c(1982, 2026)) %>% 
+  select(year, all_of(stats_to_plot)) %>% 
+  rename(Year = year) %>% 
+  mutate(Year = as.character(Year)) %>% 
+  {
+    bind_rows(
+      .,
+      summarise(
+        .,
+        Year = "Change",
+        # across(-Year, ~ diff(.x)) %>% round(1)
+        # across(-Year, \(x) round(diff(x), 1))
+        # across(-Year, ~ round(diff(.x), 1))
+        across(-Year, ~ unname(round(diff(.x), 1)))
+      )
+    )
+  } %>% 
+  gt() %>% 
+  fmt_number( # conflict of intention vs Quarto HTML dataframe render
+    columns = where(is.numeric),
+    decimals = 1
+  ) %>% 
+  tab_header(title="Younger Age Percentiles, 1982 vs 2026")
+```
+But the mean does not focus specifically on the older players I'm interested in. And maximum age focuses on just the single most extreme individual each year (and thus is just quite noisy). So an upper percentile would be more ideal - and examining a number of upper percentiles, we see a consistent pattern of increase among them. Looking over the last 24 years of the expansion era there is between a 1.6 to three year increase. 
+
+
+```{r}
+#| output: true
+
+# OLDER summary stats
+stats_to_plot <- c("80th", "85th", "90th", "95th", "99th", "Max")
+
+### Plotting selected stats_to_plot
+summarydf %>%
+  pivot_longer(
+    -year,
+  ) %>% 
+  filter(name %in% stats_to_plot) %>% 
+  # to control order/placement of plots
+  mutate(name = factor(name, 
+                       levels = stats_to_plot
+                       )) %>% 
+  ggplot(aes(year, value)) +
+  geom_line(color=palette_green) +
+  geom_smooth(method = "lm", se=FALSE, color = palette_red) +
+  geom_point(color=palette_green) +
+  facet_wrap(~ name , scales = "free_y"
+  ) + # nrow=
+  # To only show actual years in the data
+  scale_x_continuous(
+    breaks = sort(unique(summarydf$year)), 
+    guide = guide_axis(angle = 45), 
+    expand = expansion(mult = c(0.02, 0.02)) # extra space on the right
+  ) +
+  labs(title = "Men's World Cup (1982-2026) Player Ages Percentiles", 
+       x = "Year", y = "Age (Years)") + 
+  theme_minimal()
+
+summarydf %>%
+  filter(year %in% c(1982, 2026)) %>% 
+  select(year, all_of(stats_to_plot)) %>% 
+  rename(Year = year) %>% 
+  mutate(Year = as.character(Year)) %>% 
+  {
+    bind_rows(
+      .,
+      summarise(
+        .,
+        Year = "Change",
+        # across(-Year, ~ diff(.x)) %>% round(1)
+        # across(-Year, \(x) round(diff(x), 1))
+        # across(-Year, ~ round(diff(.x), 1))
+        across(-Year, ~ unname(round(diff(.x), 1)))
+      )
+    )
+  } %>% 
+  gt() %>% 
+  fmt_number( # conflict of intention vs Quarto HTML dataframe render
+    columns = where(is.numeric),
+    decimals = 1
+  ) %>% 
+  tab_header(title="Older Age Percentiles, 1982 vs 2026")
+```
+
+Both the 95th and 99th percentile (with ages of 35.2 and 38.6, respectively in the 2026 World Cup) seem like reasonable choices to represent longevity. We see that these longevity measures, as well as mean and medians of age, all show a general trend of increasing age over time during the expansion era of the World Cup. 
+
+```{r}
+#| output: true
+
+# OVERALL summary stats
+stats_to_plot <- c("Mean", "Median", "95th", "99th")
+
+### Plotting selected stats_to_plot
+summarydf %>%
+  pivot_longer(
+    -year,
+  ) %>% 
+  filter(name %in% stats_to_plot) %>% 
+  # to control order/placement of plots
+  mutate(name = factor(name, 
+                       levels = stats_to_plot
+                       )) %>% 
+  ggplot(aes(year, value)) +
+  geom_line(color=palette_green) +
+  geom_smooth(method = "lm", se=FALSE, color = palette_red) +
+  geom_point(color=palette_green) +
+  facet_wrap(~ name , scales = "free_y"
+  ) + # nrow=
+  # To only show actual years in the data
+  scale_x_continuous(
+    breaks = sort(unique(summarydf$year)), 
+    guide = guide_axis(angle = 45), 
+    expand = expansion(mult = c(0.02, 0.02)) # extra space on the right
+  ) +
+  labs(title = "Men's World Cup (1982-2026) Player Ages", 
+       x = "Year", y = "Age (Years)") + 
+  theme_minimal()
+
+summarydf %>%
+  filter(year %in% c(1982, 2026)) %>% 
+  select(year, all_of(stats_to_plot)) %>% 
+  rename(Year = year) %>% 
+  mutate(Year = as.character(Year)) %>% 
+  {
+    bind_rows(
+      .,
+      summarise(
+        .,
+        Year = "Change",
+        across(-Year, ~ unname(diff(.x)))
+      )
+    )
+  } %>% 
+  gt() %>% 
+  fmt_number( # conflict of intention vs Quarto HTML dataframe render
+    columns = where(is.numeric),
+    decimals = 1
+  ) %>% 
+  tab_header(title="Age, 1982 vs 2026")
+```
+
+**Is there an trend of increasing age and particularly longevity or older players in World Cup squads? I would argue that yes, we do see evidence of a general trend of overall increasing age (based on the means and medians increasing by .8 of a year or 9.6 months) and a minority but notable number of players with exceptional longevity (based on the 95th percentile increasing by 2 years, the 99th percentile increasing by 3 years).** 
+
+To dig a bit deeper, is it limited to certain players or squads?
+
+# Is it just goal keepers?
+
+It has been noted that many of the oldest players at this and prior World Cups are goalkeepers, as they ["typically face less physical wear and tear than outfield players, allowing many to extend their careers well into their late 30s and 40s."](https://sports.yahoo.com/articles/oldest-players-world-cup-where-150715142.html) But it also was acknowledged how a surprising number of older veterans on 2026 squads were outfield players.
+
+Looking at the expansion era data, we will focus on the mean and the longevity representation of the 95th percentile. (The 99th percentile is no longer a good option given the smaller sample sizes when splitting by position, particularly for the goal keepers.)^[Specifically, goal keepers never made up more than 100 players per year before 2026, and all other position groups were below 200 before 1998. Thus, the downsides of using a maximum and focusing on an extreme individual or two would apply in this case to the 99th percentile.] 
+
+**Goal keepers are overall older than outfielders (defenders, midfielders, and forwards) , their average age is increasing, and there seem to increases in longevity as represented by their 95th percentile of age increasing. But even outfielders are showing increases in age and increases in longevity.**
+
+```{r}
+#| output: true
+
+stats_to_plot <- c("Mean", "95th")
+dfsquads %>% 
+  group_by(year, squad_position_name) %>% 
+  summarize(Mean = mean(age, na.rm = TRUE),
+            #`99th` = quantile(age, probs = .99, na.rm = TRUE),
+            `95th` = quantile(age, probs = .95, na.rm = TRUE),
+            .groups = "drop"
+            ) %>% 
+  pivot_longer(
+    -c(year, squad_position_name),
+  ) %>% 
+  mutate(name = factor(name, 
+                       levels = stats_to_plot
+  )) %>% 
+  ggplot(aes(x = year, y = value,
+             color=squad_position_name)) +
+  geom_point() +
+  geom_smooth(se=FALSE) +
+  scale_color_brewer(palette = "Set1", 
+                     name = "Position") + 
+  facet_wrap(.~name, scales = "free_y") + 
+  # To only show actual years in the data
+  scale_x_continuous(
+    breaks = sort(unique(dfsquads$year)), 
+    guide = guide_axis(angle = 45), 
+    expand = expansion(mult = c(0.02, 0.02)) # extra space on the right
+  ) +
+  labs(title = "Men's World Cup (1982-2026) Player Ages by Position",
+       subtitle = "Smoothed Fit Lines",
+       x = "Year", y = "Player Age (Years)") + 
+  theme_minimal() + 
+  theme(legend.position = "top",
+        legend.direction = "horizontal")
+```
+
+But how big are these changes? We can calculate the change in the 24 years of data and see that all positions showed noticeable increases on our longevity measure of the 95th percentile, with more than a three year increase for forwards as well as goal keepers across the expansion era. 
+
+```{r}
+#| output: true 
+
+stats_to_plot <- c("Mean", 
+                   "95th")
+
+dfsquads %>%
+  filter(year %in% c(1982, 2026)) %>%
+  group_by(year, squad_position_name) %>%
+  summarise(
+    Mean   = mean(age, na.rm = TRUE),
+    Median = median(age, na.rm = TRUE),
+    `99th` = quantile(age, 0.99, na.rm = TRUE),
+    `95th` = quantile(age, 0.95, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(
+    cols = all_of(stats_to_plot),
+    names_to = "stat",
+    values_to = "value"
+  ) %>%
+  mutate(
+    stat = factor(stat, levels = stats_to_plot)
+  ) %>%
+  group_by(squad_position_name, stat) %>%
+  summarise(
+    `change (years)` = round(diff(value), 2),
+    `change (days)`  = round((diff(value) * 365.25), 0),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from = stat,
+    values_from = c(`change (years)`, `change (days)`),
+    names_glue = "{stat} {.value}"
+  ) %>%
+  select(
+    squad_position_name,
+    unlist(lapply(
+      stats_to_plot,
+      \(x) c(
+        paste0(x, " change (years)"),
+        paste0(x, " change (days)")
+      )
+    ))
+  ) %>%
+  rename(Position = squad_position_name) %>% 
+  select(Position, `Mean change (years)`, `95th change (years)`) %>% #limit
+  gt() %>% 
+  fmt_number( # conflict of intention vs Quarto HTML dataframe render
+    columns = contains("(years)"),
+    decimals = 1
+  ) %>% 
+  fmt_number( # conflict of intention vs Quarto HTML dataframe render
+    columns = contains("(days)"),
+    decimals = 0
+  ) %>% 
+  tab_header(title="Change in Age from 1982 to 2026 by Position")
+```
+
+# Is it just different squad creation by the expanding field of teams? 
+
+As the World Cup as expanded, it seemed natural to wonder if the new teams being able to play may differ in the age of players they select for their squads.^[More details on these analyses can be found on the project github repo.]
+
+In follow up analyses, I did not find any clear relationships between a team's number of appearances at the World Cup and the mean or 95th percentile of age of squad (the 2026 debut teams being a bit older was a bit of an anomaly, as debut teams were a bit younger than others in most prior years). 
+
+FIFA rankings at the beginning of the tournament (with worse rankings perhaps most representing the teams benefiting from the expansion) also did not show much of a clear relationship with age. 
+
+Similarly, while a few noteworthy small countries who have qualified in recent years had a bit older squads on average - with [Cabo Verde's team and their 40 year old goalie drawing particular attention](https://www.nytimes.com/athletic/7363785/2026/06/15/vozinha-cape-verde-goalkeeper-spain/) - when excluding outliers (populations below 1 million or China's one 2002 appearance at the upper end) there wasn't any real relationship between a country's population and the average age of their squad. There were slight hints of smaller countries favoring longevity - the 95th percentile of a squad's age had a negative relationship with population. However, it is a bit inconsistent in it's direction and may be primarily driven by the next few smallest countries, so perhaps it is not be worth interpreting. 
+
+```{r}
+#----------------------------------- 
+########## Population 
+#----------------------------------- 
+
+# Mean and 95th percentile in same graph
+# Couple of labels
+labels_outliers <- bind_rows(
+  dfsquads %>% 
+    group_by(year, team_name) %>% 
+    summarize(pop = mean(population, na.rm = TRUE), 
+              pop_2024 = mean(pop_2024, na.rm = TRUE),
+              Mean = mean(age, na.rm = TRUE),
+              `95th` = quantile(age, probs = .95, na.rm = TRUE),
+              .groups = "drop") %>%
+    filter(pop_2024 < 1000000 | pop_2024 > 1000000000)
+) %>% 
+  select(year, team_name, pop_2024, Mean, `95th`) %>% 
+  pivot_longer(
+    -c(year, team_name, pop_2024),
+  ) %>% 
+  mutate(name = factor(name, 
+                       levels = c("Mean", "95th")
+  ))
+
+dfsquads %>% 
+  group_by(year, team_name) %>% 
+  summarize(pop = mean(population, na.rm = TRUE), 
+            pop_2024 = mean(pop_2024, na.rm = TRUE),
+            Mean = mean(age, na.rm = TRUE),
+            `95th` = quantile(age, probs = .95, na.rm = TRUE),
+            sd_age = sd(age, na.rm=TRUE),
+            .groups = "drop") %>% 
+  select(year, team_name, pop_2024, Mean, `95th`) %>% 
+  pivot_longer(
+    -c(year, team_name, pop_2024),
+  ) %>% 
+  mutate(name = factor(name, 
+                       levels = c("Mean", "95th")
+  )) %>% 
+  ggplot(aes(x=pop_2024, y=value)) + 
+  geom_point(alpha = .3) + 
+  geom_smooth(se=FALSE, color = palette_blue) + 
+  geom_smooth(data = . %>%
+                filter(pop_2024 > 1000000 & pop_2024 < 1000000000),
+              se=FALSE, color = palette_red, 
+              linetype = "dashed") +
+  geom_text_repel(
+    data = labels_outliers,
+    aes(label = paste0(team_name, ", ", year)),
+    size = 2,
+    # The label to data connector
+    segment.color = "grey",
+    #segment.size = 0.5,
+    segment.alpha = 1,
+    min.segment.length = 0
+  ) +
+  facet_wrap(.~name, scales = "free_y") +
+  scale_x_log10(labels = scales::label_log(), # label_comma()
+                #guide = guide_axis(angle = 45)
+                ) +
+  labs(title = "Men's World Cup (1982-2026), Team Age vs Country's 2024 Population", 
+       caption = "Red dashed line excludes n = 4 outliers",
+       x = "Country Population (2024, log 10 scaled)", y = "Team Age (Years)") + 
+  theme_minimal() + 
+  theme(plot.caption = element_text(size = 6))
+```
+
+
+
+
+
+
+
+
+
+Increasing athletic longevity has captured attention in other sports as well, with notable recent examples of [Lebron James in the NBA and Tom Brady in the NFL](https://www.espn.com/nba/story/_/id/38809635/best-older-players-nba-nfl-mlb-nhl-wnba).
+
+Comments?
+
+# Post Notes
+
+## Data Details
+
+There is an excellent [World Cup database](https://www.worldcups.ai/) (© 2026 Joshua C. Fjelstudl, Ph.D. published under [CC-BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/legalcode)) of the 1930-2022 World Cups, with tables of players, squads, and team performances.^[At the time of downloading, 2026 data was not yet included] Player and squad information for 2026 was scrapped from [Wikipedia](https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_squads).
+
+```{r}
+#| eval: false
+
+#----------------------------------- 
+# Ages 40+ vs FIFA article 
+#----------------------------------- 
+########## FIFA noting more 40+ in 2026 than all other years
+  # Messy notes: 
+    # Fernando Muslera, Uruguay turns 40 after World Cup start date, but before his teams game... FIFA article counts him as over 40
+   # 1970 Soviet Union Lev Yashin was an unused squad member
+dfsquads_1930_2026 %>%
+  filter(age >=40) %>% 
+  group_by(year >= 2026) %>% 
+  arrange(year, desc(age)) %>% 
+  ungroup() %>% 
+  rename(Position = squad_position_name) %>% 
+  select(year, team_name, given_name, family_name, Position, age) 
+```
+
+Age is calculated from the date of the start of the tournament, and I am including anyone named to a squad, regardless of whether they saw playing time during the tournament.^[Note that a few seeming inconsistencies can arise based on these definitions: The earlier noted [FIFA article](https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over) about players over 40 include Uruguay's Fernando Muslera who turned 40 after the start of the 2026 tournament but before his team's first game; his age in my data would be 39.98631. They also only referred to players in prior tournaments who earned a cap - that is, played actual time - which would exclude, for example, unused squad members like the first 40+ year old Lev Yashin named to 1970 Soviet Union squad.]
