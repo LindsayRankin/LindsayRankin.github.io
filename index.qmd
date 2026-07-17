@@ -20,11 +20,10 @@ about:
 
 Hi there!
 
-I'm Lindsay Rankin. \
-(Sometimes Lindsay E Rankin)
+I'm Lindsay Rankin. 
 
 I work in data science, data analysis, statistics, and research.
 
-I have a PhD in social psychology (both experimental and survey research) with a quantitative methods concentration. After my formal education, I continued building my statistics and data skills, particularly a specialization in R programming.
+I have a PhD in social psychology with a quantitative methods concentration, where I focused on both experimental and survey research. After my formal education, I continued building my statistics and data skills, particularly a specialization in R programming.
 
-Welcome, see more in my About, and poke around!
+Welcome, and see more [About](/about.qmd) me.

@@ -4,20 +4,48 @@
     "href": "resume.html",
     "title": "Resume",
     "section": "",
-    "text": "Placeholder…"
+    "text": "Coming soon…"
+  },
+  {
+    "objectID": "projects/2026-07-09-m-world-cup-age/index.html",
+    "href": "projects/2026-07-09-m-world-cup-age/index.html",
+    "title": "Are World Cup Squads Getting Older?",
+    "section": "",
+    "text": "The 2026 Men’s World Cup will feature a record number of players over age 40 - nearly as many as all prior World Cups combined.\nAnd just below 40 years old, players like the 38 year old Lionel Messi are also drawing attention for their staying power.\nAre we really seeing an increase in high performance into older ages among World Cup players? Or is it just a bias in attention to a small number of unusually long careers likely coming to an end at the same tournament?\nWe’ll narrow this down to answerable questions we can explore about the ages of players selected to represent their country’s team (the “squad”): Are men’s World Cup squads getting older, and is there an increase in longevity?"
+  },
+  {
+    "objectID": "projects/2026-07-09-m-world-cup-age/index.html#data-details",
+    "href": "projects/2026-07-09-m-world-cup-age/index.html#data-details",
+    "title": "Are World Cup Squads Getting Older?",
+    "section": "Data Details",
+    "text": "Data Details\nThis analysis used an excellent World Cup database (© 2026 Joshua C. Fjelstudl, Ph.D. published under CC-BY-SA 4.0 license) of the 1930-2022 World Cups, with tables of players, squads, and team performances.6 Player and squad information for 2026 was scrapped from Wikipedia. Population data came from the WDI package, supplemented with government data for the separate countries of the United Kingdom. FIFA ranking data is unverified and should be treated with caution, but came from an updated version in a comment on Kaggle.\n\n\n\nAge was calculated from the date of the start of the tournament, and I included anyone named to a squad, regardless of whether they saw playing time during the tournament.7\nThe data used as well as code for analyses are available in the github project repo, and the exact code for this post are available in this website’s repo."
+  },
+  {
+    "objectID": "projects/2026-07-09-m-world-cup-age/index.html#feedback",
+    "href": "projects/2026-07-09-m-world-cup-age/index.html#feedback",
+    "title": "Are World Cup Squads Getting Older?",
+    "section": "Feedback",
+    "text": "Feedback\nThis was just a fun mini-project for me (and to practice some web scrapping and give me a project to build out a website). I am primarily an NFL-football fan (Bear Down!), and just an every-4-years-bandwagon-World-Cup-football fan — so please let me know if you think there’s any soccer/football knowledge I am missing!"
+  },
+  {
+    "objectID": "projects.html",
+    "href": "projects.html",
+    "title": "Data Projects",
+    "section": "",
+    "text": "Are World Cup Squads Getting Older?\n\n\nIs it just a few headliners (i.e., Ronaldo, Messi), or is there broader increases in longevity among World Cup players?\n\n\n\nLindsay Rankin\n\n\nJul 9, 2026\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Lindsay Rankin",
     "section": "",
-    "text": "Hi there!\nI’m Lindsay Rankin.\n(Sometimes Lindsay E Rankin)\nI work in data science, data analysis, statistics, and research.\nI have a PhD in social psychology (both experimental and survey research) with a quantitative methods concentration. After my formal education, I continued building my statistics and data skills, particularly a specialization in R programming.\nWelcome, see more in my About, and poke around!"
+    "text": "Hi there!\nI’m Lindsay Rankin.\nI work in data science, data analysis, statistics, and research.\nI have a PhD in social psychology with a quantitative methods concentration, where I focused on both experimental and survey research. After my formal education, I continued building my statistics and data skills, particularly a specialization in R programming.\nWelcome, and see more About me."
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "Now\n(Updated as of July 2026:) I have worked freelance for many years, but am interested in transitioning to an ongoing, full time role.\n\n\nProfessionally\nI love data and research. I lean more toward the analytics and decision science parts of data science. R is my preferred programming language, although I’m always interested in learning new skills. I have been a freelancer in various areas of data, statistics, research - in doing, consulting, and teaching - for over a decade.\nMy educational background is a PhD (and MA) in social psychology (both experimental research and cross-sectional/survey methods) with a quantitative methods concentration from New York University. I previously earned a psychology BA from Northwestern University.\nSee my Resume for more details.\n\n\nPersonally\nOutside of work, I enjoy surfing, cooking, reading (news, non-fiction, and fiction), learning, and traveling."
+    "text": "Now\n(Updated as of July 2026:) I have worked freelance for many years, but am interested in transitioning to an ongoing, full time role.\n\n\nProfessionally\nI love data and research. I lean more toward the analytics and decision science parts of data science. R is my preferred programming language, although I’m always interested in learning new skills (and have taught myself Python). I have been a freelancer in various areas of data, statistics, research - in doing, consulting, and teaching - for over a decade.\nMy educational background is a PhD (and MA) in social psychology (both experimental research and cross-sectional/survey methods) with a quantitative methods concentration from New York University. I previously earned a psychology BA from Northwestern University.\nSee my Resume for more details.\n\n\nPersonally\nOutside of work, I enjoy surfing, food and cooking, reading (news, non-fiction, and fiction), learning, health and wellness, and traveling."
   }
 ]
