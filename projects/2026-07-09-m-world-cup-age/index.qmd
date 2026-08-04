@@ -3,7 +3,7 @@ title: "Are World Cup Squads Getting Older?"
 #subtitle: "Are World Cup players getting older?"
 description: "Is it just a few headliners (i.e., Ronaldo, Messi), or is there broader increases in longevity among World Cup players?"
 date: 07-09-2026
-#categories: [Fun, Sports, Soccer, Age]
+categories: [Quantile regression, Learning, Fun, Sports, Soccer, Age]
 # citation:
 #   url: https://lindsayrankin.github.io/projects/2026-07-09-m-world-cup-age
 image: mwc_age_ai.jpeg
@@ -18,11 +18,37 @@ execute:
 #| include: false
 
 library(glue)
-library(gt)
 library(ggthemes)
 library(ggrepel)
 library(broom)
+library(av)
+library(ggridges)
+library(gganimate)
+library(gt)
+library(quantreg)
 library(tidyverse)
+
+
+#----------------------------------- 
+########## Overall structure of speed / efficiency issues: saving / caching
+#----------------------------------- 
+# Particularly because of bootstrapping, there are speed issues during local testing
+# labeled sections with "fit-model-"
+# these save models .rds into the folder (always using set.seed(123) and num_boot_sim <- 600)
+# set to eval: false; just need to manually re-run if there are updates to those sections or data
+# otherwise, subsequent sections using the model just load the saved .rds from folders rather than recreate it each time 
+
+# similar approach for video creations of animated graphs
+# cache is another option, but within Quarto may be a bit opaque, may be a easier to just set chunks as not evaluating
+
+
+#----------------------------------- 
+########## Quantile regression
+#----------------------------------- 
+# For initial testing/working through might use 200 for speed/efficiency;
+# When finalizing, better to use 600+
+num_boot_sim <- 600
+
 
 #----------------------------------- 
 ########## Data load, contains all years
@@ -44,7 +70,33 @@ dfsquads_1930_2026 <- readRDS("data_prepared/dfsquads_final_1930_2026.rds") %>%
 year_start <- 1982
 
 dfsquads <- dfsquads_1930_2026 %>% 
-  filter(year >= year_start) 
+  filter(year >= year_start) %>% 
+  mutate(Years.Since.1982 = year - 1982, 
+       # Nice to show meaningful coefficients, center year at start
+       team_year_cluster = paste0(year, "_", team_code)) 
+
+#----------------------------------- 
+########## Apperances for follow up analysis
+#----------------------------------- 
+# core cut off
+core_team_cutoff <- 15
+
+df_squads_appearances <- dfsquads %>% 
+  left_join(
+    # data to join: calculating appearances
+    wc_apperances <- dfsquads_1930_2026 %>% 
+      distinct(year, team_code) %>% 
+      arrange(team_code, year) %>% 
+      group_by(team_code) %>% 
+      mutate(first_appearance = ifelse(row_number() == 1, TRUE, FALSE),
+             count_appearances = row_number(),
+             total_appearances = n()),
+    # joining by team code not name 
+    by = join_by(year, team_code)
+  ) %>% 
+  mutate(core_team = total_appearances >= core_team_cutoff,
+         non_core_team = total_appearances < core_team_cutoff)
+
 
 #----------------------------------- 
 ########## Setting colors
@@ -59,7 +111,7 @@ palette_purple <- "#984EA3FF"
   
 
 #----------------------------------- 
-########## Age over time, Summary for Primary Visuals
+########## Age over time, Summary for Initial Visuals
 #----------------------------------- 
 ### summarydf used for visuals, 
   # so choosing names for display rather than tidy name formats
@@ -105,6 +157,7 @@ limits_df <- summarydf %>%
 
 ```
 
+
 The 2026 Men's World Cup will feature [a record number of players over age 40 - nearly as many as all prior World Cups combined](https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over). 
 
 <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DZbPAa_HDBQ/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/p/DZbPAa_HDBQ/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">View this post on Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a><p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;"><a href="https://www.instagram.com/p/DZbPAa_HDBQ/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">A post shared by FIFA World Cup (@fifaworldcup)</a></p></div></blockquote>
@@ -112,167 +165,58 @@ The 2026 Men's World Cup will feature [a record number of players over age 40 - 
 
 And just below 40 years old, [players like the 38 year old Lionel Messi are also drawing attention for their staying power.](https://www.bbc.com/sport/articles/c74y97k5jqpo) 
 
-Are we really seeing an increase in [high performance into older ages](https://www.nytimes.com/2026/05/06/magazine/pro-athletes-longevity-secrets-age.html) among World Cup players? Or is it just a bias in attention to a small number of unusually long careers likely coming to an end at the same tournament?
+Is it just a bias in attention, as Ronaldo and Messi happen to be (likely) coming to the end of their unusually long careers at the same tournament? Or are we really seeing an increase in older World Cup players?
 
-We'll narrow this down to answerable questions we can explore about the ages of players selected to represent their country's team (the "squad"): 
 **Are men's World Cup squads getting older, and is there an increase in longevity?** 
 
-::: {.callout-tip collapse="true"}
-## Defining longevity
-While we can examine an overall increase in age with metrics like means or medians, what should represent longevity? 
-
-Article headlines and Instagram posts like to focus on the concrete idea of athletes 40+ year old. But it is a bit of an arbitrary cutoff (why not 39? Or 38? Or 35?). I am interested in something that can capture the slightly broader trend of players continuing to perform (or at least earn their spot on a squad) into what were previously highly unusual ages, but without having to a priori select an arbitrary cutoff. 
-
-A metric like the maximum age at any tournament is interesting, but it focuses on just the single most extreme individual, and therefore can be quite noisy. 
-
-I settled on upper percentiles: I can let the data tell me an age for a given percentage of players rather than having to chose an age cutoff and calculate the percentage of players. And I felt that upper percentiles could strike the right balance between focusing on some extremity in age but not being swung by just one extreme individual like the maximum. We can think of this similar to how research on high income often focuses not on the number of people above a certain threshold, but on changes in the income of, say, the upper 1% over time (a 99th percentile).  
-
-Given that there are at least 500 players in every tournament, a 95th percentile will tell us the age cutoff corresponding to at least the 26 or so oldest players. A 99th percentile will tell us the age cutoff corresponding to at least the five oldest players. In analyses detailed below, I confirmed that these two selections were not unusual compared to other upper percentile choices (i.e., 80th, 85th, or 90th percentiles). While a 99th percentile corresponded a bit more to the ages that I was imagining at just a gut level, in further analyses on subgroups the sample sizes become quite small making a 99th percentile have a number of downsides similar to the maximum. Thus, I used a 95th and 99th percentile in the main analyses, and solely rely on the 95th percentile when subgroup become quite small. 
+::: {style="margin-left: 2em;"}
+This can be broken into two different questions, and I'm primarily interested in the second one:\
+(1) Men's World Cup squads getting older could simply be examined with trends over time in central summaries likes means or medians.\
+(2) "Longevity" as I am imagining it is the more interesting aspect, but a bit more complicated to conceptualize. To focus on the oldest players, I don't want an arbitrary cutoff like 40 nor be limited to just counting players above that threshold; I also don't want to focus on a singular outlier of the oldest player at each tournament. I will use upper percentiles (or in statistics: quantiles), similar to how economic tracking of income over time might focus on the changing value of income of the upper 5% (aka the .95 quantile or 95th percentile) or upper 1% (aka the .99 quantile or 99th percentile).^[I will prefer to to use the slightly-more-colloquial term "percentile" over "quantile" in discussions and visuals, just to be a bit more broadly understood.]\
+\
+We will further clarify these ideas of longevity (and it's distinction from just mean/median getting older) when we get into analysis techniques.^[As my ability to conceptualize the question was improved by learning new analysis techniques!]
 
 :::
 
-# Executive Summary: Jumping to the main conclusion!
-
-Overall, in the past several decades of the World Cup, there has been a trend of increase age (based on the means and medians increasing by .8 of a year or 9.6 months), a small increase. This is *not* driven by any change in avoiding younger players. 
-
-More dramatically, there has been a notable increase in longevity, that is, the small numbers of players at the upper end of age distributions are increasingly older. Specifically, when comparing the 2026 World Cup squads to the 1982 squads, the 95th percentile of age of players at each tournament (the oldest 5%) has increased by 2 years, and the 99th percentile (the oldest 1%) has increased by nearly 3 full years. 
-
-
-```{r}
-#| output: true
-#| out-width: "100%"
-
-# OVERALL summary stats
-stats_to_plot <- c("Mean", "Median", "95th", "99th")
-
-# For each particular set of graphs, set these limits so graphs have same range
-limits_df_stats_to_plot <- bind_rows(
-  # Exclude EXCEPTIONS Mean, Median, Min, Max, then bind those
-  limits_df %>%
-    filter(name %in% setdiff(stats_to_plot, c(#"Mean", "Median", 
-      "Min", "Max"))) %>% 
-    mutate(
-      ymin_graph = mid - max(range) / 2,
-      ymax_graph = mid + max(range) / 2
-    ),
-  # bind the EXCEPTION 
-    # not excluding Mean and Median; warning is okay
-  limits_df %>% 
-    filter(name %in% c(# "Mean", "Median", 
-      "Min", "Max") &
-             name %in% stats_to_plot) %>% 
-    mutate(
-      ymin_graph = mid - max(range) / 2,
-      ymax_graph = mid + max(range) / 2
-    )
-  ) %>% 
-  # all rows, now arrange
-    mutate(name = factor(name, levels = stats_to_plot)) %>%
-    arrange(name)
-
-# Build one scale per facet
-y_scales <- purrr::map2(
-  limits_df_stats_to_plot$ymin_graph,
-  limits_df_stats_to_plot$ymax_graph,
-  ~ scale_y_continuous(limits = c(.x, .y))
-)
-
-### Plotting selected stats_to_plot
-summarydf %>%
-  pivot_longer(
-    -year,
-  ) %>% 
-  filter(name %in% stats_to_plot) %>% 
-  # to control order/placement of plots
-  mutate(name = factor(name, 
-                       levels = stats_to_plot
-                       )) %>% 
-  ggplot(aes(year, value)) +
-  geom_line(color=palette_green) +
-  geom_smooth(method = "lm", se=FALSE, color = palette_red) +
-  geom_point(color=palette_green) +
-  facet_wrap(~ name , scales = "free_y", 
-             ncol= 2) + # change here vs percentiles
-  # Keep percentiles with same range on y axis
-  ggh4x::facetted_pos_scales(
-    y = y_scales
-  ) + 
-  # To only show actual years in the data
-  scale_x_continuous(
-    breaks = sort(unique(summarydf$year)), 
-    guide = guide_axis(angle = 45), 
-    expand = expansion(mult = c(0.02, 0.02)) # extra space on the right
-  ) +
-  labs(title = "Men's World Cup (1982-2026) Player Ages",
-       subtitle = "Changes in Mean, Median, and Upper Percentiles",
-       x = "Year", y = "Age (Years)") + 
-  theme_minimal() + 
-  theme(# only break years for vertical lines
-    panel.grid.minor.x = element_blank())
-
-
-### Table
-summarydf %>%
-  filter(year %in% c(1982, 2026)) %>%
-  select(year, all_of(stats_to_plot)) %>%
-  rename(Year = year) %>%
-  mutate(Year = as.character(Year)) %>%
-  {
-    bind_rows(
-      .,
-      summarise(
-        .,
-        Year = "Change",
-        across(-Year, ~ unname(diff(.x)))
-      )
-    )
-  } %>%
-  gt() %>%
-  fmt_number( # conflict of intention vs Quarto HTML dataframe render
-    columns = where(is.numeric),
-    decimals = 1
-  ) %>%
-  tab_header(title="Age, 1982 vs 2026") %>% 
-  tab_options(table.align = "left")
-```
-
-To dig into how we got to this conclusion and some more details... 
-
-# 1930-2026: Are men's World Cup squads getting older and increasing in longevity? 
-
-Although there is great variability in individual player ages (calculated from the start date of each tournament), the average trend line of age has been generally increasing over time (with the notable exception of the decades immediately following World War II). 
-
-In terms of 40+ year old players, the first appeared in 1970 (an unused squad member for the Soviet Union, Lev Yashin), the oldest in 2018 (Egypt's Essam El-Hadary at over 45 years), but the number of players at or even near 40 seems to have increased in recent years. There were seven men 40+ at the start of the 2026 tournament — compared to just nine total in all prior years.^[Note a slight difference in definition compared to the FIFA's article and Instagram post: Uruguay's Fernando Muslera turned 40 during the tournament — see the "Age at 16 June 2026" notation in the Instagram post. I calculated age for players at each tournament from each tournament start date, so Muslera's age in my data would be 39.98631. In addition, I looked at all players named to a squads, while the [FIFA article](https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over) focused only on those who saw playing time and therefore excluded unused squad members.] 
+I will use a dataset all players named to World Cup squads from the 1930-2022 World Cups from the [World Cup database](https://www.worldcups.ai/) (© 2026 Joshua C. Fjelstudl, Ph.D., [CC-BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/legalcode)). In addition, I added the 2026 players from web scrapping [Wikipedia](https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_squads). More [Data Details](#sec-data-details) are further below in the Appendix, and are fully documented on the [separate github repository for this project](https://github.com/LindsayRankin/mens-world-cup-age). 
 
 ::: {.callout-note collapse="true"}
-## Players 40+ Years Old in the 2026 tournament
-Based on age at the start date of the tournament.
+## Assumptions about player data
 
-```{r}
-dfsquads_1930_2026 %>%
-  filter(age >=40, year == 2026) %>%
-  arrange(desc(age)) %>%
-  mutate(Name = paste0(ifelse(is.na(given_name),
-                              "", # no given_name Vozinha
-                              given_name),
-                       " ", family_name),
-         Age = round(age, 1)) %>% # use fmt_number
-  select(Name,
-         Team = team_name,
-         Position = squad_position_name,
-         Age) %>%
-  gt() %>%
-  fmt_number(
-    columns = Age,
-    decimals = 1
-  ) %>%
-  tab_header(title = "2026 World Cup Players 40+ Years Old") %>% 
-  tab_options(table.align = "left")
-```
+I am considering any player named to a squad as a World Cup player (that is, not distinguishing playing time or excluding unused squad members), and calculating their age at each World Cup from the start date of that tournament. 
 
-::: 
+Conceptually I am interested in topics about training, recovery, and general wellness leading to [sustained high performance into older ages](https://www.nytimes.com/2026/05/06/magazine/pro-athletes-longevity-secrets-age.html). That's quite a complicated question I can't really address with this data. Here we are just trying to first establish if there really are any signs of increasing player longevity. But I want to make explicit the following assumption:\
+**I am broadly imagining the players selected for each squad as the best available for that team/country. That is, a player is on a squad because they are high performing, and therefore if they are older they would represent the kind of high performing longevity I am interested in.**\
 
-But drawing a line right at 40 does seem a bit arbitrary — and we can see that recent years have a number of older players just below this threshold. 
+There could be other forces at work in how managers select players for a squad (e.g., nostalgia for formerly great players that fans or teammates want to stay on the squad). It may not be anything about players changing, but just the willingness of managers to select older players. While I would not totally discount these possibilities, winning should be the primary motivation of all managers and that may ultimately tip the scales over these other considerations, so I would like to at least talk about the data with the assumption that players are the best possible selections. 
+
+In addition, players have to play as a team, and different managers may have different philosophies and balances in constructing a team. Teams are also drawn from the men in a country (leaving aside some complications of players with multiple potential eligibility, where a player must ultimately make a single, final commitment), and different countries may also have different demographic factors (e.g., differences in generation sizes) and football development factors (e.g., if there were particular periods of time they began investing more into development). 
+
+We can somewhat improve our representation of at least some of these team-level considerations by representing players as being clustered within squads, which will change standard error calculations and therefore confidence intervals. When available to (relatively easily) implement, clustering by squad within a year will be ideal; but given the 'fun' and exploratory nature of this project, I will note that at times this becomes overly burdensome and I made a choice to give up some accuracy/precision for keeping the scope of this project manageable.
+
+Finally, as the tournament has expanded to more teams over time, it's possible that these newer teams (who would have been outside of qualification prior to expansions) may differ in how they select players, and those team differences may contribute to differences in players over time. Some follow up analyses will attempt to address some of these alternative explanations. 
+
+:::
+
+
+# World Cups 1930-2026 
+
+Although there is great variability in individual player ages (calculated from the start date of each tournament), a smoothed trend line of age has been generally increasing over time (with the notable exception of a dip in the decades immediately following World War II). 
+
+I had decided (a priori / before looking at this data) to focus my analysis to the time periods decades after the end of World War II. In addition to suspending the World Cup during the 1940's, I would expect a number of lingering effects on potential players, in particular a limited pool of older players in the decades to follow. 
+
+::: {.callout-note collapse="true"}
+## World War II potential effects on player age
+
+Specifically, there would have been greater injury and mortality among military-aged men in countries involved in the war, so it seems reasonable to suspect that would have left fewer potential best players in their 20's-40's for the next couple decades when World Cup tournaments resumed. 
+
+It may also be reasonable to suspect other influences, such as those military-aged generations being able to devote less time and energy to sports during their developmental years compared to later generations who were young children during the war or born after it. 
+
+Both of these aspects would be external shocks that favored youth in the decades to follow, and then after that time period it could have made it look like squads were getting older just as a correction to these influences. 
+
+While I am not testing any *why* about age increasing, as noted above I am conceptually more interested in a general increase in longevity that [could *arguably* be due to more interesting (to me) aspects like training, recovery, and wellness,](https://www.nytimes.com/2026/05/06/magazine/pro-athletes-longevity-secrets-age.html) rather than attributable to an external shock like war. So I would like to avoid analyses including these immediate post-war years that could have such an easy alternative explanation. 
+:::
+
 
 ```{r}
 #| output: true
@@ -291,6 +235,7 @@ labels_oldest <- dfsquads_1930_2026 %>%
 dfsquads_1930_2026 %>% 
   ggplot(aes(x = year, y = age)) +
   geom_jitter(aes(color = age > 40),
+              shape = 21, fill = NA, # just outlines, no fill
               height = 0, width = .8, alpha=.3) +
   scale_color_manual(
     values = c(
@@ -320,7 +265,7 @@ dfsquads_1930_2026 %>%
     linewidth = .5,
     linetype = "dashed"
   ) +
-  geom_smooth(se=FALSE, color = "darkgrey") + 
+  geom_smooth(se=FALSE, color = palette_blue) + 
   # To only show actual years in the data
   scale_x_continuous(
     breaks = sort(unique(dfsquads_1930_2026$year)), 
@@ -335,11 +280,42 @@ dfsquads_1930_2026 %>%
     panel.grid.minor.x = element_blank())
 ```
 
-I had decided (a priori / before looking at this data) to focus my analysis to the time periods decades after the end of World War II. In addition to suspending the World Cup during the 1940's, I would expect a number of lingering effects on potential players, particularly a limited pool of older players in the decades to follow.^[Specifically, it seemed reasonable to suspect that there would have been greater injury and mortality among military-aged men in countries involved in the war that would have left fewer able-bodied men in their 20's-40's for the next couple decades when World Cup tournaments resumed. It may also be reasonable to suspect other influences, such as those generations being able to devote less time and energy to sports during their developmental years compared to younger generation coming after the war. Both of these aspects would be external shocks that favored youth in the decades to follow, and then after that time period it could have made it look like squads were getting older just as a correction to these influences.] I am more interested in a general increase in longevity that [could *arguably* be due to more interesting (to me) aspects like training, recovery, and wellness,](https://www.nytimes.com/2026/05/06/magazine/pro-athletes-longevity-secrets-age.html) rather than attributable to an external shock like war. 
+In terms of the article/Instagram representation of longevity of 40+ year old players, the first appeared in 1970 (Lev Yashin was an unused squad member for the Soviet Union), the oldest in 2018 (Egypt's Essam El-Hadary at over 45 years), but the number of players at or even near 40 seems to have increased in recent years. There were seven men 40+ at the start of the 2026 tournament — compared to just nine total in all prior years.^[Note a slight difference in definition compared to the FIFA's article and Instagram post: Uruguay's Fernando Muslera turned 40 during the tournament — see the "Age at 16 June 2026" notation in the Instagram post. I calculated age for players at each tournament from each tournament start date, so Muslera's age in my data would be 39.98631. In addition, I looked at all players named to a squads, while the [FIFA article](https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over) focused only on those who saw playing time and therefore excluded unused squad members.] 
+
+::: {.callout-note collapse="true"}
+## Players 40+ years old in the 2026 tournament
+Based on age at the start date of the tournament.
+
+```{r}
+dfsquads_1930_2026 %>%
+  filter(age >=40, year == 2026) %>%
+  arrange(desc(age)) %>%
+  mutate(Name = paste0(ifelse(is.na(given_name),
+                              "", # no given_name Vozinha
+                              given_name),
+                       " ", family_name),
+         Age = round(age, 1)) %>% # use fmt_number
+  select(Name,
+         Team = team_name,
+         Position = squad_position_name,
+         Age) %>%
+  gt() %>%
+  fmt_number(
+    columns = Age,
+    decimals = 1
+  ) %>%
+  tab_header(title = "2026 World Cup Players 40+ Years Old") %>% 
+  tab_options(table.align = "left")
+```
+
+::: 
+
+But as discussed, drawing a line right at 40 also seem a bit arbitrary — and we can see that recent years seem to have many more older players just below this threshold (potentially even when taking into account the greater number of players per tournaments in more recent years). 
+
 
 # Expansion Era (1982-2026)
 
-The 1982 World Cup could be referred to a the beginning of an "expansion era" of the tournament, as it increased from 16 to 24 teams. This format change is far enough out from the shadow of WWII to hopefully minimize those direct influences (someone born at the end of WWII in 1944 would be 38 years old by the 1982 tournament) and thus serves as a good conceptual cut point for the data, as well as providing a larger sample size of players. 
+I will limit my analysis to World Cup tournaments from 1982 until 2026. The 1982 World Cup could be referred to a the beginning of an "expansion era" of the tournament, as it increased from 16 to 24 teams. This format change is far enough out from the shadow of WWII to hopefully minimize those direct influences (someone born at the end of WWII in 1944 would be 38 years old by the 1982 tournament), as well as providing a larger sample size of players, so it thus serves as a good conceptual cut point. 
 
 
 ```{r}
@@ -363,7 +339,8 @@ dfsquads %>%
 ::: {.callout-note collapse="true"}
 ## Sample size details
 
-Specifically, the tournament expanded in 1982 to 26 teams and a total of 526 players (a couple of squad spots were unused, and the total number of players was 528 for the next three tournaments). In the years since, the tournament experienced additional expansions in the number of teams and minor upticks in squad size, reaching 1248 players on 48 teams in 2026. 
+Specifically, the tournament expanded in 1982 to 26 teams and a total of 526 players (unusually, a couple of the 22 squad spots went unused that year, but the total number of players was 528 for the next three tournaments).\ 
+In the years since, the tournament experienced additional expansions in the number of teams and a upticks in squad size (from 22 to 23 and eventually 26), reaching 1248 players on 48 teams in 2026. 
 
 ```{r}
 #| output: true
@@ -407,6 +384,24 @@ ggplot(plot_sample_df, aes(x = year)) +
     values = c("Players" = palette_green, "Teams" = palette_red),
     name = ""
   ) +
+   # Vertical reference lines
+  geom_vline(xintercept = 2002, linetype = "dashed",
+             color = "grey50", linewidth = 0.6) +
+  geom_vline(xintercept = 2022, linetype = "dashed",
+             color = "grey50", linewidth = 0.6) +
+  # Labels
+  annotate("text",
+           x = (2002-.2), y = Inf, # to place at top
+           label = "Squad size\n22 → 23",
+           vjust = 1.7,
+           hjust = 1,
+           size = 2.5, color = "grey30") +
+  annotate("text",
+           x = (2022-.2), y = Inf, # to place at top
+           label = "Squad size\n23 → 26",
+           vjust = 1.7,
+           hjust = 1, 
+           size = 2.5, color = "grey30") +
   scale_x_continuous(
     breaks = sort(unique(dfsquads$year)), # Only use actual years in data
     guide = guide_axis(angle = 45),
@@ -435,9 +430,9 @@ ggplot(plot_sample_df, aes(x = year)) +
 ```
 :::
 
-# 1982-2026: Are men's World Cup squads getting older and increasing in longevity? 
+# World Cups 1982-2026: Are men's World Cup squads getting older? 
 
-Age distributions in tournament years had small to medium positive skews (all < .43) and some outliers. I will focus primarily on means as representing the overall age increase (but medians are quite similar). We'll also explore the patterns of change across percentiles as a way to understand other shifts in longevity (and youth), rather than a focus on the somewhat arbitrary line of 40 years old. 
+Age distributions in tournament years had small positive skews (all <= .43), and means and medians were generally quite similar. 
 
 ::: {.callout-note collapse="true"}
 ## Age distribution at each tournament year
@@ -455,7 +450,7 @@ age_hist_stats <- dfsquads %>%
 
 dfsquads %>%
   ggplot(aes(x=age)) + 
-  geom_histogram() + 
+  geom_histogram(alpha = .7) + 
   geom_vline(data = age_hist_stats, aes(xintercept=Mean), 
              color = palette_red) + 
   geom_vline(data = age_hist_stats, aes(xintercept=Median), 
@@ -494,7 +489,7 @@ dfsquads %>%
 ```
 ::: 
 
-Using a regression fit line during the expansion era, predicted mean player age was increasing by .07 years or 25 days at each tournament since 1982.^[The coefficient .0174 is the change in age per year. Tournaments are every four years, and there are 365.25 days in each year: .0174 \* 4 years/tournament = .07 years increase per tournament and .0174 \* 4 years/tournament \* 365.25 days/year = 25.36 days increase per tournament] Collectively, this shows an increase from an average predicted age of 27.01 in 1982 to 27.78 in 2026, a bit over 3/4ths of a year increase - not a massive increase, but a non-trivial cumulative result. 
+Using a linear regression fit line during the expansion era, predicted mean player age was increasing by .07 years or 25 days at each tournament since 1982.^[The coefficient .0174 is the change in age per year. Tournaments are every four years, and there are 365.25 days in each year: .0174 \* 4 years/tournament = .07 years increase per tournament and .0174 \* 4 years/tournament \* 365.25 days/year = 25.36 days increase per tournament. Note that years were calculated as years since 1982 to make the intercept interpretable as the predicted mean age in 1982.] Collectively, this shows an increase from an average predicted age of 27.01 in 1982 to 27.78 in 2026, a bit over 3/4ths of a year increase - not a massive increase, but a non-trivial cumulative result that players are getting a bit older. 
 
 ```{r}
 #| output: true
@@ -505,9 +500,7 @@ Using a regression fit line during the expansion era, predicted mean player age 
 #----------------------------------- 
 
 ### Coefficient
-# Nice to show meaningful coefficients, center year at start
-dfsquads <- dfsquads %>% mutate(`Years Since 1982` = year - year_start)
-model_age_since82 <- lm(age ~ `Years Since 1982`, data = dfsquads) 
+model_age_since82 <- lm(age ~ Years.Since.1982, data = dfsquads) 
 b <- model_age_since82 %>% coef()
 eq_label <- glue(
   "Predicted Mean Player Age = {round(b[1], 3)} + {round(b[2], 3)} × (Years Since 1982)"
@@ -516,11 +509,11 @@ eq_label <- glue(
 # Prediction to 2026: 
 label_pred_82_26 <- tibble(
   year = c(1982, 2026),
-  `Years Since 1982` = c(0, 2026 - 1982)
+  Years.Since.1982 = c(0, 2026 - 1982)
 ) %>%
   mutate(
     pred_age = predict(model_age_since82, newdata = .),
-    label = paste0(year, ": ", round(pred_age, 3))
+    label = paste0(year, ": ", round(pred_age, 2))
   )
 
 # Overall main player age graph
@@ -559,10 +552,18 @@ dfsquads %>%
   theme_minimal()
 ```
 
-Because I'm primarily interested in older players, I would want to distinguish if mean ages was increasing just because *younger* players were being left off squads. To rule this out, I examined the trends in selecting younger players to squads. By focusing on the minimum age at each tournament (which does jump around a bit as it focuses on a single extreme individual) but also a number of lower percentiles, we can see that there is not any general increase in the younger end of players and might be a slight tendency to giving youth more of a chance. So changes in the mean are not being driven by the selection of fewer younger players - and if anything, could be hiding longevity increases if we were to just focus on the mean. 
+But this increase in mean age cannot address the second and more interesting question about changes in longevity. 
+
+For this, we turn to quantile regression. 
 
 ::: {.callout-note collapse="true"}
-## Younger players on squads over time
+## From percentile explorations to quantile regression
+
+Quantile regression is new to me, so this was a learning experience! 
+
+I was initially hitting a bit of a roadblock: 
+
+I had visually explored trends in percentile values calculated per year. I had looked at lower percentiles to confirm that changes in mean age were not being driven by just avoiding selecting youth; if anything, lower percentiles were flat or trending slightly downwards, that is selecting even younger players. So I felt confident in saying that increases in mean age were not just driven by avoiding youth.
 
 ```{r}
 #| output: true
@@ -635,32 +636,43 @@ summarydf %>%
   theme(# only break years for vertical lines
     panel.grid.minor.x = element_blank())
 
-# ### Table
-# summarydf %>%
-#   filter(year %in% c(1982, 2026)) %>% 
-#   select(year, all_of(stats_to_plot)) %>% 
-#   rename(Year = year) %>% 
-#   mutate(Year = as.character(Year)) %>% 
-#   {
-#     bind_rows(
-#       .,
-#       summarise(
-#         .,
-#         Year = "Change",
-#         across(-Year, ~ unname(round(diff(.x), 1)))
-#       )
-#     )
-#   } %>% 
-#   gt() %>% 
-#   fmt_number( # conflict of intention vs Quarto HTML dataframe render
-#     columns = where(is.numeric),
-#     decimals = 1
-#   ) %>% 
-#   tab_header(title="Younger Age Percentiles, 1982 vs 2026")
 ```
-:::
 
-When trying to represent longevity of older players, upper percentile would be ideal (rather than a noisy and variable maximum or arbitrary cutoff of 40 years old) - and examining a number of upper percentiles, we see a consistent pattern of increases among them. Looking at just the two end points of the last 24 years of the expansion era (1982 vs 2026), even the 80th through 90th percentiles are increasing by over a year and half in age, and there is a two year increase in the 95th percentile of age and a three year increase in the 99th percentile. 
+But I was more interested in representing longevity itself with upper percentiles. The 95th and 99th percentiles just intuitively seemed like ideal cutoffs (the upper 5% and 1% of age at each tournament, respectively). When looking at the actual ages corresponding to these cutoffs in the 2026 World Cup (35.2 and 38.6 years old), they matched my prima facie idea of the kind of longevity I wanted to represent. 
+
+```{r}
+#| output: true
+#| out-width: "100%"
+
+# OLDER summary stats
+stats_to_plot <- c("80th", "85th", "90th", "95th", "99th", "Max")
+
+### Table
+summarydf %>%
+  filter(year %in% c(1982, 2026)) %>% 
+  select(year, all_of(stats_to_plot)) %>% 
+  rename(Year = year) %>% 
+  mutate(Year = as.character(Year)) %>% 
+  {
+    bind_rows(
+      .,
+      summarise(
+        .,
+        Year = "Change",
+        across(-Year, ~ unname(round(diff(.x), 1)))
+      )
+    )
+  } %>% 
+  gt() %>% 
+  fmt_number( # conflict of intention vs Quarto HTML dataframe render
+    columns = where(is.numeric),
+    decimals = 1
+  ) %>% 
+  tab_header(title="Older Age Percentiles, 1982 vs 2026") %>% 
+  tab_options(table.align = "left")
+```
+
+I saw a consistent pattern of increases in the upper percentiles, but it was most dramatic in these very most upper percentiles. 
 
 ```{r}
 #| output: true
@@ -732,544 +744,1708 @@ summarydf %>%
   theme(# only break years for vertical lines
     panel.grid.minor.x = element_blank())
 ```
+But beyond these graphs and calculating changes at the end points, I was initially stumped as to how to further represent these changes, particularly how to summarize them into statistics. And how to extend it to considerations of other variables, like a player's position. I wanted something like a linear regression slope, but for some kind of longevity measure rather than a mean. 🤔
 
-Both the 95th and 99th percentile seem like reasonable choices to track to represent longevity, as they correspond to ages of 35.2 and 38.6, respectively, in the 2026 World Cup.
+Enter [quantile regression, particularly as outlined by Roger Koenker](http://www.econ.uiuc.edu/~roger/research/rq/QRJEP.pdf), and implemented in his [quantreg package in R](https://cran.r-project.org/web/packages/quantreg/index.html). This seemed like [a great set of approaches](https://rkoenker.github.io/www/roger/research/rq/rq.html) for this question.
 
-```{r}
-#| output: true
-#| out-width: "100%"
+So this is an exploration and learning experience. I am a bit unsure (as I am stepping into new analyses with somewhat complicated clustered data and later exploring some interaction effects) or knowingly doing not-quite-ideal analyses (particularly with respect to some limitations for standard error calculations / analyses that cannot represent the clustered data without creating custom code that will be computationally intense, as discussed below), but I want to float some ideas. I'm also going to take more of an explaining/teaching tone to parts of this as I am teaching myself.
 
-# OLDER summary stats
-stats_to_plot <- c("80th", "85th", "90th", "95th", "99th", "Max")
+::: 
 
-### Table
-summarydf %>%
-  filter(year %in% c(1982, 2026)) %>% 
-  select(year, all_of(stats_to_plot)) %>% 
-  rename(Year = year) %>% 
-  mutate(Year = as.character(Year)) %>% 
-  {
-    bind_rows(
-      .,
-      summarise(
-        .,
-        Year = "Change",
-        across(-Year, ~ unname(round(diff(.x), 1)))
-      )
-    )
-  } %>% 
-  gt() %>% 
-  fmt_number( # conflict of intention vs Quarto HTML dataframe render
-    columns = where(is.numeric),
-    decimals = 1
-  ) %>% 
-  tab_header(title="Older Age Percentiles, 1982 vs 2026") %>% 
-  tab_options(table.align = "left")
-```
+# World Cups 1982-2026: Are men's World Cup squads increasing in longevity? Quantile regression approach
 
-**Thus, as covered in the Executive Summary above, we concluded that yes we do see evidence of a general trend of overall increasing age, and a notable increase in players with exceptional longevity.** 
+With quantile regression, instead of representing the slope of change in mean age over time, we can consider the change in age over time of any particular quantile or percentile. 
 
-But to continue digging a bit deeper, is it limited to certain players or squads?
+First, it's worth noting that a quantile regression prediction of the median (aka the 50th percentile or .50 quantile) does not really conceptually differ from our linear regression mean prediction — by either measure, central age is increasing a bit over time, and in very similar ways. 
 
-# Is it just goal keepers?
+::: {.callout-note collapse="true"}
+## Mean vs median prediction lines
 
-It has been noted that many of the oldest players at this and prior World Cups are goalkeepers, as they ["typically face less physical wear and tear than outfield players, allowing many to extend their careers well into their late 30s and 40s."](https://sports.yahoo.com/articles/oldest-players-world-cup-where-150715142.html) But it was also noted that a surprising number of older veterans on 2026 squads were also field players (that is, the non-goal keeper positions of defenders, midfielders, and forwards).
-
-Looking at the expansion era squads, we will focus on the mean and the longevity representation of the 95th percentile. (The 99th percentile is no longer a good option given the smaller sample sizes when splitting by position, particularly for the small number of goal keepers.)^[Goal keepers never made up more than 100 players per year before 2026, and all other position groups were below 200 before 1998. Thus, the downsides of using a maximum and focusing on an extreme individual or two would now apply to the 99th percentile.] (Given the smaller sample sizes and thus greater variability in any particular year, I also switch to smooth lines to visually focus on the general patterns of change.)
-
-**Goal keepers are consistently older than field players (defenders, midfielders, and forwards), their average age is increasing, and there seem to increases in longevity as represented by their 95th percentile of age increasing. But field players are *also* showing increases in average age and increases in longevity.**
+You didn't believe me? So similar! 😂
 
 ```{r}
 #| output: true
 #| out-width: "100%"
 
-stats_to_plot <- c("Mean", "95th")
-
-# To make the two graphs have the same range, need to same plot data first
-position_plot_data <- dfsquads %>% 
-  group_by(year, squad_position_name) %>% 
-  summarize(Mean = mean(age, na.rm = TRUE),
-            `95th` = quantile(age, probs = .95, na.rm = TRUE),
-            .groups = "drop"
-            ) %>% 
-  pivot_longer(
-    -c(year, squad_position_name),
-  ) %>% 
-  mutate(name = factor(name, 
-                       levels = stats_to_plot
-  )) 
-
-position_limits_df <- position_plot_data %>% 
-  group_by(name) %>% 
-  summarise(
-    ymin = min(value),
-    ymax = max(value),
-    .groups = "drop"
-  ) %>%
-  mutate(
-    range = ymax - ymin,
-    mid = (ymin + ymax) / 2
-  ) %>% 
-    mutate(
-    ymin_graph = mid - max(range) / 2,
-    ymax_graph = mid + max(range) / 2
-  ) %>% 
-  # all rows, now arrange
-    mutate(name = factor(name, levels = stats_to_plot)) %>%
-    arrange(name)
-
-
-# Build one scale per facet
-y_scales <- purrr::map2(
-  position_limits_df$ymin_graph,
-  position_limits_df$ymax_graph,
-  ~ scale_y_continuous(limits = c(.x, .y))
-)
-
-# Graphing
-position_plot_data %>% 
-  ggplot(aes(x = year, y = value,
-             color=squad_position_name)) +
-  geom_point() +
-  geom_smooth(se=FALSE) +
-  scale_color_brewer(palette = "Set1", 
-                     name = "Position") + 
-  facet_wrap(.~name, scales = "free_y") + 
-  # To have same range on graphs
-  ggh4x::facetted_pos_scales(
-  y = y_scales
-  ) + 
+dfsquads %>% 
+  ggplot(aes(x = year, y = age, 
+             )) +
+  geom_jitter(color = palette_green,
+              shape = 21, fill = NA,
+              height = 0, width = .8, alpha=.3) +
+  geom_smooth(method = "lm", color = palette_red, linetype = "dashed") +
+  geom_quantile(quantiles = .5, color = palette_blue) +
   # To only show actual years in the data
   scale_x_continuous(
     breaks = sort(unique(dfsquads$year)), 
     guide = guide_axis(angle = 45), 
-    expand = expansion(mult = c(0.02, 0.02)) # extra space on the right
+    expand = expansion(mult = c(0.02, # 0.02)) # extra space on the right
+                                .12)) # extra room for labels
   ) +
-  labs(title = "Men's World Cup (1982-2026) Player Ages by Position",
-       subtitle = "Smoothed Fit Lines",
-       caption = "Note: Graphs set to equal ranges for comparisons",
+  labs(title = "Men's World Cup (1982-2026) Player Ages",
+       subtitle = "Linear regression mean fit line (red) and quantile regression median fit line (blue)",
        x = "Year", y = "Player Age (Years)") + 
-  theme_minimal() + 
-  theme(legend.position = "top",
-        legend.direction = "horizontal",
-        panel.grid.minor.x = element_blank())
+  theme_minimal() +
+  theme(panel.grid.minor.x = element_blank(),
+        legend.position = "none")
 ```
+::: 
 
-But how big are these changes? Looking at the ends points of these 24 years of data (1982 vs 2026), all positions showed noticeable increases on our longevity measure of the 95th percentile, with more than a three year increase for forwards as well as goal keepers across the expansion era - a pretty dramatic increase. 
+But we want to examine the slopes over time of different quantiles or percentiles of the age. Given this new quantile regression framework, we can actually further refine or clarify our research questions and separate our 'longevity increasing' second question into two components: 
+
+::: {style="margin-left: 2em;"}
+1. **Location shift of longevity**: The slope of change in age over time for the 95th or 99th percentile can represent that the older players are getting older. This may be consistent with an overall "location shift" where the center of age is also increasing (mean/median ages are going up, as are the oldest ages); it's like the whole distribution of age shifts in its location, so players at any point (median, 95th or 99th percentiles) are all getting older over time. 
+
+2. **Shape shift of longevity**: Difference of the slopes of age over time of these upper percentiles compared to or relative to changes for the rest of the distribution would tell us that there is a change in the shape of the distribution of age. If the slope of age over time for the 95th percentile of age is greater than the slope of age over time at the median, than it is indicating that small number of players are getting increasingly or relatively older above and beyond any possible overall age increases elsewhere in the distribution. In terms of the shape of the distribution of age, it's not about (just) a location shift but (also) a shape shift with the upper tail of the distribution stretching out.  
+:::
+
+
+This first check for the usefulness of a quantile regression is to see if slopes at different quantiles do seem to differ. In addition to clustering players by their squads (specifically the particular team by year), we will use quantreg summary.rq functions to estimate standard errors empirically through bootstrapping. 
+
+::: {.callout-note collapse="true"}
+## Usefulness of quantile regression
+
+If a quantile regression shows us that we have no differences in the slopes of age over time for any particular percentile of age, then there is very little need to continue to modeling each of these other percentiles separately. But if we see different slopes for the upper percentiles compared to the median, this may hint at a "shape shift of longevity" possibility that there is a minority of the very oldest players outlasting prior age norms, and it is worth investigating these quantile regression results further. 
+:::
+
+
+As in the linear regression, the slopes represent the predicted change for each year since 1982.^[In this initial graph the slopes are per year simply because we can lean on functions built for quantreg and not need customization. But in later visualizations we will represent slopes by multiplying this coefficient by 4 years so that it will represent the change in age expected per World Cup.] We can find the coefficients for the fit lines across all percentiles (that is, quantiles from .04 to .99 by .05 increments.^[In terms of pure speed/burning up my local computer memory, I found by .01 problematically slow; the quantreg plot.rq function needs evenly spaced intervals for the plot, and by using .04 to .99 I will get an estimate for .94 and .99 which is close enough for an initial look to my desired 95th and 99th percentile.]  In the plot below, the different quantiles are represented along the x axis, and the values of slope (in units per year) for each quantile is shown on the y axis; the red represents the coefficients and confidence interval from the linear regression and the black and grey represent coefficients and confidence intervals for each quantile.
+
+We see that the slope of age over time does differ by quantiles of age, and does differ from the mean prediction of a linear regression slope. 
+
 
 ```{r}
-#| output: true 
+#| label: fit-model-sum_quantreg_seqby05_bootSEcluster
+#| eval: false
+
+# speed / efficiency:
+  # due to processing time during local development: 
+  # save the model locally, then in a separate code chunk just load it
+  # Only manually rerun this chunk to resave the model if there are changes to the data or this 
+    # simply because all these bootstraps take so long
+
+# Fuller values of tau to actually represent the .95 and .99 might be ideal
+  # so something like tau = seq(.01, .99, by = .01)
+  # BUT this plot.rq needs/assumes equal spaced taus
+  # and the .01 increment along that full scale takes way too long and often crashes my local machine (July 2026 before upgrade)
+  # I will use seq(.04, .99, by = .05), which will including .94 and .99
+quantreg_seqby05 <- rq(age ~ Years.Since.1982, data = dfsquads, 
+                       tau = seq(.04, .99, by = .05))
+
+set.seed(123)
+sum_quantreg_seqby05_bootSEcluster <- 
+  summary(quantreg_seqby05,
+          se = "boot", 
+          cluster = dfsquads$team_year_cluster,                                       
+          R = num_boot_sim)
+
+saveRDS(sum_quantreg_seqby05_bootSEcluster,
+        file = "sum_quantreg_seqby05_bootSEcluster.rds")
+
+```
+
+```{r}
+#| output: true
 #| out-width: "100%"
 
-stats_to_plot <- c("Mean", 
-                   "95th")
+sum_quantreg_seqby05_bootSEcluster <- readRDS("sum_quantreg_seqby05_bootSEcluster.rds")
 
-dfsquads %>%
-  filter(year %in% c(1982, 2026)) %>%
-  group_by(year, squad_position_name) %>%
-  summarise(
-    Mean   = mean(age, na.rm = TRUE),
-    Median = median(age, na.rm = TRUE),
-    `99th` = quantile(age, 0.99, na.rm = TRUE),
-    `95th` = quantile(age, 0.95, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
+plot(sum_quantreg_seqby05_bootSEcluster,
+     parm = "Years.Since.1982") # don't shown intercept, just slope
+
+```
+Specifically, at a quantile around .5 (the median) the slope does not differ from the linear regression mean predictions (represented by the red lines) because it's is well within those red bounds. However, the lowest quantiles are differing from these predictions, and generally do not differ from zero (the black line) — indicating that the ages among the youngest players selected are not changing at each World Cup. But of primary interest is the upper quantiles that show even greater slopes, indicating that the oldest players are not only getting older consistent with a "location shift of longevity", but that upper minority of the oldest players may be getting older at an even greater rate than other parts of the distribution of age, consistent with the possibility of a "shape shift of longevity".
+
+Therefore, a linear regression of the mean or a quantile regression of the median slope do not represent the changes in age over time for the more extreme ages and could obscure these differences, and we need to use quantile regression to represent these upper percentiles of interest.
+
+To make it a bit more concrete, we can graph the equations of some of the quantile regression lines on the original data (converting to changes in age per World Cup tournament "/WC", that is every four years) to more clearly see that both the 95th and 99th percentiles demonstrate not only positive slopes for a "location shift of longevity", but they may have even steeper slopes and stretching the upper part of the distribution faster than the upward trajectory of the rest of the distribution, consistent with the "shape shift of longevity". 
+
+```{r}
+#| label: quantreg_tauval
+#| output: true
+#| out-width: "100%"
+
+tauval <- c(.05, .5, .95, .99)
+taulab <- c("05th", "50th", "95th", "99th")
+tau_key <- tibble(tau = tauval, tau_label = taulab)
+
+quantreg_tauval <- rq(age ~ Years.Since.1982, data = dfsquads, tau = tauval)
+
+# With only year as predictor, it will be repetitive in the data
+  # Match to year, grab distinct
+pred_tauval <- data.frame(dfsquads %>% select(year), 
+                          quantreg_tauval$fitted.values) %>% 
+  distinct() 
+
+colnames(pred_tauval) <- c("year", taulab)
+
+# Pivot longer for graphing
+pred_tauval <- pred_tauval %>% 
   pivot_longer(
-    cols = all_of(stats_to_plot),
-    names_to = "stat",
-    values_to = "value"
+    -year, 
+    names_to = "Percentile", 
+    values_to = "age",
+  ) %>% 
+  arrange(year, Percentile)
+
+# Labels for lines 
+line_labels <- pred_tauval %>%
+  group_by(Percentile) %>%
+  slice_max(year, n = 1) %>%
+  ungroup()
+
+# Label of slopes; year and age determine placement on graph
+  # can get from coefficents, but more complicated; just compute from predicted
+slope_labels <-
+  pred_tauval %>%
+  group_by(Percentile) %>%
+  summarize(
+    slope_per_wc = ((age[year == 2026] - age[year == 1982]) / 44) * 4,
+    age = age[year == 2006],   # for graph placement
+    .groups = "drop"
   ) %>%
   mutate(
-    stat = factor(stat, levels = stats_to_plot)
-  ) %>%
-  group_by(squad_position_name, stat) %>%
-  summarise(
-    `change` = round(diff(value), 2),
-    .groups = "drop"
-  ) %>%
-  pivot_wider(
-    names_from = stat,
-    values_from = c(`change`),
-    names_glue = "{stat} {.value}"
-  ) %>%
-  select(
-    squad_position_name,
-    unlist(lapply(
-      stats_to_plot,
-      \(x) c(
-        paste0(x, " change")
+    year = 2006,               # for graph placement
+    label = sprintf("%+.3f/WC", slope_per_wc)
+  )
+
+# Place percentiles on top of: 
+# Overall main player age graph
+  # Labels of slopes aren't matching color... but this graph is probably too busy
+dfsquads %>% 
+  ggplot(aes(x = year, y = age, 
+             color = Percentile # not in dfsquads, but matches labels to color
+             )) +
+  geom_jitter(color = "grey",# palette_green,
+              shape = 21, fill = NA,
+              height = 0, width = .8, alpha=.3) +
+  geom_line(data = pred_tauval, 
+            mapping = aes(x = year, y = age, color = Percentile)) + 
+  scale_color_brewer(palette = "Set1") + 
+  # Labels by lines instead of legend
+  geom_text(
+    data = line_labels,
+    aes(label = Percentile),
+    size = 3.5,
+    hjust = -0.1,
+    vjust = 0.5,
+    show.legend = FALSE
+  ) +
+  # Slopes
+  geom_label(
+    data = slope_labels,
+    aes(label = label),
+    fill = scales::alpha("white", .75),
+    #color = "black",
+    size = 3.5,
+    linewidth = 0, # label.size = 0,
+    label.padding = unit(.08, "lines"),
+    show.legend = FALSE
+  ) +
+  # To only show actual years in the data
+  scale_x_continuous(
+    breaks = sort(unique(dfsquads$year)), 
+    guide = guide_axis(angle = 45), 
+    expand = expansion(mult = c(0.02, # 0.02)) # extra space on the right
+                                .12)) # extra room for labels
+  ) +
+  labs(title = "Men's World Cup (1982-2026) Player Ages",
+       subtitle = "Quantile Regression Fit Lines at Selected Percentiles",
+       caption = "Note: Slopes represent change in age per World Cup (every 4 years) for each percentile",
+       x = "Year", y = "Player Age (Years)") + 
+  theme_minimal() +
+  theme(panel.grid.minor.x = element_blank(),
+        legend.position = "none")
+
+```
+Looking at the significance testing of each of these slopes seperately, we can confirm the "location shift of longevity": There is a significant increase in age over time at the 95th and 99th percentiles, but also at the median or 50th percentile. 
+
+```{r}
+#| label: fit-model-sum_all_tau
+#| eval: false
+
+# speed / efficiency:
+  # due to processing time during local development: 
+  # save the model locally, then in a separate code chunk just load it
+  # Only manually rerun this chunk to resave the model if there are changes to the data or this 
+    # simply because all these bootstraps take so long
+
+### calculations done here, with SE with bootstrapping and clustering
+  # can be slow, depending on num_boot_sim (set to 200 for testing; 600+ final)
+set.seed(123)
+sum_all_tau <- summary(
+  quantreg_tauval,
+  se = "boot", 
+  covariance = TRUE,      # <- needed to get $B (bootstrap draws) alongside coefficients for calculating predicted values
+  cluster = dfsquads$team_year_cluster, 
+  R = num_boot_sim
+)
+# sum_all_tau is a list, one element per tau, in the same order as tauval
+
+saveRDS(sum_all_tau,
+        file = "sum_all_tau.rds")
+
+
+```
+
+
+```{r}
+#| label: sum_all_tau
+#| output: true
+#| out-width: "100%"
+
+# saved for efficiency, eval: false on its creation, not rendered and must be recreated manually
+sum_all_tau <- readRDS("sum_all_tau.rds")
+
+
+# # These must match how this model was run
+  # Should when code is run in order
+# tauval <- c(.05, .5, .95, .99)
+# taulab <- c("05th", "50th", "95th", "99th")
+# tau_key <- tibble(tau = tauval, tau_label = taulab)
+
+# Table of slopes for significance and CIs and predicted values
+  # Will be reused later for core vs non-core team tables
+make_table_slopeCIpred <- function(which_team = "All", 
+                                   # "Core", #"Non Core",
+                                   which_model = sum_all_tau,
+                                   # sum_coreteam_tau, # sum_noncoreteam_tau
+                                   which_tauval = tauval,
+                                   which_tau_key = tau_key){
+  # Table title depending on team core vs non core or original analysis
+  if (which_team %in% c("Core", "Non-Core", "Non Core")) {
+    table_title <- paste0("Player Age by Percentile, ", which_team, " Teams")
+  } else {
+    table_title <- "Player Age by Percentile"
+  }
+  
+  
+  # Calculations
+  slopes_df <- map2_dfr(which_model, which_tauval, function(s, tv) {
+    cf <- s$coefficients
+    age_change <- cf["Years.Since.1982", "Value"] * 4
+    se_change  <- cf["Years.Since.1982", "Std. Error"] * 4
+    tibble(
+      tau            = tv,
+      AgeChangePerWC = age_change,
+      SEPerWC        = se_change,
+      lower.CL.PerWC = age_change - qnorm(.975) * se_change,
+      upper.CL.PerWC = age_change + qnorm(.975) * se_change,
+      p.value        = cf["Years.Since.1982", "Pr(>|t|)"]
+    )
+  }) %>% 
+    left_join(which_tau_key, by = "tau")
+  
+  pred_df <- map2_dfr(which_model, which_tauval, function(s, tv) {
+    cf <- s$coefficients
+    B  <- s$B
+    colnames(B) <- rownames(cf)   # B has no dimnames by default; columns are in the same order as cf's rows
+    
+    map_dfr(c(`1982` = 0, `2026` = 44), function(x) {
+      pred      <- cf["(Intercept)", "Value"] + cf["Years.Since.1982", "Value"] * x
+      boot_pred <- B[, "(Intercept)"] + B[, "Years.Since.1982"] * x
+      # more direct/empirical/non-covariance-formula way of calculating SE of predicted values 
+      se_pred   <- sd(boot_pred)
+      tibble(
+        emmean   = pred,
+        SE       = se_pred,
+        lower.CL = pred - qnorm(.975) * se_pred,
+        upper.CL = pred + qnorm(.975) * se_pred
       )
-    ))
-  ) %>%
-  rename(Position = squad_position_name) %>% 
-  select(Position, `Mean change`, `95th change`) %>% #limit
-  gt() %>% 
-  fmt_number( # conflict of intention vs Quarto HTML dataframe render
-    columns = contains("change"),
-    decimals = 1
+    }, .id = "year_label") %>% 
+      mutate(tau = tv)
+  }) %>% 
+    pivot_wider(
+      id_cols     = tau,
+      names_from  = year_label,
+      values_from = c(emmean, SE, lower.CL, upper.CL),
+      names_glue  = "{.value}_{year_label}"
+    )
+  
+  
+  combined_table <- slopes_df %>% 
+    left_join(pred_df, by = "tau") %>% 
+    select(tau_label, AgeChangePerWC, SEPerWC, lower.CL.PerWC, upper.CL.PerWC, p.value,
+           emmean_1982, SE_1982, lower.CL_1982, upper.CL_1982,
+           emmean_2026, SE_2026, lower.CL_2026, upper.CL_2026) %>% 
+    arrange(match(tau_label, taulab))   # keep your original tau ordering, not alphabetical
+  
+  combined_table %>% 
+    gt(rowname_col = "tau_label") %>% 
+    fmt_number(
+      columns = c(AgeChangePerWC, SEPerWC, lower.CL.PerWC, upper.CL.PerWC),
+      decimals = 3
+    ) %>% 
+    fmt_number( # Age means just 1 decimal
+      columns = c(emmean_1982, SE_1982, lower.CL_1982, upper.CL_1982,
+                  emmean_2026, SE_2026, lower.CL_2026, upper.CL_2026),
+      decimals = 1
+    ) %>% 
+    fmt(
+      columns = p.value,
+      fns = function(x) ifelse(x < .001, "<.001", sub("^0\\.", ".", sprintf("%.3f", x)))
+    ) %>% 
+    cols_merge(columns = c(lower.CL.PerWC, upper.CL.PerWC), pattern = "[{1}, {2}]") %>% 
+    cols_merge(columns = c(lower.CL_1982, upper.CL_1982),   pattern = "[{1}, {2}]") %>% 
+    cols_merge(columns = c(lower.CL_2026, upper.CL_2026),   pattern = "[{1}, {2}]") %>% 
+    cols_label(
+      AgeChangePerWC = "Age Δ /WC", SEPerWC = "SE", lower.CL.PerWC = "95% CI", p.value = "p",
+      emmean_1982 = "Age", SE_1982 = "SE", lower.CL_1982 = "95% CI",
+      emmean_2026 = "Age", SE_2026 = "SE", lower.CL_2026 = "95% CI"
+    ) %>% 
+    tab_spanner(label = "Slope (per WC cycle)", columns = c(AgeChangePerWC, SEPerWC, lower.CL.PerWC, p.value)) %>% 
+    tab_spanner(label = "Predicted Age, 1982",  columns = c(emmean_1982, SE_1982, lower.CL_1982)) %>% 
+    tab_spanner(label = "Predicted Age, 2026",  columns = c(emmean_2026, SE_2026, lower.CL_2026)) %>% 
+    cols_align(align = "center", 
+               columns = c(AgeChangePerWC, SEPerWC, lower.CL.PerWC, p.value,
+                           emmean_1982, SE_1982, lower.CL_1982, emmean_2026, SE_2026, lower.CL_2026)) %>% 
+    tab_style(style = cell_text(align = "left"), locations = cells_stub()) %>% 
+    tab_header(title    = table_title,
+               subtitle = paste0("Quantile regression slopes and predicted ages, with clustered bootstrapped SEs (", 
+                                 num_boot_sim, " resamples)")
+    ) %>% 
+    tab_footnote(
+      footnote = "Note: Predicted value SEs are empirically calculating from bootstrapped samples",
+      locations = cells_column_labels(columns = c(SE_1982, SE_2026))
+    ) %>% 
+    tab_style(
+      style = cell_text(align = "right"),
+      locations = cells_footnotes()
+    ) %>% 
+    tab_options(table.align = "left")
+  
+}
+
+
+make_table_slopeCIpred(which_team = "All", 
+                       which_model = sum_all_tau)
+
+
+```
+
+To make it concrete, we can say that it predicts to a 2 year increase in the 95th percentile of age (from 32.9 to 34.9) during the 44 years of the expansion era of the tournament, and a 2.4 year increase in the 99th percentile of age (from 35.6 to 38.0).
+
+To test the "shape shift of longevity", we would want to test the difference of the slopes at the upper percentiles compared to at the median. The quantreg package in R, however, does not have the ability to conduct these tests with bootstrapped standard errors that take into account clustering.^[This is just a current, known limitation of the quantreg package, as acknowledged in the anova.rq function help files.] I'll note that this could be custom built, but given the processing time/speed it would require to run such code, and the scope of this project, I am going to skip this.^[Specifically, using summary.rq with clustering and bootstrapped SEs can already be a bit slow running on my local machine. While I did not fully build it out, some initial looks at the resampling and processing steps needed to implement this made it clear it would be very slow, and someone building this would really benefit from a greater understanding than I have of how best to program within R from a speed/efficiency perspective. If this is your jam and you want to do it, you could help improve the quantreg package.] 
+
+Instead, I will use models with standard errors estimated *without* bootstrap resampling and *without* taking into account the clustering in calculating these slope differences to at least give some hints of whether we see differences, acknowledging the limitations with these very "rough SE-limitation comparisons".^[My standard errors will likely be too small, and therefore my significance testing will be biased downwards, increasing the risk of Type I errors and producing overly narrow confidence intervals.]
+
+I compared the slopes at the median, 95th, and 99th percentiles (using these "rough SE-limitation comparisons"), and there are overall differences. Using follow up pairwise comparisons (with Holm correction), we can see that both the 95th percentile and 99th percentile slopes are significantly bigger than the median, but do not differ from each other. 
+
+```{r}
+
+taus_to_compare <- c(.5, .95, .99)
+tau_pairs <- combn(taus_to_compare, 2, simplify = FALSE)
+
+# # Not taking into account clustered SEs or using bootstrapped SEs
+# anova(rq(age ~ Years.Since.1982, 
+#          data = dfsquads, 
+#          tau = taus_to_compare), 
+#       test = "Wald")
+
+pairwise_wald <- map_dfr(tau_pairs, function(p) {
+  fit_pair <- rq(age ~ Years.Since.1982, data = dfsquads, tau = p)
+  a   <- anova(fit_pair, test = "Wald")   # se = "nid" by default -- fast, not bootstrapped
+  tab <- a$table
+  tibble(
+    tau_lower = p[1],
+    tau_upper = p[2],
+    F_value   = tab[, ncol(tab) - 1],
+    p_value   = tab[, ncol(tab)]
+  )
+}) %>% 
+  mutate(p_adj = p.adjust(p_value, method = "holm"))  # correcting for testing 3 pairs
+
+
+# Table 
+pairwise_wald %>% 
+  mutate(Comparison = paste0("\u03c4=", sprintf("%.2f", tau_lower), 
+                              " vs \u03c4=", sprintf("%.2f", tau_upper))) %>% 
+  select(Comparison, F_value, p_value, p_adj) %>% 
+  gt(rowname_col = "Comparison") %>% 
+  fmt_number(
+    columns = F_value,
+    decimals = 3
   ) %>% 
-  tab_header(title="Change in Age from 1982 to 2026 by Position") %>% 
+  fmt(
+    columns = c(p_value, p_adj),
+    fns = function(x) {
+      ifelse(x < .001, 
+             "<.001", 
+             sub("^0\\.", ".", sprintf("%.3f", x)))
+    }
+  ) %>% 
+  cols_label(
+    F_value = "F",
+    p_value = "p (raw)",
+    p_adj   = "p (Holm-adjusted)"
+  ) %>% 
+  cols_align(align = "center", columns = c(F_value, p_value, p_adj)) %>% 
+  tab_style(style = cell_text(align = "left"), locations = cells_stub()) %>% 
+  tab_header(
+    title    = "Pairwise Comparisons of Slopes Across Quantiles",
+    subtitle = "Wald tests, analytic (nid) SEs \u2014 not bootstrapped or cluster-adjusted"
+  ) %>% 
   tab_options(table.align = "left")
 ```
 
-# Different squad choices by the exanding field of teams?
-
-Could changes in age of squads just be a byproduct of different approaches to squad creation by the qualifying teams in the expanded format? That is, perhaps the 'extra' teams making more recent World Cups (who would not have qualified for prior, smaller tournaments) differ in who they choose to represent their country. 
-
-Overall, in these follow up analyses I did not find anything clear or conclusive that could otherwise explain the changes in age. I am limited in some analyses to just mean age as the groups of interest become too small for the longevity measure of a 95th percentile (for example, when considering team variables there are no more than 26 squad members). But I offer just a few observations to end, and welcome other ideas - as I am pushing the limits of my soccer knowledge.
-
-I looked at FIFA rankings^[Please see note in Data Details - this was exploratory and I did not find anything of interest, so I did not put any time into verifying the ranking data. This data came from Kaggle, but in particular this updated version was from a comment section.] at the beginning of the tournament (with worse rankings perhaps representing the teams who benefited from the ongoing expansion and may not have qualified in prior years of the tournament with smaller numbers of teams), but did not find much of a clear relationship with mean age. 
+We have support for the "shape shift of longevity" that oldest players are getting increasingly older, there is a stretching of the tail of the distribution (with the caveats of the "rough SE-limitation comparisons"). 
 
 ::: {.callout-note collapse="true"}
-## FIFA rankings and age of squad
+## Further visualzing the shape shift of longevity
 
-FIFA rankings only began in 1992. I selected the most recent ranking up to or before the start date of the tournament. To consider the relationship of ages to FIFA rankings, it's necessary to summarize the ages by team. While we can calculate a mean team age, the longevity measure of a 95th percentile is problematic when applied to such a small sized team, as the largest squad size is 26 players. Thus, here we only consider mean team age. 
-
-Ignoring the outlier (of a low FIFA rank over 100), there was not a clear overall relationship of FIFA rank and age; only when zooming in was there slight tendency among just the top 10 teams for the best ranked teams to be older.
+We can visualize this by considering the changing distribution of age over time. The upper tail (as seen in those green and purple sections of the distribution) is stretching out and moving further to the right than the shifts of the median. 
 
 ```{r}
-#| output: true 
+#| include: true
 #| out-width: "100%"
 
-dfsquads %>%
-  filter(year >= 1992) %>% 
-  group_by(year, team_name) %>%
-  summarize(
-    Mean = mean(age, na.rm = TRUE),
-    fifa_rank = mean(fifa_rank, na.rm = TRUE),
-    .groups = "drop"
-  ) %>% 
-  ggplot(aes(x = fifa_rank, 
-             y = Mean
-             )) + 
-  geom_point(alpha = .2) +
-  geom_smooth(se = FALSE, color = palette_red) +
-  scale_x_continuous(
-    limits = c(1,NA), 
-    breaks = c(1, 10, 20, 30, 40, 50, 60, 80, 100),
-    expand = expansion(mult = 0.02)
-  ) +
-  labs(title = "Men's World Cup (1992-2026), Mean Team Age vs FIFA Rank", 
-       # caption = "",
-       x = "Team FIFA Rank (at Tournament Start)", y = "Mean Team Age (Years)") + 
-  theme_minimal()
 
-```
-
-:::
-
-I did not find any clear relationships between a team's number of appearances at the World Cup and the mean age of squad (the 2026 debut teams were a bit older but this was an anomaly in the overall patterns, as debut teams were a bit younger than others in most prior years). 
-
-::: {.callout-note collapse="true"}
-## World Cup apperances and age of squad
-
-When considering a team's total number of appearances at all World Cups, it is again necessary to summarize the ages by team. While we can calculate a mean team age, the longevity measure of a 95th percentile is problematic when applied to such a small sized team, as the largest squad size is 26 players. Thus, here we only consider mean team age. 
-
-```{r}
-#| output: true 
-#| out-width: "100%"
-
-df_squads_apperances <- dfsquads %>% 
-  left_join(
-    # data to join: calculating appearances
-    wc_apperances <- dfsquads_1930_2026 %>% 
-      distinct(year, team_code) %>% 
-      arrange(team_code, year) %>% 
-      group_by(team_code) %>% 
-      mutate(first_apperance = ifelse(row_number() == 1, TRUE, FALSE),
-             count_apperances = row_number(),
-             total_apperances = n()),
-    # joining by team code not name 
-    by = join_by(year, team_code)
-  )
-
-# No relationships of appearances and age over time 
-df_squads_apperances %>%
-  group_by(year, team_name) %>% 
-  summarize(
-    Mean = mean(age, na.rm = TRUE),
-    total_apperances = mean(total_apperances, na.rm = TRUE),
-    count_apperances = mean(count_apperances, na.rm = TRUE),
-    first_apperance = as.logical(max(first_apperance, na.rm = TRUE)),
-    .groups = "drop"
-  ) %>% 
-  ggplot(aes(x=count_apperances, y=Mean
-             )) + 
-  geom_point(alpha=.5) + 
-  geom_smooth(se=FALSE, color = palette_red) + 
-  facet_wrap(.~ year) +
-  labs(title = "Men's World Cup, Mean Player Age by Team's Apperances", 
-       x = "Team's Total Apperances to Date", y = "Mean Team Age (Years)"
+tauval <- c(.5, .95, .99)
+taulab <- c("< Median", "> Median", "95th percentile", "99th percentile")
+# Overall 
+ggplot(dfsquads, aes(x=age, y=forcats::fct_rev(factor(year)), # top to bottom
+                     group=forcats::fct_rev(factor(year)),
+                     fill = factor(after_stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient", calc_ecdf = TRUE,
+    quantile_lines = TRUE, quantiles = tauval
   ) + 
-  theme_minimal()
+  scale_fill_brewer(palette = "Set1", 
+                    name = "Age Percentiles",
+                    breaks = 1:4, # ensure order stays correct
+                    labels = taulab) + 
+  labs(title = "Men's World Cup (1982-2026) Player Ages Distributions",
+       x = "Player Age (Years)", y = "Year") + 
+  theme_minimal() +
+  theme(legend.position = "top")
+```
 
 
-# First apperance
-df_squads_apperances %>% 
-  group_by(year, team_name, team_code) %>%
-  summarize(
-    Mean = mean(age, na.rm = TRUE),
-    total_apperances = mean(total_apperances, na.rm = TRUE),
-    count_apperances = mean(count_apperances, na.rm = TRUE),
-    first_apperance = as.logical(max(first_apperance, na.rm = TRUE)),
-    .groups = "drop"
+```{r}
+#| label: age-dist-fn
+
+
+# function for animated histogram of age distribution
+  # ideal for Median and 95th percentile; 99th can be squeezed on
+
+anim_age_dist_fn <- function(
+  # Which position(s) to graph  
+  position_choice = c("Goal keeper", "Defender", "Midfielder", "Forward"), 
+      # Or single selections: 
+        # position_choice = "Goal keeper"
+        # position_choice = "Defender"
+        # position_choice = "Midfielder"
+        # position_choice = "Forward"
+  stats_to_graph = c("Median", "95th"),
+    # Or: 
+      # stats_to_graph = c("Median", "95th", "99th"),
+  # Start year(s) for comparison; select two complementary values and labels
+  start_comp = 1982,
+  start_comp_lab = as.character(start_comp),
+    # Or:
+      # start_comp = c(1982, 1986),
+      # start_comp_lab = "1982-1986",
+      # start_comp = c(1982, 1986, 1990),
+      # start_comp_lab = "1982-1990",
+  # Nudging up/down placement of distance year labels of each horizontal distance line 
+  y_dist_top = .11,
+  y_dist_bottom = .06,
+  # 95th and 99th will otherwise overlap, custom moving
+  nudge_down_99th = .003
+    ) {
+  
+  # Data for this position (or all)
+  df_plot <- dfsquads %>%
+    filter(squad_position_name %in% position_choice) 
+  
+  # Graphing details 
+  percentile_specs <-
+  tibble(
+    Percentile = c("Median", "95th", "99th"),
+    word_labs = c("Median", "95th Percentile", "99th Percentile"),
+    label_start_stat = paste0(start_comp_lab, " ", word_labs), 
+    hjust = c(1, 0, 0),
+    y_label_start_stat = case_when(
+      Percentile %in% c("Median", "95th") ~ Inf,
+      Percentile == "99th" ~ (y_dist_bottom - (nudge_down_99th*.3)) #label below 95ths
+    )
   ) %>% 
-  ggplot(aes(x = year, y = Mean, 
-               color=first_apperance)) +
-  geom_jitter(height = 0, width = .5, 
-              alpha = .5) +
-  geom_smooth(se=FALSE) +
-  scale_color_brewer(palette = "Set1", 
-                     name = "Team's First World Cup Apperance") +
-  scale_x_continuous(
-    breaks = sort(unique(dfsquads$year)), # Only use actual years in data
-    guide = guide_axis(angle = 45)
-  ) +
-  labs(title = "Men's World Cup (1982-2026), Mean Team Age and First Apperance", 
-       # caption = "", 
-       x = "Year", y = "Team Age (Years)") + 
-  theme_minimal() + 
-  theme(legend.position = "top",
-        legend.direction = "horizontal",
-        panel.grid.minor.x = element_blank())
+    filter(Percentile %in% stats_to_graph)
+  
+  ### Lines and Labels 
+  # To draw quantile lines
+  quantiles <-
+    df_plot %>%
+    group_by(year) %>%
+    summarize(
+      Median = quantile(age,.5),
+      `95th` = quantile(age,.95),
+      `99th` = quantile(age,.99) 
+    ) %>%
+    pivot_longer(
+      -year,
+      names_to="Percentile",
+      values_to="age"
+    ) %>% 
+    filter(Percentile %in% stats_to_graph) %>% 
+    mutate(Percentile = factor(Percentile, # order
+                               levels = stats_to_graph))
+  
+  # Start year or 80's average or first three tournament average
+    # for labels and dashed lines
+  quantiles_start_labels <-
+    df_plot %>%
+    filter(year %in% start_comp) %>%
+    summarize(
+      Median = quantile(age,.5),
+      `95th`  = quantile(age,.95),
+      `99th` = quantile(age,.99) 
+    ) %>%
+    pivot_longer(
+      cols = everything(),
+      names_to="Percentile",
+      values_to="age"
+    ) %>% 
+    filter(Percentile %in% stats_to_graph) %>% 
+    mutate(Percentile = factor(Percentile, # order
+                               levels = stats_to_graph)) %>% 
+    left_join(percentile_specs,
+              by = "Percentile")
+  
+  
+  # To draw horizontal line of distance changes 
+    # from dashed start year stat line to current year stat line
+    # exclude whatever years are included in start comparison
+  history_dist <-
+    quantiles %>%
+    filter(!year %in% start_comp) %>% 
+    bind_rows(
+      quantiles_start_labels %>%
+        select(Percentile, age) %>% 
+        mutate(year = 1)
+    ) %>%
+    arrange(Percentile, year) %>%
+    group_by(Percentile) %>%
+    mutate(
+      x0 = first(age),
+      y = case_when(
+        # placement of each year going down to keep them all on the graph
+          # 99th has to be custom/odd to not overlap with 95th
+        Percentile == "Median" ~ seq(y_dist_top, y_dist_bottom, length.out = n()),
+        Percentile == "95th"   ~ seq(y_dist_top, y_dist_bottom, length.out = n()),
+        Percentile == "99th"   ~ seq(y_dist_bottom - (2*nudge_down_99th), # shift down start
+                                     ((y_dist_bottom - (2*nudge_down_99th)) - (y_dist_top-y_dist_bottom)),
+                                     length.out = n())
+      )
+    ) %>%
+    ungroup() %>%
+    filter(!year %in% c(1, 1982))
+  
+  
+  ### Graph
+    # year is implemented in transition_states, like a facet 
+  anim_plot_fn <- 
+    df_plot %>% 
+    ggplot(aes(age)) + 
+    # Density of current year, layer 1
+    geom_density(
+      fill = palette_green,
+      alpha = .8,
+      linewidth = 1
+    ) +
+    # Dashed line of current year quantile, layer 2
+    geom_vline(
+      data = quantiles,
+      aes(xintercept = age,
+          color = Percentile),
+      linewidth = 1
+    ) +
+    ### Early years for comparison
+    # Dashed line for early years
+    geom_vline(
+      data = quantiles_start_labels,
+      aes(xintercept = age,
+          color = Percentile),
+      linewidth = 1,
+      linetype = "dashed",
+      alpha = .5
+    ) +
+    # Label of early years(s) stat
+    geom_label(data = quantiles_start_labels,
+               aes(x = age, y = y_label_start_stat,
+                   label = label_start_stat, 
+                   color = Percentile,
+                   hjust = hjust
+                   ),
+               fill = "white",
+               label.padding = unit(0, "lines"),
+               linewidth = NA, # no box outline
+               vjust = 1.7,
+               size = 3.5) + 
+    # Colors from "Set1"
+    scale_color_manual(
+      values = c(
+        "Median" = palette_red,
+        "95th" = palette_blue,
+        "99th" = palette_purple
+      )
+    ) +
+    ### Current years vs early year(s)
+    # Drawing horizontal line to compare each stat to early years
+    geom_segment(
+      data = history_dist,
+      aes(
+        x = x0,
+        xend = age,
+        y = y,
+        yend = y,
+        color = Percentile
+      ),
+      linewidth = 1.2
+    ) + 
+    # Text of current year for comparing each stat to early years
+    geom_label( 
+      data = history_dist,
+      aes(
+        x = age + .1, # Just a bit of space
+        y = y,
+        label = year,
+        color = Percentile
+      ),
+      fill = "white",
+      label.padding = unit(0, "lines"),
+      linewidth = NA, # no box outline around year
+      hjust = 0,
+      size = 3.5
+    ) +
+    # keep horizontal distance as it goes through years
+    shadow_mark(
+      past = TRUE,
+      future = FALSE,
+      alpha = .8,
+      exclude_layer = c(1,2) #geom_* layers by count
+    ) +
+    transition_states(
+      year,
+      transition_length = 1,
+      state_length = 5,
+      wrap = FALSE # integrate into blog so reader can press play
+    ) +
+    labs(
+      title = ifelse(length(position_choice) > 1,
+                     yes = paste0("{closest_state} Distribution of Player Ages"),
+                     no = paste0("{closest_state} Distribution of Player Ages for ",
+                                 str_to_title(position_choice), "s")
+      ),
+      subtitle = "Changes by Year vs 1982 (dashed)",
+      x = "Player Age (Years)", y = "" 
+    ) +
+    coord_cartesian(
+      xlim = c(17, 46) # range in dfsquads
+    ) + 
+    theme_minimal() +
+    theme(legend.position = "none",
+          axis.text.y = element_blank(),
+          panel.grid.major.y = element_blank(), 
+          panel.grid.minor.y = element_blank()
+    ) 
+  
+  return(anim_plot_fn)
+}
 
 ```
 
+
+```{r}
+#| label: age-dist-video-all
+#| eval: false
+
+# cache efficiency:
+  # due to processing time during local development: 
+  # This code makes an mp4, which is loaded to the quarto
+
+anim <- animate(
+  anim_age_dist_fn(stats_to_graph = c("Median", "95th", "99th")),
+  renderer = av_renderer(),
+  width = 800, height = 800, res = 150,
+  fps = 10, duration = 8,   # tune to taste
+  end_pause = 20
+)
+
+anim_save("age_dist_allpositions.mp4", anim)
+
+```
+
+We could also visualize this with a bit on animation.^[The image quality and resolution aspects are not ideal here, but I wanted to include this rough draft as it helped me to make the ideas of shape shift more concrete.] We can keep a constant marker of the starting point (1982 as a dashed line) as our comparison for the median, 95th percentile, and 99th percentile, and then observe the new position of each of those stats over time, and keep a trace of these shifts by drawing a horizontal distance line to the new position at each year versus the 1982 starting point. As can be seen, there is location shift — ages are increasing a bit at the median, 95th percentile, and 99th percentile in most years and therefore overall (i.e., if we imagine an 'average' shift of each). But there is also a shape shift: The upper tail of the distribution stretches out further to the right, and the increases in the 95th and 99th percentiles (again, visualized by the trace of each horizontal distance shift) not only tend to increase over time, they are also greater than the shift of the median. This is the shape shift of longevity. 
+
+![](age_dist_allpositions.mp4){controls="1" loop="0"}
+
+
+
 :::
 
-Similarly, while a few noteworthy small countries who have qualified in recent years had a bit older squads on average - with [Cabo Verde's team and their 40 year old goal keeper drawing particular attention](https://www.nytimes.com/athletic/7363785/2026/06/15/vozinha-cape-verde-goalkeeper-spain/) — when excluding outliers (populations below 1 million or China's one 2002 appearance at the upper end) there wasn't any clear relationship between a country's population and the average age of their squad. 
+But are these increases in longevity perhaps limited to or just driven by certain kinds of players? 
+
+# Is it just goal keepers?
+
+Although it was noted that a surprising number of older players on 2026 squads were field players (that is, the non-goal keeper positions of defenders, midfielders, and forwards), in general many of the oldest players at the 2026 and prior World Cups have been goalkeepers, as they ["typically face less physical wear and tear than outfield players, allowing many to extend their careers well into their late 30s and 40s."](https://sports.yahoo.com/articles/oldest-players-world-cup-where-150715142.html) Thus, it's reasonable to ask if it's just goal keepers driving these longevity trends. 
+
+When we split by position, we should be mindful that the sample size per tournament year does get quite small, particularly for goal keepers. Thus the 99th percentiles in particular may become quite unstable and should be interpreted with a bit of caution; I will focus more on the 95th percentile as our primary longevity metric, and even among goal keepers we should note it still represents very small numbers of players. 
+
 
 ::: {.callout-note collapse="true"}
-## Country population and age of squad
+## Sample size by position details
 
-Again, when considering a team's country population, it is necessary to summarize the ages by team. While we can calculate a mean team age, the longevity measure of a 95th percentile is problematic when applied to such a small sized team, as the largest squad size is 26 players. Thus, here we only consider mean team age. Most countries had increasing populations over most of the time period; to not have a time confound confuse the relationship of interest, a country's 2024 population was used to compare to their mean team ages for all tournament years (rather than matching to the population in that tournament year). 
+No position group exceeded 200 before 1998, indicating that a 99th percentile represents fewer than the oldest two individuals. Further, prior to the 2026 tournament expansions, there were only between 69 and 99 goal keepers per tournament.
 
 ```{r}
 #| output: true
 #| out-width: "100%"
 
 #----------------------------------- 
-########## Population 
+########## Sample size graph - players by position
 #----------------------------------- 
-
-# Mean (95th percentile is too few)
-# Couple of labels
-labels_outliers <- dfsquads %>% 
-    group_by(year, team_name) %>% 
-    summarize(pop = mean(population, na.rm = TRUE), 
-              pop_2024 = mean(pop_2024, na.rm = TRUE),
-              Mean = mean(age, na.rm = TRUE),
-              #`95th` = quantile(age, probs = .95, na.rm = TRUE),
-              .groups = "drop") %>%
-    filter(pop_2024 < 1000000 | pop_2024 > 1000000000) 
-
-dfsquads %>% 
-  group_by(year, team_name) %>% 
-  summarize(pop = mean(population, na.rm = TRUE), 
-            pop_2024 = mean(pop_2024, na.rm = TRUE),
-            Mean = mean(age, na.rm = TRUE),
-            #`95th` = quantile(age, probs = .95, na.rm = TRUE),
-            .groups = "drop") %>% 
-  ggplot(aes(x=pop_2024, y=Mean)) + 
-  geom_point(alpha = .3) + 
-  geom_smooth(se=FALSE, color = palette_green) + 
-  geom_smooth(data = . %>%
-                filter(pop_2024 > 1000000 & pop_2024 < 1000000000),
-              se=FALSE, color = palette_red, 
-              linetype = "dashed") +
-  geom_text_repel(
-    data = labels_outliers,
-    aes(label = paste0(team_name, ", ", year)),
-    size = 2,
-    color = palette_green,
-    # The label to data connector
-    segment.color = "grey",
-    #segment.size = 0.5,
-    segment.alpha = 1,
-    min.segment.length = 0,
-    nudge_y =.2
-  ) +
-  scale_x_log10(labels = scales::label_log(), # label_comma()
-                #guide = guide_axis(angle = 45)
-                ) +
-  labs(title = "Men's World Cup (1982-2026), Mean Team Age vs Country Population", 
-       caption = "Red dashed line excludes n = 4 outliers",
-       x = "Country Population (2024, log 10 scaled)", y = "Mean Team Age (Years)") + 
-  theme_minimal() + 
-  theme(plot.caption = element_text(size = 6))
-```
-:::
-
-There are additional complicated forces in squad creation when considering the many players who could be eligible to compete for more than one country. Many [players born in Europe have multiple eligibility, often to places outside of Europe](https://www.nytimes.com/athletic/7408721/2026/07/03/france-world-cup-players/), so I began exploring age patterns separately by football confederation (which broadly line up with regions). Interestingly, both European (UEFA) and African (CAF) teams did *not* show the typical pattern of an overall increase in average age (and showed quite opposite patterns). Those two confederations do show somewhat of an increase in the longevity measure of the 95th percentile, although it is noisier and less clear. However, the 95th percentiles should be particularly interpreted with caution given the small sample sizes when dividing by conference. 
-
-::: {.callout-note collapse="true"}
-## Sample size by confederation
-
-There were some small sample sizes by confederations, particularly in the 80's and early 90's. For example, many confederations contained only 44 total players, an thus a 95th percentile would cut out just before the two oldest players.
-
-Note that the Oceania Football Confederation (OFC) has only had 3 teams in the World Cup during this time period and are excluded from all confederation analyses. European teams (UEFA) always had more than 285 players and are thus not a concern for sample size and usage of a 95th percentile. This graph just visualizes the sample sizes of the other confederations to help highlight the limitations of the 95th percentile. 
-
-```{r}
 dfsquads %>%
-  filter(!confederation_code %in% c("OFC", "UEFA")) %>% 
-  group_by(year, confederation_code) %>%
-  summarize(Count = n(),
-            .groups = "drop") %>% 
-  ggplot(aes(x=year, y=Count, color=confederation_code)) +
-  geom_point(alpha=.8) + geom_line(alpha=.8) + 
+  group_by(year, squad_position_name) %>%
+  summarise(
+    total_players = n(),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = year, y = total_players, color = squad_position_name)) +
+  geom_line(linewidth = 1, alpha = .8) +
+  geom_point(alpha = .8) +
+  scale_y_continuous(
+    name = "Total Players",
+    limits = c(50, 450),
+    breaks = seq(0, 450, by=50),
+  ) + 
   scale_color_brewer(palette = "Set1", 
-                     name = "Confederation") +
+                   name = "Position") + 
   scale_x_continuous(
     breaks = sort(unique(dfsquads$year)), # Only use actual years in data
-    guide = guide_axis(angle = 45)
+    guide = guide_axis(angle = 45),
+    expand = expansion(mult = c(0.02, 0.02)) # extra space, equal each side
   ) +
-  scale_y_continuous(
-    breaks = seq(from = 0 , to = 300, by = 25), 
-  ) +
-  labs(title = "Player Count by Non-European Confederations (1982-2026)", 
-       caption = "OFC (3 teams) excluded from all confederation analyses. UEFA excluded from this graph, all n's > 285", 
-       x = "Year", y = "Player Count") + 
+  labs(title = "Men's World Cup Expansion Era (1982-2026)",
+       subtitle = "Sample Sizes: Player Counts by Position",
+       x = "Year") +
   theme_minimal() +
   theme(legend.position = "top",
         legend.direction = "horizontal",
-        # only break years for vertical lines
-        panel.grid.minor.x = element_blank())
+        # horizontal line breaks
+        panel.grid.major.y = element_line(color = "grey85", linewidth = 0.4),
+        panel.grid.minor.y = element_blank(),
+        # remove vertical line breaks
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()
+        )
+
+
 ```
 :::
 
-I don't offer any interpretations here, but again welcome ideas or point others to [try their own analyses](https://github.com/LindsayRankin/mens-world-cup-age)!
+However, we see consistent patterns: Although goal keepers are older overall, all positions show "location shift of longevity" in the direction of ages of their upper percentiles increasing. And again, at least with respect to the raw values of the slopes those upper percentiles may be increasing at greater rates, potentially consistent with "shape shift of longevity" (with the exception of the particularly-concerningly-small-sample size of the 99th percentile for goal keepers, although their 95th percentile shows a trend consistent with others).
+
+```{r}
+#| include: false
+
+# set tau values (aka quantiles or percentiles) here and run model
+
+tauval <- c(.05, .5, .95, .99)
+taulab <- c("05th", "50th", "95th", "99th")
+
+quantreg_position_tauval <- rq(age ~ Years.Since.1982*squad_position_name, 
+                                data = dfsquads, tau = tauval)
+
+
+
+```
 
 ```{r}
 #| output: true
 #| out-width: "100%"
 
-#----------------------------------- 
-########## Age by confederation 
-#----------------------------------- 
+# With only year as predictor, it will be repetitive in the data
+# Match to year, grab distinct
+pred_tauval <- data.frame(dfsquads %>% select(year, squad_position_name), 
+                          quantreg_position_tauval$fitted.values) %>% 
+  distinct() 
 
-# I want means to have same range; 95th percentile to have same range
-  # BUT NOT across stats (i.e., not same for Mean as for 95th)
+colnames(pred_tauval) <- c("year", "squad_position_name", taulab)
 
-# To make the graphs have the same range, need to same plot data first
-confed_plot_data <- dfsquads %>%
-  filter(confederation_code != "OFC") %>% # Just 3
-  group_by(year, confederation_code) %>%
+pred_tauval <- pred_tauval %>% 
+  pivot_longer(
+    -c(year, squad_position_name),
+    names_to = "Percentile", 
+    values_to = "age",
+  ) %>% 
+  arrange(year, Percentile)
+
+# Labels for lines 
+line_labels <- pred_tauval %>%
+  group_by(Percentile, squad_position_name) %>%
+  slice_max(year, n = 1) %>%
+  ungroup()
+
+# Label of slopes; year and age determine placement on graph
+  # short cut to compute slope from end points rather than map through regression results
+  # coef(quantreg_position_tauval)
+slope_labels <- pred_tauval %>%
+  group_by(Percentile, squad_position_name) %>%
   summarize(
-    Mean = mean(age, na.rm = TRUE),
-    `95th` = quantile(age, probs = .95, na.rm = TRUE),
+    slope_per_wc = ((age[year == 2026] - age[year == 1982]) / 44)*4,
+    age = age[year == 2006], # just for graph placement
     .groups = "drop"
   ) %>% 
-  pivot_longer(
-    -c(year, confederation_code),
+  mutate(year = 2006,  # just for graph placement
+        label = sprintf("%+.3f/WC", slope_per_wc)
+        ) %>% 
+  # manually tweaking to not have overlap
+  mutate(
+    age = age +
+      recode_values(
+        Percentile,
+        "99th" ~ 0.70,
+        "95th" ~ -0.70,
+        "50th" ~ 0,
+        "05th" ~ 0
+      )
+  )
+
+# With all data points, but facet wrap by position
+dfsquads %>% 
+  ggplot(aes(x = year, y = age, 
+             color = Percentile # not in dfsquads, but matches labels to color
+  )) +
+  geom_jitter(color = "grey",# palette_green,
+              shape = 21, fill = NA,
+              height = 0, width = .8, alpha=.3) +
+  geom_line(data = pred_tauval, 
+            mapping = aes(x = year, y = age, color = Percentile)) +
+  facet_wrap(.~squad_position_name) + #, scales = "free_y") + 
+  scale_color_brewer(palette = "Set1", 
+                     name = "Position") + 
+  # Labels by lines instead of legend
+  geom_text(
+    data = line_labels,
+    aes(label = Percentile),
+    size = 3.5,
+    hjust = -0.1,
+    vjust = 0.5,
+    show.legend = FALSE
+  ) +
+  geom_label(
+    data = slope_labels,
+    aes(label = label),
+    fill = scales::alpha("white", .75),
+    #color = "black",
+    size = 3.5,
+    linewidth = 0,
+    label.padding = unit(.08, "lines"),
+    show.legend = FALSE
+  ) +
+  # To only show actual years in the data
+  scale_x_continuous(
+    breaks = sort(unique(dfsquads$year)), 
+    guide = guide_axis(angle = 45), 
+    expand = expansion(mult = c(0.02, # 0.02)) # extra space on the right
+                                .15)) # extra room for labels
+  ) +
+  labs(title = "Men's World Cup (1982-2026) Player Ages by Position",
+       subtitle = "Quantile Regression Fit Lines at Selected Percentiles",
+       caption = "Note: Slopes represent change in age per World Cup (every 4 years) for each percentile", 
+       x = "Year", y = "Player Age (Years)") + 
+  theme_minimal() +
+  theme(panel.grid.minor.x = element_blank(),
+        legend.position = "none")
+```
+
+Using bootstrapped standard errors and taking into account clustering within squad, we can calculate confidence intervals and significance testing for each of these longevity slopes to test the "location shift of longevity". 
+
+```{r}
+#| label: fit-model-slopes_byposition_tauval
+#| eval: false
+
+# speed / efficiency:
+  # due to processing time during local development: 
+  # save the model locally, then in a separate code chunk just load it
+  # Only manually rerun this chunk to resave the model if there are changes to the data or this 
+    # simply because all these bootstraps take so long
+
+# Slopes by position from regressions from all tauval
+  # Small note: Noticed this seems to use df from the full sample for calculating CI
+    # Not as ideal as using position specific; but it would still be in the thousands so not practically important
+set.seed(123)
+slopes_byposition_tauval <- emmeans::emtrends(
+  quantreg_position_tauval, ~ squad_position_name | tau,
+  var = "Years.Since.1982",
+  se = "boot", 
+  cluster = dfsquads$team_year_cluster, 
+  R = num_boot_sim)
+
+
+saveRDS(slopes_byposition_tauval,
+        file = "slopes_byposition_tauval.rds")
+
+# Predicted values by position from regressions for all tauval
+# 2026 corresponds to Years.Since.1982 = 44
+set.seed(123)
+pred_byposition_tauval <- emmeans::emmeans(
+  quantreg_position_tauval,
+  specs   = ~ squad_position_name | tau + Years.Since.1982,   # keep year as its own grouping var, not averaged over,
+  at      = list(Years.Since.1982 = c(0, 44)), # 1982 and 2026
+  se      = "boot",
+  cluster = dfsquads$team_year_cluster,
+  R       = num_boot_sim
+)
+
+saveRDS(pred_byposition_tauval,
+        file = "pred_byposition_tauval.rds")
+
+```
+
+
+```{r}
+#| output: true
+#| out-width: "100%"
+
+
+# saved for efficiency, eval: false on its creation, not rendered and must be recreated manually
+slopes_byposition_tauval <- readRDS("slopes_byposition_tauval.rds")
+pred_byposition_tauval <- readRDS("pred_byposition_tauval.rds")
+
+# slopes by position at each tau into data frame df
+slopes_byposition_tauval_df <- summary(slopes_byposition_tauval, infer = c(TRUE, TRUE)) %>% 
+  as_tibble() %>% 
+    mutate(AgeChangePerWC = Years.Since.1982.trend * 4,
+           SEPerWC    = SE * 4,
+           lower.CL.PerWC = lower.CL *4,
+           upper.CL.PerWC = upper.CL *4,
+           Position = squad_position_name) 
+
+
+# predicted values by position at each tau and for two different years into df
+pred_byposition_tauval_df <- summary(pred_byposition_tauval, infer = c(TRUE, TRUE)) %>% 
+  as_tibble() %>% 
+  filter(round(tau, 2) %in% c(.50, .95, .99)) %>% 
+  rename(Position = squad_position_name) %>% 
+  mutate(year_label = case_when(
+           Years.Since.1982 == 0 ~ "1982", 
+           Years.Since.1982 == 44 ~ "2026"),
+         tau_label = paste0("\u03c4 = ", sprintf("%.2f", tau))) %>% 
+  select(tau_label, Position, year_label, emmean, SE, lower.CL, upper.CL) %>% 
+  pivot_wider(
+    id_cols     = c(tau_label, Position),
+    names_from  = year_label,
+    values_from = c(emmean, SE, lower.CL, upper.CL),
+    names_glue  = "{.value}_{year_label}"
+  )
+# columns produced: emmean_1982, emmean_2026, SE_1982, SE_2026,
+#                   lower.CL_1982, upper.CL_1982, lower.CL_2026, upper.CL_2026
+
+
+combined_position_table <- slopes_byposition_tauval_df %>% 
+  filter(round(tau, 2) %in% c(.50, .95, .99)) %>% 
+  mutate(tau_label = paste0("\u03c4 = ", sprintf("%.2f", tau)) # "τ = 0.95"
+         ) %>%   
+  left_join(
+    pred_byposition_tauval_df,
+    by = c("Position", "tau_label")
   ) %>% 
-    mutate(name = factor(name, 
-                       levels = c("Mean", "95th")
-  )) %>% 
-  mutate(split = case_when(
-    confederation_code %in% c("UEFA", "CAF") ~ "UEFA and CAF",
-    TRUE ~ "Other Confederations"
+  select(tau_label, Position, AgeChangePerWC, SEPerWC, lower.CL.PerWC, upper.CL.PerWC, p.value,
+         emmean_1982, SE_1982, lower.CL_1982, upper.CL_1982,
+         emmean_2026, SE_2026, lower.CL_2026, upper.CL_2026) %>% 
+  arrange(tau_label, Position)
+
+
+combined_position_table %>% 
+  gt(groupname_col = "tau_label", rowname_col = "Position") %>%
+  fmt_number( 
+    columns = c(AgeChangePerWC, SEPerWC, lower.CL.PerWC, upper.CL.PerWC),
+    decimals = 3
   ) %>% 
-    factor(level = c("UEFA and CAF", "Other Confederations"), 
-           ordered = TRUE) # graphing order
+    fmt_number( # for pred ages, just 1 decimal
+    columns = c(emmean_1982, SE_1982, lower.CL_1982, upper.CL_1982,
+                emmean_2026, SE_2026, lower.CL_2026, upper.CL_2026),
+    decimals = 1 
+  ) %>% 
+  fmt(
+    columns = p.value, 
+    fns = function(x) {
+      ifelse(x < .001, "<.001", sub("^0\\.", ".", sprintf("%.3f", x)))
+    }
+  ) %>% 
+  cols_merge(columns = c(lower.CL.PerWC, upper.CL.PerWC), pattern = "[{1}, {2}]") %>% 
+  cols_merge(columns = c(lower.CL_1982, upper.CL_1982),   pattern = "[{1}, {2}]") %>% 
+  cols_merge(columns = c(lower.CL_2026, upper.CL_2026),   pattern = "[{1}, {2}]") %>% 
+  cols_label(
+    AgeChangePerWC = "Age Δ /WC",
+    SEPerWC        = "SE",
+    lower.CL.PerWC = "95% CI",
+    p.value        = "p",
+    emmean_1982    = "Age",
+    SE_1982        = "SE",
+    lower.CL_1982  = "95% CI",
+    emmean_2026    = "Age",
+    SE_2026        = "SE",
+    lower.CL_2026  = "95% CI"
+  ) %>% 
+  tab_spanner(label = "Slope (per WC cycle)", columns = c(AgeChangePerWC, SEPerWC, lower.CL.PerWC, p.value)) %>% 
+  tab_spanner(label = "Predicted Age, 1982",    columns = c(emmean_1982, SE_1982, lower.CL_1982)) %>% 
+  tab_spanner(label = "Predicted Age, 2026",    columns = c(emmean_2026, SE_2026, lower.CL_2026)) %>% 
+  cols_align(
+    align   = "center",
+    columns = c(AgeChangePerWC, SEPerWC, lower.CL.PerWC, p.value, 
+                emmean_1982, SE_1982, lower.CL_1982, 
+                emmean_2026, SE_2026, lower.CL_2026)
+  ) %>% 
+  tab_style(style = cell_text(align = "left"), locations = cells_stub()) %>% 
+  tab_header(title    = "Longevity by Position",
+             subtitle = paste0("Quantile regression slopes and predicted ages, with clustered bootstrapped SEs (", 
+                               num_boot_sim, " resamples)")
+             ) %>%
+  tab_options(table.align = "left")
+
+
+```
+
+Only goal keepers and defenders show significant increases in median ages. 
+
+Consistent with the "location shift of longevity", we see that all positions show a significant increase in age at the 95th percentile. (And with hesitancy we can note that all but the small sample size goal keepers show a significant increase at the 99th percentile.) 
+
+To test the differences of the slopes at the median and 95th percentile for each position, we again have the "rough SE-limitation comparisons" issue. We will use the same limitation-acknowledging-approach of not using clustering and bootstrapped resampling for standard errors. With these constraints in mind, we do see tentative support for the "shape shift of longevity" among both forwards and defenders, but not for midfielders and not for the small number of goal keepers.
+
+```{r}
+#| output: true
+#| out-width: "100%"
+
+tau_pair <- c(.5, .95)
+
+pairwise_wald_byposition_95 <- map_dfr(levels(dfsquads$squad_position_name), function(pos) {
+  df_pos   <- dfsquads %>% filter(squad_position_name == pos)
+  fit_pair <- rq(age ~ Years.Since.1982, data = df_pos, tau = tau_pair)
+  a        <- anova(fit_pair, test = "Wald", joint = FALSE)   # se = "nid", not bootstrapped/clustered — same accepted limitation as before
+  tab      <- a$table
+  tibble(
+    Position = pos,
+    F_value  = tab[, ncol(tab) - 1],
+    p_value  = tab[, ncol(tab)]
+  )
+}) %>%
+  mutate(p_adj = p.adjust(p_value, method = "holm"))  # correcting across the 4 position tests
+
+# TODO here
+pairwise_wald_byposition_95 %>% 
+  gt(rowname_col = "Position") %>% 
+  fmt_number(
+    columns = F_value,
+    decimals = 3
+  ) %>% 
+  fmt(
+    columns = c(p_value, p_adj),
+    fns = function(x) {
+      ifelse(x < .001, 
+             "<.001", 
+             sub("^0\\.", ".", sprintf("%.3f", x)))
+    }
+  ) %>% 
+  cols_label(
+    F_value = "F",
+    p_value = "p (raw)",
+    p_adj   = "p (Holm-adjusted)"
+  ) %>% 
+  cols_align(align = "center", columns = c(F_value, p_value, p_adj)) %>% 
+  tab_style(style = cell_text(align = "left"), locations = cells_stub()) %>% 
+  tab_header(
+    title    = "Pairwise Comparisons of Median vs 95th Percentile Slopes, for each Position",
+    subtitle = "Wald tests, analytic (nid) SEs \u2014 not bootstrapped or cluster-adjusted"
+  ) %>% 
+  tab_options(table.align = "left")
+
+```
+
+
+
+::: {.callout-note collapse="true"}
+## Detailing and further visualzing the location shift and shape shift of longevity by position
+
+
+```{r}
+#| label: age-dist-video-positions
+#| eval: false
+
+# Run this and save these, eval: false to avoid this slow chunk re-running in each local dev render
+
+for (pos in c("Goal keeper", "Defender", "Midfielder", "Forward")){
+
+  anim_pos <- animate(
+  anim_age_dist_fn(position_choice = pos, stats_to_graph = c("Median", "95th")),
+  renderer = av_renderer(),
+  width = 800, height = 800, res = 150,
+  fps = 10, duration = 8, end_pause = 20
+  )
+
+  filename <- paste0("age_dist_",
+  str_to_lower(pos) %>% str_replace(" ", "_"), 
+  ".mp4")
+
+  print(filename)
+
+  tryCatch(
+    anim_save(filename, anim_pos),
+    error = function(e) message(e)
   )
   
-# For each particular facet of graphs, set these limits BUT HERE 
-  # separately for Mean vs 95th percentile
-confed_limits_df <- confed_plot_data %>% 
-  group_by(name, split) %>% 
+}
+
+```
+
+We can again visualize these changes in the distribution over time, but now separately by position, and interpret them in context with the testing. 
+
+```{r}
+#| output: true
+#| out-width: "100%"
+
+
+# Positions by year
+ggplot(dfsquads, aes(x=age, y=forcats::fct_rev(factor(year)), # top to bottom
+                     group=forcats::fct_rev(factor(year)),
+                     fill = factor(after_stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient", calc_ecdf = TRUE,
+    quantile_lines = TRUE, quantiles = tauval
+  ) + 
+  scale_fill_brewer(palette = "Set1", 
+                    name = "Age Percentiles",
+                    breaks = 1:4, # ensure order stays correct
+                    labels = taulab) + 
+  facet_wrap(.~ squad_position_name) + 
+  labs(title = "Men's World Cup (1982-2026) Player Ages Distributions by Position",
+       x = "Player Age (Years)", y = "Year") + 
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+
+Taken together, it appears that the median age is getting older for defenders but not for forwards, but both defenders and forwards show increasing longevity ("location shift of longevity" based on significant slopes at the 95th percentile) and their oldest players are getting *increasingly* or relatively older ("shape shift of longevity" based on greater slopes at the 95th percentile compared to the median, with limitations in testing). Thus, both of these positions show increases in longevity.
+
+![](age_dist_defender.mp4){controls="1" loop="0"}
+![](age_dist_forward.mp4){controls="1" loop="0"}
+
+Midfielders show a "location shift of longevity" (based on significant slopes at the 95th percentile), but that increase in the oldest players is not growing at rate significantly greater than their (not-significant) change at the median (that is, not strong support for a "shape shift of longevity"). Thus, we see some slight increases in older midfielders, but not as much support for increasing or unusual minority of particularly long lasting players — a bit of a lack of support for the full ideas of longevity increases.
+
+![](age_dist_midfielder.mp4){controls="1" loop="0"}
+
+The results for the goal keepers are a bit ambiguous, at least in part due to their smaller sample size, but perhaps also because they showed different patterns of age even in the beginning of the expansion era. In terms of pure coefficient size, they had the largest "location shift of longevity" with the largest increase at median ages and the second largest increase at the 95th percentile. But their oldest players were *not* getting *increasingly* or relatively older (no "shape shift of longevity" because their 95th percentile slope did not significantly differ from the median). However, goal keepers *already* had the largest gap between their median and 95th percentile values starting all the way back in the 1980s. (This can also be visually confirmed with the graph "Quantile Regression Fit Lines at Selected Percentiles".) That is, earlier on they already had more of a right tail stretched distribution or shape difference compared to other positions, there were already a lot of exceptionally older goal keepers and their trends over time are, arguably, not increasing that stretch but may be maintaining it. Thus, goal keepers already had exceptional longevity and a different shape, but it may not be accelerating (or we may frame it as other positions seem to be catching up or beginning to get distributions of age shaped more like goal keeper's distributions).  
+
+![](age_dist_goal_keeper.mp4){controls="1" loop="0"}
+
+
+:::
+
+Overall, there is some support for longevity shape shifting increases among defenders and forwards, a lack of support for any exceptional longevity for midfielders (no shape shifting, but just some overall location shifting at the upper percentile), and ambiguous results for the already-older and smaller sample size of goal keepers. But ultimately, a position analysis was trying to assess if the story of overall increases in longevity in both location shift and shape shift were misleading and just being driven by a goal keepers, and we can definitely say that is not the case, and at least forwards and defenders are contributing.
+
+But what about the alternative explanation that it may just be that teams in the expanding formats select older players? 
+
+# Ruling out alternative explanations: Different squad choices because of different teams?
+
+
+## Expanding field of teams? 
+
+As the World Cup has expanded, perhaps it is the additional teams who make different selections — for example, teams who rarely get to go to the World Cup may reward veterans who have stuck with their national program but have rarely or never been able to play in a World Cup. One fairly straightforward way to investigate claims about different 'types' of teams making different age selections would be to think separately about the more traditional or "core" teams (those who frequently qualify for the World Cup) and the "non-core" teams who are either newly or rarely appearing in World Cup tournaments. Essentially, do the location and especially shape shift of longevity hold true for both types of teams?
+
+While only Brazil has qualified for all 23 World Cups, since 1930 there are 10 teams with at least 15 appearances that I will define as the "core" teams.^[Note that for this analysis, Germany's number of appearances is counted by including teams of Germany (1934-1938; 1994-present) and West Germany (1954-1990), and they are considered a "core" team. In contrast, no later country is connected to Yugoslavia nor the Soviet Union for purposes of counting its total appearances given that each split into many countries, i.e., Yugoslavia's 9 appearances through 1998 are not added to Croatia's 7 appearances since (and overlapping with) 1998, so Croatia is a "non-core" team.] The "core" teams account for 180 squads (appearances of a team in a particular year) in the expansion era of the World Cup. The remaining 74 "non-core" teams participating in the expansion era account for 353 squads (appearances of team per year), including 15 teams with single appearances.^[Note that two of these were not exactly single appearances in the same way we think about for other countries: "Serbia and Montenegro" qualified as a team in one tournament after the break of up Yugoslavia but before the two separated; similarly, Slovakia has qualified once since the break up of Czechslovakia separated it from Czech Republic.]
+
+::: {.callout-note collapse="true"}
+## Core teams
+```{r}
+#| output: true
+#| out-width: "100%"
+
+# data frame df_squads_appearances created above
+
+
+# # Some calculations for text above
+# # Expansion era appearances
+# df_squads_appearances %>% 
+#   filter(year >= 1982) %>% 
+#   mutate(team_name = ifelse(team_name %in% c("Germany", "West Germany"),
+#                             "Germany (incl West Germany)",
+#                             team_name)) %>%
+#   count(team_name, core_team, total_appearances) %>% 
+#   group_by(core_team) %>% 
+#   summarize(count = n(),
+#             sum(total_appearances))
+# 
+# # Teams with 1 apperance
+# df_squads_appearances %>% 
+#   filter(year >= 1982) %>% 
+#   mutate(team_name = ifelse(team_name %in% c("Germany", "West Germany"),
+#                             "Germany (incl West Germany)",
+#                             team_name)) %>%
+#   count(team_name, core_team, total_appearances) %>% 
+#   filter(total_appearances == 1) 
+# 
+# Complications with Yugoslavia and Croatia
+# dfsquads_1930_2026 %>%
+#   filter(team_code == "YUG" | team_code == "HRV") %>%
+#   #filter(year >= 1982) %>%
+#   count(year, team_code, team_name)
+
+# core team table
+df_squads_appearances %>% 
+  mutate(team_name = ifelse(team_name %in% c("Germany", "West Germany"),
+                            "Germany (incl West Germany)",
+                            team_name)) %>%
+  count(team_name, total_appearances) %>% 
+  filter(total_appearances >= 15) %>% 
+  arrange(desc(total_appearances)) %>% 
+  select(team_name, total_appearances) %>% 
+  gt() %>% 
+  cols_label(team_name = "Core Team",
+             total_appearances = "Total apperances") %>% 
+  tab_header(title = "Most World Cup Apperances (1930-2026)") %>% 
+  tab_options(table.align = "left")
+  
+
+```
+
+:::
+
+
+```{r}
+#| include: false
+
+# Just get data frames and models for core and noncore teams
+
+
+# Taus to test, just .5 and .95
+tauval <- c(.5, .95)
+taulab <- c("50th", "95th")
+tau_key <- tibble(tau = tauval, tau_label = taulab)
+
+
+#### Core teams 
+df_squads_appearances_coreteam <- df_squads_appearances %>% 
+  filter(core_team)
+
+quantreg_coreteam_tauval <- rq(age ~ Years.Since.1982, 
+                           data = df_squads_appearances_coreteam, 
+                           tau = tauval)
+
+#### Noncore teams 
+df_squads_appearances_noncoreteam <- df_squads_appearances %>% 
+  filter(non_core_team)
+
+quantreg_noncoreteam_tauval <- rq(age ~ Years.Since.1982, 
+                           data = df_squads_appearances_noncoreteam, 
+                           tau = tauval)
+
+
+```
+
+
+```{r}
+#| label: fit-model-sum_corenoncore_tau
+#| eval: false
+
+
+# repeating main analysis, copy from fit-model-sum_all_tau
+  # add in core vs noncore 
+
+# speed / efficiency:
+# due to processing time during local development: 
+# save the model locally, then in a separate code chunk just load it
+# Only manually rerun this chunk to resave the model if there are changes to the data or this 
+# simply because all these bootstraps take so long
+
+
+
+### calculations done here, with SE with bootstrapping and clustering
+# can be slow, depending on num_boot_sim (set to 200 for testing; 600+ final)
+
+#### Core teams 
+set.seed(123)
+sum_coreteam_tau <- summary(
+  quantreg_coreteam_tauval,
+  se = "boot", 
+  covariance = TRUE,      # <- needed to get $B (bootstrap draws) alongside coefficients for calculating predicted values
+  cluster = df_squads_appearances_coreteam$team_year_cluster, 
+  R = num_boot_sim
+)
+
+saveRDS(sum_coreteam_tau,
+        file = "sum_coreteam_tau.rds")
+
+
+#### Noncore teams 
+set.seed(123)
+sum_noncoreteam_tau <- summary(
+  quantreg_noncoreteam_tauval,
+  se = "boot", 
+  covariance = TRUE,      # <- needed to get $B (bootstrap draws) alongside coefficients for calculating predicted values
+  cluster = df_squads_appearances_noncoreteam$team_year_cluster, 
+  R = num_boot_sim
+)
+
+saveRDS(sum_noncoreteam_tau,
+        file = "sum_noncoreteam_tau.rds")
+
+
+```
+
+
+If we repeat the primary analyses for core and non-core teams (and similar to the position analysis, focusing on just the 95th percentile as splitting reduces the sample size), we can see that for each of these types of teams there is a significant increase in ages at the 95th percentile (for core teams, the increase at the median is not significant while for non-core teams the median increase is significant).  
+
+
+```{r}
+#| label: sum_corenoncore_tau
+#| output: true
+#| out-width: "100%"
+
+# This code based on #| label: sum_all_tau and changing for core/noncore 
+# and using function make_table_slopeCIpred created in that prior chunk
+
+
+# saved for efficiency, eval: false on its creation, not rendered and must be recreated manually if there are changes
+sum_coreteam_tau <- readRDS("sum_coreteam_tau.rds")
+sum_noncoreteam_tau <- readRDS("sum_noncoreteam_tau.rds")
+
+
+# # These must match how those models were run
+  # Should when code is run in order
+# tauval <- c(.5, .95)
+# taulab <- c("50th", "95th")
+# tau_key <- tibble(tau = tauval, tau_label = taulab)
+
+
+# Table of slopes for significance and CIs
+
+make_table_slopeCIpred(which_team = "Core", 
+                       which_model = sum_coreteam_tau)
+
+make_table_slopeCIpred(which_team = "Non Core", 
+                       which_model = sum_noncoreteam_tau)
+
+# In line to show values was becoming more trouble than it was worth, just hard coded text in
+coreteam_slopetest <- anova(quantreg_coreteam_tauval, test = "Wald")
+noncoreteam_slopetest <- anova(quantreg_noncoreteam_tauval, test = "Wald") 
+
+
+```
+
+In testing the differences of slopes (again, with the limitation that we cannot take into account the clustering by teams, nor using bootstrapping to estimate the standard errors), the slope at the 95th percentile is greater than the slope at the median for both core teams (*F*(1, 4899) = 13.28, *p* < .001) and non-core teams (*F*(1, 12247) = 10.50, *p* < .001). Thus, there is support for the shape shift of longevity among both core and non-core teams, it is *not* just the expanding pool of teams driving longevity increases in older players.
+
+## Confederation differences?
+
+Another change in World Cup format is a shift in the numbers of teams by confederation (which maps to regions of the world). In particular, relatively more spots have been given to African (CAF) and Asian (AFC) confederation teams over the expansion era. 
+
+Overall, there is not strong evidence of any noteworthy differences by confederation or the overall findings of location and shape shifts of longevity being driven just by the inclusion of more African and Asian confederation teams. Although Europe (UEFA) does show the smallest magnitude of longevity increases (the smallest slope at the 95th percentile), it still shows directions of coefficients consistent with the overall story. However, these analyses should be interpreted very tentatively given how small sample sizes are when split by confederation. 
+
+
+::: {.callout-note collapse="true"}
+## Confederation differences in longevity, small sample size limitations
+
+Europe (UEFA) is disproportionately represented at the World Cup, and sample sizes for other confederations are quite small particularly for analyses on extremes like the 95th percentile. 
+```{r}
+#| output: true
+#| out-width: "100%"
+
+dfsquads_conf <- dfsquads %>% 
+  filter(confederation_code != "OFC") %>% 
+  mutate(confederation_code = factor(confederation_code))
+
+
+### Sample size concerns 
+dfsquads_conf %>%
+  group_by(year, confederation_code) %>%
   summarise(
-    ymin = min(value),
-    ymax = max(value),
+    total_players = n(),
     .groups = "drop"
   ) %>%
-  mutate(
-    range = ymax - ymin,
-    mid = (ymin + ymax) / 2
-  ) %>% 
-  group_by(name) %>% # separately by stat
-  mutate(
-    ymin_graph = mid - max(range) / 2,
-    ymax_graph = mid + max(range) / 2
-  ) %>% 
-  # all rows, now arrange
-  ungroup() %>% # IMPORTANT before y_scales
-  arrange(name, split)
-
-
-# Build one scale per facet
-y_scales <- purrr::map2(
-  confed_limits_df$ymin_graph,
-  confed_limits_df$ymax_graph,
-  ~ scale_y_continuous(limits = c(.x, .y))
-)
- 
-
-# Mean, a bit small for 95th percentile - interpret with caution
-confed_plot_data %>% 
-  ggplot(aes(year, value, color=confederation_code)) +
-  geom_point() +
-  geom_smooth(se=FALSE) +
+  ggplot(aes(x = year, y = total_players, color = confederation_code)) +
+  geom_line(linewidth = 1, alpha = .8) +
+  geom_point(alpha = .8) +
+  scale_y_continuous(
+    name = "Total Players",
+    limits = c(0, 450),
+    breaks = seq(0, 450, by=50),
+  ) + 
   scale_color_brewer(palette = "Set1", 
-                     name = "Confederation") +
+                     name = "Confederation") + 
   scale_x_continuous(
     breaks = sort(unique(dfsquads$year)), # Only use actual years in data
-    guide = guide_axis(angle = 45)
+    guide = guide_axis(angle = 45),
+    expand = expansion(mult = c(0.02, 0.02)) # extra space, equal each side
   ) +
-  facet_wrap(name ~ split, scales = "free_y", 
-             ncol=2) + 
-  ggh4x::facetted_pos_scales(
-    y = y_scales
-  ) + 
-  labs(title = "Men's World Cup (1982-2026), Player Ages by Confederation", 
-       caption = "Excluding OFC, n = 3. Note small sample sizes limiting interpretations of 95th percentiles.", 
-       x = "Year", y = "Player Age (Years)") + 
-  theme_minimal() + 
-  theme(plot.caption = element_text(size = 7),
-        legend.position = "top",
+  labs(title = "Men's World Cup Expansion Era (1982-2026)",
+       subtitle = "Sample Sizes: Player Counts by Confederation",
+       caption = "Note, excluding n = 3 OFC confederation",
+       x = "Year") +
+  theme_minimal() +
+  theme(legend.position = "top",
         legend.direction = "horizontal",
-        # only break years for vertical lines
-        panel.grid.minor.x = element_blank())
+        # horizontal line breaks
+        panel.grid.major.y = element_line(color = "grey85", linewidth = 0.4),
+        panel.grid.minor.y = element_blank(),
+        # remove vertical line breaks
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()
+  )
+
 ```
+
+
+```{r}
+tauval <- c(.5, .95)
+taulab <- c("50th", "95th")
+
+quantreg_confed_tauval <- rq(age ~ Years.Since.1982*confederation_code, 
+                               data = dfsquads_conf, tau = tauval)
+
+
+```
+
+```{r}
+#| label: fit-model-slopes_byconfed_tauval
+#| eval: false
+
+# speed / efficiency:
+  # due to processing time during local development: 
+  # save the model locally, then in a separate code chunk just load it
+  # Only manually rerun this chunk to resave the model if there are changes to the data or this 
+    # simply because all these bootstraps take so long
+
+
+# Slopes by confed from regressions from all tauval
+# Small note: Noticed this seems to use df from the full sample for calculating CI
+# Not as ideal as using confed specific; but it would still be in the thousands so not practically important
+set.seed(123)
+slopes_byconfed_tauval <- emmeans::emtrends(
+  quantreg_confed_tauval, ~ confederation_code | tau,
+  var = "Years.Since.1982",
+  se = "boot", 
+  cluster = dfsquads_conf$team_year_cluster, 
+  R = num_boot_sim)
+
+
+saveRDS(slopes_byconfed_tauval,
+        file = "slopes_byconfed_tauval.rds")
+
+# Predicted values by confed from regressions for all tauval
+# 2026 corresponds to Years.Since.1982 = 44
+set.seed(123)
+pred_byconfed_tauval <- emmeans::emmeans(
+  quantreg_confed_tauval,
+  specs   = ~ confederation_code | tau + Years.Since.1982,   # keep year as its own grouping var, not averaged over,
+  at      = list(Years.Since.1982 = c(0, 44)), # 1982 and 2026
+  se      = "boot",
+  cluster = dfsquads_conf$team_year_cluster,
+  R       = num_boot_sim
+)
+
+saveRDS(pred_byconfed_tauval,
+        file = "pred_byconfed_tauval.rds")
+
+```
+
+If we proceed in an exploratory way regardless, we can see that all confederations show the location shift of longevity, with significant increases in age over time at the 95th percentile — although it is noted that the actual magnitude of change is quite small for the European UEFA confederation. (As before, the confidence intervals and significance testing for each of these longevity slopes to test the "location shift of longevity" were calculated using bootstrapped standard errors and taking into account clustering within squad.)
+
+```{r}
+#| output: true
+#| out-width: "100%"
+
+
+# saved for efficiency, eval: false on its creation, not rendered and must be recreated manually
+slopes_byconfed_tauval <- readRDS("slopes_byconfed_tauval.rds")
+pred_byconfed_tauval <- readRDS("pred_byconfed_tauval.rds")
+
+# slopes by confed at each tau into data frame df
+slopes_byconfed_tauval_df <- summary(slopes_byconfed_tauval, infer = c(TRUE, TRUE)) %>% 
+  as_tibble() %>% 
+  mutate(AgeChangePerWC = Years.Since.1982.trend * 4,
+         SEPerWC    = SE * 4,
+         lower.CL.PerWC = lower.CL *4,
+         upper.CL.PerWC = upper.CL *4,
+         Confederation = confederation_code) 
+
+
+# predicted values by confed at each tau and for two different years into df
+pred_byconfed_tauval_df <- summary(pred_byconfed_tauval, infer = c(TRUE, TRUE)) %>% 
+  as_tibble() %>% 
+  filter(round(tau, 2) %in% c(.50, .95, .99)) %>% 
+  rename(Confederation = confederation_code) %>% 
+  mutate(year_label = case_when(
+    Years.Since.1982 == 0 ~ "1982", 
+    Years.Since.1982 == 44 ~ "2026"),
+    tau_label = paste0("\u03c4 = ", sprintf("%.2f", tau))) %>% 
+  select(tau_label, Confederation, year_label, emmean, SE, lower.CL, upper.CL) %>% 
+  pivot_wider(
+    id_cols     = c(tau_label, Confederation),
+    names_from  = year_label,
+    values_from = c(emmean, SE, lower.CL, upper.CL),
+    names_glue  = "{.value}_{year_label}"
+  )
+# columns produced: emmean_1982, emmean_2026, SE_1982, SE_2026,
+#                   lower.CL_1982, upper.CL_1982, lower.CL_2026, upper.CL_2026
+
+
+combined_confed_table <- slopes_byconfed_tauval_df %>% 
+  filter(round(tau, 2) %in% c(.50, .95, .99)) %>% 
+  mutate(tau_label = paste0("\u03c4 = ", sprintf("%.2f", tau)) # "τ = 0.95"
+  ) %>%   
+  left_join(
+    pred_byconfed_tauval_df,
+    by = c("Confederation", "tau_label")
+  ) %>% 
+  select(tau_label, Confederation, AgeChangePerWC, SEPerWC, lower.CL.PerWC, upper.CL.PerWC, p.value,
+         emmean_1982, SE_1982, lower.CL_1982, upper.CL_1982,
+         emmean_2026, SE_2026, lower.CL_2026, upper.CL_2026) %>% 
+  arrange(tau_label, Confederation)
+
+
+combined_confed_table %>% 
+  gt(groupname_col = "tau_label", rowname_col = "Confederation") %>%
+  fmt_number( 
+    columns = c(AgeChangePerWC, SEPerWC, lower.CL.PerWC, upper.CL.PerWC),
+    decimals = 3
+  ) %>% 
+  fmt_number( # for pred ages, just 1 decimal
+    columns = c(emmean_1982, SE_1982, lower.CL_1982, upper.CL_1982,
+                emmean_2026, SE_2026, lower.CL_2026, upper.CL_2026),
+    decimals = 1 
+  ) %>% 
+  fmt(
+    columns = p.value, 
+    fns = function(x) {
+      ifelse(x < .001, "<.001", sub("^0\\.", ".", sprintf("%.3f", x)))
+    }
+  ) %>% 
+  cols_merge(columns = c(lower.CL.PerWC, upper.CL.PerWC), pattern = "[{1}, {2}]") %>% 
+  cols_merge(columns = c(lower.CL_1982, upper.CL_1982),   pattern = "[{1}, {2}]") %>% 
+  cols_merge(columns = c(lower.CL_2026, upper.CL_2026),   pattern = "[{1}, {2}]") %>% 
+  cols_label(
+    AgeChangePerWC = "Age Δ /WC",
+    SEPerWC        = "SE",
+    lower.CL.PerWC = "95% CI",
+    p.value        = "p",
+    emmean_1982    = "Age",
+    SE_1982        = "SE",
+    lower.CL_1982  = "95% CI",
+    emmean_2026    = "Age",
+    SE_2026        = "SE",
+    lower.CL_2026  = "95% CI"
+  ) %>% 
+  tab_spanner(label = "Slope (per WC cycle)", columns = c(AgeChangePerWC, SEPerWC, lower.CL.PerWC, p.value)) %>% 
+  tab_spanner(label = "Predicted Age, 1982",    columns = c(emmean_1982, SE_1982, lower.CL_1982)) %>% 
+  tab_spanner(label = "Predicted Age, 2026",    columns = c(emmean_2026, SE_2026, lower.CL_2026)) %>% 
+  cols_align(
+    align   = "center",
+    columns = c(AgeChangePerWC, SEPerWC, lower.CL.PerWC, p.value, 
+                emmean_1982, SE_1982, lower.CL_1982, 
+                emmean_2026, SE_2026, lower.CL_2026)
+  ) %>% 
+  tab_style(style = cell_text(align = "left"), locations = cells_stub()) %>% 
+  tab_header(title    = "Longevity by Confederation",
+             subtitle = paste0("Quantile regression slopes and predicted ages, with clustered bootstrapped SEs (", 
+                               num_boot_sim, " resamples)")
+  ) %>%
+  tab_options(table.align = "left")
+
+```
+
+For each confederation, we can see that at least the magnitude of the slope at the 95th percentile is greater than at the median. To actually test these difference of slopes at the median vs the 95th percentile (the shape shift of longevity), we again have the "rough SE-limitation comparisons" issue (that we cannot cluster within squad or easily implement bootstrapping for estimating the SEs) as well as small sample sizes, and thus should interpret these results with some skepticism. But with Holm's adjustment for multiple comparisons, there is support for the shape shift of longevity only for South America (CONMEBOL).
+
+
+```{r}
+tau_pair <- c(.5, .95)
+
+pairwise_wald_byconfed_95 <- map_dfr(levels(dfsquads_conf$confederation_code), function(pos) {
+  df_pos   <- dfsquads_conf %>% filter(confederation_code == pos)
+  fit_pair <- rq(age ~ Years.Since.1982, data = df_pos, tau = tau_pair)
+  a        <- anova(fit_pair, test = "Wald", joint = FALSE)   # se = "nid", not bootstrapped/clustered — same accepted limitation as before
+  tab      <- a$table
+  tibble(
+    Confederation = pos,
+    F_value  = tab[, ncol(tab) - 1],
+    p_value  = tab[, ncol(tab)]
+  )
+}) %>%
+  mutate(p_adj = p.adjust(p_value, method = "holm"))  # correcting across the 4 Confederation tests
+
+# TODO here
+pairwise_wald_byconfed_95 %>% 
+  gt(rowname_col = "Confederation") %>% 
+  fmt_number(
+    columns = F_value,
+    decimals = 3
+  ) %>% 
+  fmt(
+    columns = c(p_value, p_adj),
+    fns = function(x) {
+      ifelse(x < .001, 
+             "<.001", 
+             sub("^0\\.", ".", sprintf("%.3f", x)))
+    }
+  ) %>% 
+  cols_label(
+    F_value = "F",
+    p_value = "p (raw)",
+    p_adj   = "p (Holm-adjusted)"
+  ) %>% 
+  cols_align(align = "center", columns = c(F_value, p_value, p_adj)) %>% 
+  tab_style(style = cell_text(align = "left"), locations = cells_stub()) %>% 
+  tab_header(
+    title    = "Pairwise Comparisons of Median vs 95th Percentile Slopes, for each Confederation",
+    subtitle = "Wald tests, analytic (nid) SEs \u2014 not bootstrapped or cluster-adjusted"
+  ) %>% 
+  tab_options(table.align = "left")
+```
+Overall, we might very tentatively say that nothing about examinations by confederation lead us to believe that the results discussed so far are driven *just* by African and Asian confederations; all confederations at least show coefficient directions and patterns consistent with the overall findings of location and shape shifts of longevity, and these patterns are significant among South American teams. However, we can acknowledge that the longevity patterns may be the least strong among European teams.  
+:::
 
 # Conclusion
 
-There are small increases in average ages, and more notable increase in upper percentiles among players selected to World Cup squads since the expansion era began in 1982. 
+There are small increases in overall ages of World Cup players since the expansion era began in 1982 (the location shift), but the increases in the upper percentiles of age tend to be even greater (the shape shift of longevity). 
 
-This is particularly true for goal keepers and forwards, but midfielders and defenders also show small increases. 
+It cannot simply be explained away as just being among goal keepers, and it is not just among the newer teams qualifying under the expanded format, nor is it driven just by greater representation among historically less-included regions like Africa and Asia because similar patterns exist for all confederations, including South America and (more weakly) Europe.
 
-Increases in mean age cannot (yet?) be simply explained away by the new teams in the expanding tournament using different approaches to squad creation. 
+**Thus, World Cup players do seem to be increasing in longevity!**\
 
-**Thus, there does seem to be some trends towards older players and increases in longevity among World Cup players in the past several decades.**
+![](mwc_age_ai.jpeg){width=80%}
+\
+\
+\
 
+# Appendix
 
-## Data Details
-
-This analysis used an excellent [World Cup database](https://www.worldcups.ai/) (© 2026 Joshua C. Fjelstudl, Ph.D. published under [CC-BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/legalcode)) of the 1930-2022 World Cups, with tables of players, squads, and team performances.^[At the time of downloading, 2026 data was not yet included] Player and squad information for 2026 was scrapped from [Wikipedia](https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_squads). Population data came from the [WDI package](https://cran.r-project.org/web/packages/WDI/), supplemented with government data for the separate countries of the [United Kingdom](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/timeseries/). FIFA ranking data is unverified and should be treated with caution, but came from [an updated version in a comment on Kaggle](https://www.kaggle.com/datasets/cashncarry/fifaworldranking/discussion/715112). 
-
-```{r}
-#| eval: false
-
-#----------------------------------- 
-# Ages 40+ vs FIFA article 
-#----------------------------------- 
-########## FIFA noting more 40+ in 2026 than all other years
-  # Messy notes: 
-    # Fernando Muslera, Uruguay turns 40 after World Cup start date, but before his teams game... FIFA article counts him as over 40
-   # 1970 Soviet Union Lev Yashin was an unused squad member
-dfsquads_1930_2026 %>%
-  filter(age >=40) %>% 
-  group_by(year >= 2026) %>% 
-  arrange(year, desc(age)) %>% 
-  ungroup() %>% 
-  rename(Position = squad_position_name) %>% 
-  select(year, team_name, given_name, family_name, Position, age) 
-```
+## Data Details {#sec-data-details}
+::: {style="font-size: 0.85em;"}
+This analysis used an excellent [World Cup database](https://www.worldcups.ai/) (© 2026 Joshua C. Fjelstudl, Ph.D. published under [CC-BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/legalcode)) of the 1930-2022 World Cups, with tables of players, squads, and team performances.^[At the time of downloading, 2026 data was not yet included.] Player and squad information for 2026 was scrapped from [Wikipedia](https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_squads). For some exploratory analyses (not all included in the interest of scope and clarity), I added in some additional data: Population data came from the [WDI package](https://cran.r-project.org/web/packages/WDI/), supplemented with government data for the separate countries of the [United Kingdom](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/timeseries/). FIFA ranking data is unverified and should be treated with caution, but came from [an updated version in a comment on Kaggle](https://www.kaggle.com/datasets/cashncarry/fifaworldranking/discussion/715112). 
 
 Age was calculated from the date of the start of the tournament, and I included anyone named to a squad, regardless of whether they saw playing time during the tournament.^[As noted above, there are a few seeming inconsistencies can arise based on these definitions: [FIFA's count of eight players over 40](https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over) included Uruguay's Fernando Muslera who turned 40 after the start of the 2026 tournament but before his team's first game; his age in my data would be 39.98631. They also only referred to players in prior tournaments who earned a cap — that is, played actual time — which would exclude, for example, unused squad members like the first 40+ year old Lev Yashin named to a squad with the 1970 Soviet Union team.]
 
 The data used as well as code for analyses are available in the [github project repo](https://github.com/LindsayRankin/mens-world-cup-age), and the exact code for this post are available in [this website's repo](https://github.com/LindsayRankin/LindsayRankin.github.io). 
+:::
 
 
-## Feedback 
+## Project Context
+::: {style="font-size: 0.85em;"}
+This was just a fun mini-project for me:\
+Interest in the topic itself, I wanted to practice some web scrapping, I wanted a project to write up to help me build out a website, this gave me something to work through to figure out how best to organize a Quarto document (particularly with time-intensive simulation code), I ended up learning quantile regression, I dove into making some animated graphics. etc. I am just an every-4-years-bandwagon-World-Cup-football fan — so [please let me know](mailto:LindsayRankin@gmail.com) if you think there's any soccer/football knowledge I am missing!
 
-*This was just a fun mini-project for me (and to practice some web scrapping and give me a project to build out a website). I am primarily an NFL-football fan ([Bear Down!](https://www.chicagobears.com/)), and just an every-4-years-bandwagon-World-Cup-football fan — so [please let me know](mailto:LindsayRankin@gmail.com) if you think there's any soccer/football knowledge I am missing!*
+This is not an exhaustive analysis, and I focused on a high level story (but making liberal use of click boxes to give some details or explanations) while also putting on a bit of a learning/explaining approach as I dove into quantile regression. 
+
+I would like to document some aspects/examples of how I used AI/LLM (Claude and ChatGPT) in the context of this project. Just some examples to think through how one can use it productively:\
+
+::: {.callout-note collapse="true"}
+## AI/LLM use examples
+
+  - I frequently use AI to help me speed through minor coding details of data manipulation/transformation/pretty-ing up a table or graph. Often times these are things I already 'know', but it's sometimes faster to ask AI to get at least a working example that I can then refine, rather than to dig through my own past notes/code.\
+  - It can also be helpful for navigating new packages like quantreg — for example, I wanted something similar to emmeans for breaking down interaction terms, but as applied to quantreg. I initially found emmeans would not work well with quantreg results, and I started making my own code to relevel the player position and pull out a lower order term. My own code was working pretty well, but as I wanted to do more with those results I stepped back and asked Claude if something like this already exist? I learned there was a known bug in emmeans that was recently fixed, and by updating that package and building on example code from Claude, I was able to streamline this.\
+  - I turned to Claude to help me learn and implement web scrapping; I quickly realized that once you get the R packages to just pull from a website, it's really just about string parsing by patterns. Interesting. Claude was pretty bad at the parsing initially, so I did a bit of my own code clean up and a bit of iterative back and forth with Claude for troubleshooting. I also undertook some steps to try to help clean the data (player given vs family names; trying to match it to prior data from the Fjelstudl) to conceptualize how that might be done. It was a bit unnecessary for this particular project, but I had some future projects in mind so I partially pursued this but did not invest the time to clean up every last detail.\
+  - Most of the conceptual thinking about the data is my own, but one key use of AI here: After I started with explorations of percentile graphs, I was a bit stumped as to what other analyses approaches would be appropriate. Searching around myself was not as productive as I didn't know what I didn't know. But I leaned on Claude for some back and forth explanation of my thinking, using the metaphor of tracking changes in the upper 1% of income over time. It provided a lot of suggestions of different kinds of analyse I might consider (i.e., extreme value theory EVT; survival/duration, sensitivity analysis; GAMLSS distributional regression) and based on some of my own reading about these techniques and a bit of back and forth with Claude, I decided I would go read up on quantile regression. I found it helpful to get ideas from AI I didn't quite know what I was looking for, but I think exactly how one phrases their instructions and prompts could really drive the suggestions here. Interesting use case to ponder.\
+  - The writing and explanation (and misspellings and type-os) are all my own. Apparently frequent use of the em dash is considered a tell that AI wrote something, which is really unfortunate because I have long been a fan and (over?) user of the em dash — it's just so handy and another layer on top of parentheses and footnotes and callout boxes, all of which I (over?) use. And in terms of content, just given some of the things Claude said in other back and forths (about analyses to consider, for example), it clearly misunderstood very important conceptual details about the data and the meaning, and I frequently had to redirect it, point out mistakes, etc.; AI cannot yet replace a thoughtful approach to data analysis.
+  - Please forgive my AI slop image of the old player, I loved it 😂 
+:::
+:::
