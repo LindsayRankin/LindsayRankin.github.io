@@ -1,13 +1,15 @@
 # LindsayRankin.github.io
 
+[lindsayrankin.github.io](https://lindsayrankin.github.io/)
+
 ## Welcome to my personal/professional website repo!
 
-Great resources I used to get this up and running:\
-Building the website in RStudio using Quarto, deploying with GitHub Pages: 
+Great resources I used to get this up and running:
+- Building the website in RStudio using Quarto, deploying with GitHub Pages: 
 https://ucsb-meds.github.io/creating-quarto-websites/
-Adding a Data Project section to it formatted as a blog: 
+- Adding a Data Project section, formatted as a blog: 
 https://samanthacsik.github.io/posts/2022-10-24-quarto-blogs/
-At some future date, I may try to spruce it up a bit visually with additional guidance here: 
+- At some future date, I may try to spruce it up a bit visually with additional guidance here: 
 https://ucsb-meds.github.io/customizing-quarto-websites/#/title-slide
 
 ## Notes/Reminders to self:
