@@ -5,15 +5,15 @@ toc: false
 
 ### Professionally
 
-I love data and research. I lean more toward the analytics and decision science parts of data science. R is my preferred programming language, although I'm always interested in learning new skills (and have taught myself Python). I have been a freelancer in various areas of data, statistics, research — in doing, consulting, and teaching - for over a decade.
+I love data and research. R is my preferred programming language, although I'm always interested in learning new skills (and have taught myself Python). I have been a freelancer in various areas of data, statistics, research for over a decade: I do analyses, consult or assist others with their research, and teach/train/tutor in these topics. 
 
-My educational background is a PhD in social psychology with a quantitative methods concentration from New York University, where I conducted both experimental and cross-sectional/survey research. I previously earned a psychology BA from Northwestern University.
+My educational background is a PhD in social psychology with a quantitative methods concentration from New York University, where I conducted both experimental and survey research. I previously earned a psychology BA from Northwestern University.
 
 See my [Resume](./resume.qmd) for more details.
 
 
 ### Personally
 
-Outside of work, I enjoy surfing, food and cooking, reading (news, non-fiction, and fiction), learning, health and wellness, and traveling.
+I love traveling to new countries to explore the culture, food, history, and nature. I am Midwest-born-and-raised but picked up surfing as an adult, and spend a lot of time in the warmer waves of Costa Rica. I am always trying to expand my horizons with reading, both fiction and my favorite non-fiction topics (food history and culture, psychology, environmentalism, sustainability, social justice, politics, data). I am into fitness and wellness, and I am currently pretty obsessed with creating healthy-ish protein ice cream recipes with my Ninja Creami. 
 
 

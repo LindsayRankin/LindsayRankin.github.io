@@ -115,6 +115,7 @@ ul.task-list li input[type="checkbox"] {
         </div>
       </div>
                           <div class="quarto-categories">
+                <div class="quarto-category">R</div>
                 <div class="quarto-category">Quantile regression</div>
                 <div class="quarto-category">Learning</div>
                 <div class="quarto-category">Fun</div>
@@ -167,7 +168,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a>
   <ul class="collapse">
   <li><a href="#sec-data-details" id="toc-sec-data-details" class="nav-link" data-scroll-target="#sec-data-details">Data Details</a></li>
-  <li><a href="#project-context" id="toc-project-context" class="nav-link" data-scroll-target="#project-context">Project Context</a></li>
+  <li><a href="#reflections-on-this-project" id="toc-reflections-on-this-project" class="nav-link" data-scroll-target="#reflections-on-this-project">Reflections on this Project</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -181,7 +182,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>The 2026 Men’s World Cup will feature <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over">a record number of players over age 40 - nearly as many as all prior World Cups combined</a>.</p>
+<p>The 2026 Men’s World Cup will feature <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over">a record number of players over age 40 — nearly as many as all prior World Cups combined</a>.</p>
 <blockquote class="instagram-media blockquote" data-instgrm-captioned="" data-instgrm-permalink="https://www.instagram.com/p/DZbPAa_HDBQ/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
 <div style="padding:16px;">
 <a href="https://www.instagram.com/p/DZbPAa_HDBQ/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank">
@@ -266,8 +267,8 @@ View this post on Instagram
 <p><strong>Are men’s World Cup squads getting older, and is there an increase in longevity?</strong></p>
 <div style="margin-left: 2em;">
 <p>This can be broken into two different questions, and I’m primarily interested in the second one:<br>
-(1) Men’s World Cup squads getting older could simply be examined with trends over time in central summaries likes means or medians.<br>
-(2) “Longevity” as I am imagining it is the more interesting aspect, but a bit more complicated to conceptualize. To focus on the oldest players, I don’t want an arbitrary cutoff like 40 nor be limited to just counting players above that threshold; I also don’t want to focus on a singular outlier of the oldest player at each tournament. I will use upper percentiles (or in statistics: quantiles), similar to how economic tracking of income over time might focus on the changing value of income of the upper 5% (aka the .95 quantile or 95th percentile) or upper 1% (aka the .99 quantile or 99th percentile).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a><br>
+(1) Men’s World Cup squads getting older could be examined with trends over time in central summaries likes means or medians.<br>
+(2) “Longevity” as I am imagining it is the more interesting aspect, but a bit more complicated to conceptualize. To focus on the oldest players, I don’t want an arbitrary cutoff like 40 and just counting players above that threshold; I also don’t want to focus on a singular outlier of the oldest player at each tournament. I will use upper percentiles (or in statistics: quantiles), similar to how economic tracking of income over time might focus on the changing value of income of the upper 5% (aka the .95 quantile or 95th percentile) or upper 1% (aka the .99 quantile or 99th percentile).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a><br>
 <br>
 We will further clarify these ideas of longevity (and it’s distinction from just mean/median getting older) when we get into analysis techniques.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 </div>
@@ -290,7 +291,7 @@ Assumptions about player data
 </p>
 <p>There could be other forces at work in how managers select players for a squad (e.g., nostalgia for formerly great players that fans or teammates want to stay on the squad). It may not be anything about players changing, but just the willingness of managers to select older players. While I would not totally discount these possibilities, winning should be the primary motivation of all managers and that may ultimately tip the scales over these other considerations, so I would like to at least talk about the data with the assumption that players are the best possible selections.</p>
 <p>In addition, players have to play as a team, and different managers may have different philosophies and balances in constructing a team. Teams are also drawn from the men in a country (leaving aside some complications of players with multiple potential eligibility, where a player must ultimately make a single, final commitment), and different countries may also have different demographic factors (e.g., differences in generation sizes) and football development factors (e.g., if there were particular periods of time they began investing more into development).</p>
-<p>We can somewhat improve our representation of at least some of these team-level considerations by representing players as being clustered within squads, which will change standard error calculations and therefore confidence intervals. When available to (relatively easily) implement, clustering by squad within a year will be ideal; but given the ‘fun’ and exploratory nature of this project, I will note that at times this becomes overly burdensome and I made a choice to give up some accuracy/precision for keeping the scope of this project manageable.</p>
+<p>We can somewhat improve our representation of at least some of these team-level considerations by representing players as being clustered within squads, which will change standard error calculations and therefore confidence intervals. When available to (relatively easily) implement, clustering by squad within a year will be ideal; but given the fun and exploratory nature of this project, I will note that at times this becomes overly burdensome and I made a choice to give up some accuracy/precision for keeping the scope of this project manageable.</p>
 <p>Finally, as the tournament has expanded to more teams over time, it’s possible that these newer teams (who would have been outside of qualification prior to expansions) may differ in how they select players, and those team differences may contribute to differences in players over time. Some follow up analyses will attempt to address some of these alternative explanations.</p>
 </div>
 </div>
@@ -340,23 +341,23 @@ Players 40+ years old in the 2026 tournament
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="zelglmqywx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#zelglmqywx table {
+<div id="zkjtgtqsnj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zkjtgtqsnj table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#zelglmqywx thead, #zelglmqywx tbody, #zelglmqywx tfoot, #zelglmqywx tr, #zelglmqywx td, #zelglmqywx th {
+#zkjtgtqsnj thead, #zkjtgtqsnj tbody, #zkjtgtqsnj tfoot, #zkjtgtqsnj tr, #zkjtgtqsnj td, #zkjtgtqsnj th {
   border-style: none;
 }
 
-#zelglmqywx p {
+#zkjtgtqsnj p {
   margin: 0;
   padding: 0;
 }
 
-#zelglmqywx .gt_table {
+#zkjtgtqsnj .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -382,12 +383,12 @@ Players 40+ years old in the 2026 tournament
   border-left-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_caption {
+#zkjtgtqsnj .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#zelglmqywx .gt_title {
+#zkjtgtqsnj .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -399,7 +400,7 @@ Players 40+ years old in the 2026 tournament
   border-bottom-width: 0;
 }
 
-#zelglmqywx .gt_subtitle {
+#zkjtgtqsnj .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -411,7 +412,7 @@ Players 40+ years old in the 2026 tournament
   border-top-width: 0;
 }
 
-#zelglmqywx .gt_heading {
+#zkjtgtqsnj .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -423,13 +424,13 @@ Players 40+ years old in the 2026 tournament
   border-right-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_bottom_border {
+#zkjtgtqsnj .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_col_headings {
+#zkjtgtqsnj .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -444,7 +445,7 @@ Players 40+ years old in the 2026 tournament
   border-right-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_col_heading {
+#zkjtgtqsnj .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -464,7 +465,7 @@ Players 40+ years old in the 2026 tournament
   overflow-x: hidden;
 }
 
-#zelglmqywx .gt_column_spanner_outer {
+#zkjtgtqsnj .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -476,15 +477,15 @@ Players 40+ years old in the 2026 tournament
   padding-right: 4px;
 }
 
-#zelglmqywx .gt_column_spanner_outer:first-child {
+#zkjtgtqsnj .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#zelglmqywx .gt_column_spanner_outer:last-child {
+#zkjtgtqsnj .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#zelglmqywx .gt_column_spanner {
+#zkjtgtqsnj .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -496,11 +497,11 @@ Players 40+ years old in the 2026 tournament
   width: 100%;
 }
 
-#zelglmqywx .gt_spanner_row {
+#zkjtgtqsnj .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#zelglmqywx .gt_group_heading {
+#zkjtgtqsnj .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -526,7 +527,7 @@ Players 40+ years old in the 2026 tournament
   text-align: left;
 }
 
-#zelglmqywx .gt_empty_group_heading {
+#zkjtgtqsnj .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -541,15 +542,15 @@ Players 40+ years old in the 2026 tournament
   vertical-align: middle;
 }
 
-#zelglmqywx .gt_from_md > :first-child {
+#zkjtgtqsnj .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#zelglmqywx .gt_from_md > :last-child {
+#zkjtgtqsnj .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#zelglmqywx .gt_row {
+#zkjtgtqsnj .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -568,7 +569,7 @@ Players 40+ years old in the 2026 tournament
   overflow-x: hidden;
 }
 
-#zelglmqywx .gt_stub {
+#zkjtgtqsnj .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -581,7 +582,7 @@ Players 40+ years old in the 2026 tournament
   padding-right: 5px;
 }
 
-#zelglmqywx .gt_stub_row_group {
+#zkjtgtqsnj .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -595,15 +596,15 @@ Players 40+ years old in the 2026 tournament
   vertical-align: top;
 }
 
-#zelglmqywx .gt_row_group_first td {
+#zkjtgtqsnj .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#zelglmqywx .gt_row_group_first th {
+#zkjtgtqsnj .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#zelglmqywx .gt_summary_row {
+#zkjtgtqsnj .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -613,16 +614,16 @@ Players 40+ years old in the 2026 tournament
   padding-right: 5px;
 }
 
-#zelglmqywx .gt_first_summary_row {
+#zkjtgtqsnj .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_first_summary_row.thick {
+#zkjtgtqsnj .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#zelglmqywx .gt_last_summary_row {
+#zkjtgtqsnj .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -632,7 +633,7 @@ Players 40+ years old in the 2026 tournament
   border-bottom-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_grand_summary_row {
+#zkjtgtqsnj .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -642,7 +643,7 @@ Players 40+ years old in the 2026 tournament
   padding-right: 5px;
 }
 
-#zelglmqywx .gt_first_grand_summary_row {
+#zkjtgtqsnj .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -652,7 +653,7 @@ Players 40+ years old in the 2026 tournament
   border-top-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_last_grand_summary_row_top {
+#zkjtgtqsnj .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -662,11 +663,11 @@ Players 40+ years old in the 2026 tournament
   border-bottom-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_striped {
+#zkjtgtqsnj .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#zelglmqywx .gt_table_body {
+#zkjtgtqsnj .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -675,7 +676,7 @@ Players 40+ years old in the 2026 tournament
   border-bottom-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_footnotes {
+#zkjtgtqsnj .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -689,7 +690,7 @@ Players 40+ years old in the 2026 tournament
   border-right-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_footnote {
+#zkjtgtqsnj .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -698,7 +699,7 @@ Players 40+ years old in the 2026 tournament
   padding-right: 5px;
 }
 
-#zelglmqywx .gt_sourcenotes {
+#zkjtgtqsnj .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -712,7 +713,7 @@ Players 40+ years old in the 2026 tournament
   border-right-color: #D3D3D3;
 }
 
-#zelglmqywx .gt_sourcenote {
+#zkjtgtqsnj .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -720,72 +721,72 @@ Players 40+ years old in the 2026 tournament
   padding-right: 5px;
 }
 
-#zelglmqywx .gt_left {
+#zkjtgtqsnj .gt_left {
   text-align: left;
 }
 
-#zelglmqywx .gt_center {
+#zkjtgtqsnj .gt_center {
   text-align: center;
 }
 
-#zelglmqywx .gt_right {
+#zkjtgtqsnj .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#zelglmqywx .gt_font_normal {
+#zkjtgtqsnj .gt_font_normal {
   font-weight: normal;
 }
 
-#zelglmqywx .gt_font_bold {
+#zkjtgtqsnj .gt_font_bold {
   font-weight: bold;
 }
 
-#zelglmqywx .gt_font_italic {
+#zkjtgtqsnj .gt_font_italic {
   font-style: italic;
 }
 
-#zelglmqywx .gt_super {
+#zkjtgtqsnj .gt_super {
   font-size: 65%;
 }
 
-#zelglmqywx .gt_footnote_marks {
+#zkjtgtqsnj .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#zelglmqywx .gt_asterisk {
+#zkjtgtqsnj .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#zelglmqywx .gt_indent_1 {
+#zkjtgtqsnj .gt_indent_1 {
   text-indent: 5px;
 }
 
-#zelglmqywx .gt_indent_2 {
+#zkjtgtqsnj .gt_indent_2 {
   text-indent: 10px;
 }
 
-#zelglmqywx .gt_indent_3 {
+#zkjtgtqsnj .gt_indent_3 {
   text-indent: 15px;
 }
 
-#zelglmqywx .gt_indent_4 {
+#zkjtgtqsnj .gt_indent_4 {
   text-indent: 20px;
 }
 
-#zelglmqywx .gt_indent_5 {
+#zkjtgtqsnj .gt_indent_5 {
   text-indent: 25px;
 }
 
-#zelglmqywx .katex-display {
+#zkjtgtqsnj .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#zelglmqywx div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#zkjtgtqsnj div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -891,15 +892,30 @@ Age distribution at each tournament year
 </div>
 </div>
 <p>Using a linear regression fit line during the expansion era, predicted mean player age was increasing by .07 years or 25 days at each tournament since 1982.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> Collectively, this shows an increase from an average predicted age of 27.01 in 1982 to 27.78 in 2026, a bit over 3/4ths of a year increase - not a massive increase, but a non-trivial cumulative result that players are getting a bit older.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Graphing the linear regression
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 </div>
+</div>
+</div>
+</div>
 <p>But this increase in mean age cannot address the second and more interesting question about changes in longevity.</p>
 <p>For this, we turn to quantile regression.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -908,7 +924,7 @@ From percentile explorations to quantile regression
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Quantile regression is new to me, so this was a learning experience!</p>
 <p>I was initially hitting a bit of a roadblock:</p>
@@ -922,23 +938,23 @@ From percentile explorations to quantile regression
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="bjtefjxyln" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#bjtefjxyln table {
+<div id="atxmobvkfu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#atxmobvkfu table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#bjtefjxyln thead, #bjtefjxyln tbody, #bjtefjxyln tfoot, #bjtefjxyln tr, #bjtefjxyln td, #bjtefjxyln th {
+#atxmobvkfu thead, #atxmobvkfu tbody, #atxmobvkfu tfoot, #atxmobvkfu tr, #atxmobvkfu td, #atxmobvkfu th {
   border-style: none;
 }
 
-#bjtefjxyln p {
+#atxmobvkfu p {
   margin: 0;
   padding: 0;
 }
 
-#bjtefjxyln .gt_table {
+#atxmobvkfu .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -964,12 +980,12 @@ From percentile explorations to quantile regression
   border-left-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_caption {
+#atxmobvkfu .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#bjtefjxyln .gt_title {
+#atxmobvkfu .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -981,7 +997,7 @@ From percentile explorations to quantile regression
   border-bottom-width: 0;
 }
 
-#bjtefjxyln .gt_subtitle {
+#atxmobvkfu .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -993,7 +1009,7 @@ From percentile explorations to quantile regression
   border-top-width: 0;
 }
 
-#bjtefjxyln .gt_heading {
+#atxmobvkfu .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1005,13 +1021,13 @@ From percentile explorations to quantile regression
   border-right-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_bottom_border {
+#atxmobvkfu .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_col_headings {
+#atxmobvkfu .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1026,7 +1042,7 @@ From percentile explorations to quantile regression
   border-right-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_col_heading {
+#atxmobvkfu .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1046,7 +1062,7 @@ From percentile explorations to quantile regression
   overflow-x: hidden;
 }
 
-#bjtefjxyln .gt_column_spanner_outer {
+#atxmobvkfu .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1058,15 +1074,15 @@ From percentile explorations to quantile regression
   padding-right: 4px;
 }
 
-#bjtefjxyln .gt_column_spanner_outer:first-child {
+#atxmobvkfu .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#bjtefjxyln .gt_column_spanner_outer:last-child {
+#atxmobvkfu .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#bjtefjxyln .gt_column_spanner {
+#atxmobvkfu .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1078,11 +1094,11 @@ From percentile explorations to quantile regression
   width: 100%;
 }
 
-#bjtefjxyln .gt_spanner_row {
+#atxmobvkfu .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#bjtefjxyln .gt_group_heading {
+#atxmobvkfu .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1108,7 +1124,7 @@ From percentile explorations to quantile regression
   text-align: left;
 }
 
-#bjtefjxyln .gt_empty_group_heading {
+#atxmobvkfu .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1123,15 +1139,15 @@ From percentile explorations to quantile regression
   vertical-align: middle;
 }
 
-#bjtefjxyln .gt_from_md > :first-child {
+#atxmobvkfu .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#bjtefjxyln .gt_from_md > :last-child {
+#atxmobvkfu .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#bjtefjxyln .gt_row {
+#atxmobvkfu .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1150,7 +1166,7 @@ From percentile explorations to quantile regression
   overflow-x: hidden;
 }
 
-#bjtefjxyln .gt_stub {
+#atxmobvkfu .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1163,7 +1179,7 @@ From percentile explorations to quantile regression
   padding-right: 5px;
 }
 
-#bjtefjxyln .gt_stub_row_group {
+#atxmobvkfu .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1177,15 +1193,15 @@ From percentile explorations to quantile regression
   vertical-align: top;
 }
 
-#bjtefjxyln .gt_row_group_first td {
+#atxmobvkfu .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#bjtefjxyln .gt_row_group_first th {
+#atxmobvkfu .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#bjtefjxyln .gt_summary_row {
+#atxmobvkfu .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1195,16 +1211,16 @@ From percentile explorations to quantile regression
   padding-right: 5px;
 }
 
-#bjtefjxyln .gt_first_summary_row {
+#atxmobvkfu .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_first_summary_row.thick {
+#atxmobvkfu .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#bjtefjxyln .gt_last_summary_row {
+#atxmobvkfu .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1214,7 +1230,7 @@ From percentile explorations to quantile regression
   border-bottom-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_grand_summary_row {
+#atxmobvkfu .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1224,7 +1240,7 @@ From percentile explorations to quantile regression
   padding-right: 5px;
 }
 
-#bjtefjxyln .gt_first_grand_summary_row {
+#atxmobvkfu .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1234,7 +1250,7 @@ From percentile explorations to quantile regression
   border-top-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_last_grand_summary_row_top {
+#atxmobvkfu .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1244,11 +1260,11 @@ From percentile explorations to quantile regression
   border-bottom-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_striped {
+#atxmobvkfu .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#bjtefjxyln .gt_table_body {
+#atxmobvkfu .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1257,7 +1273,7 @@ From percentile explorations to quantile regression
   border-bottom-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_footnotes {
+#atxmobvkfu .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1271,7 +1287,7 @@ From percentile explorations to quantile regression
   border-right-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_footnote {
+#atxmobvkfu .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1280,7 +1296,7 @@ From percentile explorations to quantile regression
   padding-right: 5px;
 }
 
-#bjtefjxyln .gt_sourcenotes {
+#atxmobvkfu .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1294,7 +1310,7 @@ From percentile explorations to quantile regression
   border-right-color: #D3D3D3;
 }
 
-#bjtefjxyln .gt_sourcenote {
+#atxmobvkfu .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1302,72 +1318,72 @@ From percentile explorations to quantile regression
   padding-right: 5px;
 }
 
-#bjtefjxyln .gt_left {
+#atxmobvkfu .gt_left {
   text-align: left;
 }
 
-#bjtefjxyln .gt_center {
+#atxmobvkfu .gt_center {
   text-align: center;
 }
 
-#bjtefjxyln .gt_right {
+#atxmobvkfu .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#bjtefjxyln .gt_font_normal {
+#atxmobvkfu .gt_font_normal {
   font-weight: normal;
 }
 
-#bjtefjxyln .gt_font_bold {
+#atxmobvkfu .gt_font_bold {
   font-weight: bold;
 }
 
-#bjtefjxyln .gt_font_italic {
+#atxmobvkfu .gt_font_italic {
   font-style: italic;
 }
 
-#bjtefjxyln .gt_super {
+#atxmobvkfu .gt_super {
   font-size: 65%;
 }
 
-#bjtefjxyln .gt_footnote_marks {
+#atxmobvkfu .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#bjtefjxyln .gt_asterisk {
+#atxmobvkfu .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#bjtefjxyln .gt_indent_1 {
+#atxmobvkfu .gt_indent_1 {
   text-indent: 5px;
 }
 
-#bjtefjxyln .gt_indent_2 {
+#atxmobvkfu .gt_indent_2 {
   text-indent: 10px;
 }
 
-#bjtefjxyln .gt_indent_3 {
+#atxmobvkfu .gt_indent_3 {
   text-indent: 15px;
 }
 
-#bjtefjxyln .gt_indent_4 {
+#atxmobvkfu .gt_indent_4 {
   text-indent: 20px;
 }
 
-#bjtefjxyln .gt_indent_5 {
+#atxmobvkfu .gt_indent_5 {
   text-indent: 25px;
 }
 
-#bjtefjxyln .katex-display {
+#atxmobvkfu .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#bjtefjxyln div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#atxmobvkfu div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1433,7 +1449,7 @@ From percentile explorations to quantile regression
 <p>With quantile regression, instead of representing the slope of change in mean age over time, we can consider the change in age over time of any particular quantile or percentile.</p>
 <p>First, it’s worth noting that a quantile regression prediction of the median (aka the 50th percentile or .50 quantile) does not really conceptually differ from our linear regression mean prediction — by either measure, central age is increasing a bit over time, and in very similar ways.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1442,7 +1458,7 @@ Mean vs median prediction lines
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>You didn’t believe me? So similar! 😂</p>
 <div class="cell">
@@ -1456,30 +1472,32 @@ Mean vs median prediction lines
 <p>But we want to examine the slopes over time of different quantiles or percentiles of the age. Given this new quantile regression framework, we can actually further refine or clarify our research questions and separate our ‘longevity increasing’ second question into two components:</p>
 <div style="margin-left: 2em;">
 <ol type="1">
-<li><p><strong>Location shift of longevity</strong>: The slope of change in age over time for the 95th or 99th percentile can represent that the older players are getting older. This may be consistent with an overall “location shift” where the center of age is also increasing (mean/median ages are going up, as are the oldest ages); it’s like the whole distribution of age shifts in its location, so players at any point (median, 95th or 99th percentiles) are all getting older over time.</p></li>
+<li><p><strong>Location shift of longevity</strong>: The slope of change in age over time for the 95th or 99th percentile can represent that the older players are getting older.<br>
+<br>
+But this may be a part of an overall “location shift” of just getting older where the center of age is also increasing (mean/median ages are going up, as are the oldest ages) consistent with the first overall research question of “squads getting older”; it could be that the whole distribution of age shifts in its location, so players at any point (median, 95th or 99th percentiles) are all getting older over time. Thus, we need to distinguish a second aspect:</p></li>
 <li><p><strong>Shape shift of longevity</strong>: Difference of the slopes of age over time of these upper percentiles compared to or relative to changes for the rest of the distribution would tell us that there is a change in the shape of the distribution of age. If the slope of age over time for the 95th percentile of age is greater than the slope of age over time at the median, than it is indicating that small number of players are getting increasingly or relatively older above and beyond any possible overall age increases elsewhere in the distribution. In terms of the shape of the distribution of age, it’s not about (just) a location shift but (also) a shape shift with the upper tail of the distribution stretching out.<br>
 </p></li>
 </ol>
 </div>
-<p>This first check for the usefulness of a quantile regression is to see if slopes at different quantiles do seem to differ. In addition to clustering players by their squads (specifically the particular team by year), we will use quantreg summary.rq functions to estimate standard errors empirically through bootstrapping.</p>
+<p>To consider using quantile regression, a first check can be if slopes at different quantiles do seem to differ. In addition to clustering players by their squads (specifically the particular team by year), we will use quantreg summary.rq functions to estimate standard errors empirically through bootstrapping.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Usefulness of quantile regression
+Do we need quantile regression?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>If a quantile regression shows us that we have no differences in the slopes of age over time for any particular percentile of age, then there is very little need to continue to modeling each of these other percentiles separately. But if we see different slopes for the upper percentiles compared to the median, this may hint at a “shape shift of longevity” possibility that there is a minority of the very oldest players outlasting prior age norms, and it is worth investigating these quantile regression results further.</p>
 </div>
 </div>
 </div>
-<p>As in the linear regression, the slopes represent the predicted change for each year since 1982.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> We can find the coefficients for the fit lines across all percentiles (that is, quantiles from .04 to .99 by .05 increments.<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> In the plot below, the different quantiles are represented along the x axis, and the values of slope (in units per year) for each quantile is shown on the y axis; the red represents the coefficients and confidence interval from the linear regression and the black and grey represent coefficients and confidence intervals for each quantile.</p>
-<p>We see that the slope of age over time does differ by quantiles of age, and does differ from the mean prediction of a linear regression slope.</p>
+<p>As in the linear regression, the slopes represent the predicted change for each year since 1982.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> We can find the coefficients for the fit lines across all percentiles (that is, quantiles from .04 to .99 by .05 increments).<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> In the plot below, the different quantiles are represented along the x axis, and the values of slope (in units per year) for each of those quantile regressions is shown on the y axis and represented with the black dots and dashed line (and grey confidence intervals); the red represents the coefficients and confidence interval from the linear regression for comparison.</p>
+<p>We see that the slope of age over time does differ by quantiles of age (the line of slopes by quantiles is not flat), and does differ from the mean prediction of a linear regression slope (it is outside the red bounds).</p>
 <div class="cell">
 
 </div>
@@ -1488,9 +1506,24 @@ Usefulness of quantile regression
 <p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 </div>
-<p>Specifically, at a quantile around .5 (the median) the slope does not differ from the linear regression mean predictions (represented by the red lines) because it’s is well within those red bounds. However, the lowest quantiles are differing from these predictions, and generally do not differ from zero (the black line) — indicating that the ages among the youngest players selected are not changing at each World Cup. But of primary interest is the upper quantiles that show even greater slopes, indicating that the oldest players are not only getting older consistent with a “location shift of longevity”, but that upper minority of the oldest players may be getting older at an even greater rate than other parts of the distribution of age, consistent with the possibility of a “shape shift of longevity”.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Further details on interpreting the graph
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Specifically, at a quantile around .5 (the median) the slope does not differ from the linear regression mean predictions (represented by the red lines) because it’s is well within those red bounds. However, the lowest quantiles are differing from these predictions, and generally do not differ from zero (the horizontal black line) — indicating that the ages among the youngest players selected are not changing at each World Cup. But of primary interest is the upper quantiles that show greater slopes, indicating that the oldest players are not only getting older consistent with a “location shift of longevity” like at the mean and median, but that upper minority of the oldest players may be getting older at an even greater rate than other parts of the distribution of age, consistent with the possibility of a “shape shift of longevity”.</p>
+</div>
+</div>
+</div>
 <p>Therefore, a linear regression of the mean or a quantile regression of the median slope do not represent the changes in age over time for the more extreme ages and could obscure these differences, and we need to use quantile regression to represent these upper percentiles of interest.</p>
-<p>To make it a bit more concrete, we can graph the equations of some of the quantile regression lines on the original data (converting to changes in age per World Cup tournament “/WC”, that is every four years) to more clearly see that both the 95th and 99th percentiles demonstrate not only positive slopes for a “location shift of longevity”, but they may have even steeper slopes and stretching the upper part of the distribution faster than the upward trajectory of the rest of the distribution, consistent with the “shape shift of longevity”.</p>
+<p>To make it more concrete, we can graph the equations of some of the quantile regression lines on the original data (converting to changes in age per World Cup tournament “/WC”, that is every four years) to more clearly see that both the 95th and 99th percentiles demonstrate not only positive slopes for a “location shift of longevity”, but they may have even steeper slopes and stretching the upper part of the distribution faster than the upward trajectory of the rest of the distribution, consistent with the possibility of a “shape shift of longevity”.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/quantreg_tauval-1.png" class="img-fluid" style="width:100.0%"></p>
@@ -1503,23 +1536,23 @@ Usefulness of quantile regression
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="vtpmtfojnh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#vtpmtfojnh table {
+<div id="kvkobookru" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kvkobookru table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#vtpmtfojnh thead, #vtpmtfojnh tbody, #vtpmtfojnh tfoot, #vtpmtfojnh tr, #vtpmtfojnh td, #vtpmtfojnh th {
+#kvkobookru thead, #kvkobookru tbody, #kvkobookru tfoot, #kvkobookru tr, #kvkobookru td, #kvkobookru th {
   border-style: none;
 }
 
-#vtpmtfojnh p {
+#kvkobookru p {
   margin: 0;
   padding: 0;
 }
 
-#vtpmtfojnh .gt_table {
+#kvkobookru .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1545,12 +1578,12 @@ Usefulness of quantile regression
   border-left-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_caption {
+#kvkobookru .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#vtpmtfojnh .gt_title {
+#kvkobookru .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1562,7 +1595,7 @@ Usefulness of quantile regression
   border-bottom-width: 0;
 }
 
-#vtpmtfojnh .gt_subtitle {
+#kvkobookru .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1574,7 +1607,7 @@ Usefulness of quantile regression
   border-top-width: 0;
 }
 
-#vtpmtfojnh .gt_heading {
+#kvkobookru .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1586,13 +1619,13 @@ Usefulness of quantile regression
   border-right-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_bottom_border {
+#kvkobookru .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_col_headings {
+#kvkobookru .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1607,7 +1640,7 @@ Usefulness of quantile regression
   border-right-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_col_heading {
+#kvkobookru .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1627,7 +1660,7 @@ Usefulness of quantile regression
   overflow-x: hidden;
 }
 
-#vtpmtfojnh .gt_column_spanner_outer {
+#kvkobookru .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1639,15 +1672,15 @@ Usefulness of quantile regression
   padding-right: 4px;
 }
 
-#vtpmtfojnh .gt_column_spanner_outer:first-child {
+#kvkobookru .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#vtpmtfojnh .gt_column_spanner_outer:last-child {
+#kvkobookru .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#vtpmtfojnh .gt_column_spanner {
+#kvkobookru .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1659,11 +1692,11 @@ Usefulness of quantile regression
   width: 100%;
 }
 
-#vtpmtfojnh .gt_spanner_row {
+#kvkobookru .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#vtpmtfojnh .gt_group_heading {
+#kvkobookru .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1689,7 +1722,7 @@ Usefulness of quantile regression
   text-align: left;
 }
 
-#vtpmtfojnh .gt_empty_group_heading {
+#kvkobookru .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1704,15 +1737,15 @@ Usefulness of quantile regression
   vertical-align: middle;
 }
 
-#vtpmtfojnh .gt_from_md > :first-child {
+#kvkobookru .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#vtpmtfojnh .gt_from_md > :last-child {
+#kvkobookru .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#vtpmtfojnh .gt_row {
+#kvkobookru .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1731,7 +1764,7 @@ Usefulness of quantile regression
   overflow-x: hidden;
 }
 
-#vtpmtfojnh .gt_stub {
+#kvkobookru .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1744,7 +1777,7 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#vtpmtfojnh .gt_stub_row_group {
+#kvkobookru .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1758,15 +1791,15 @@ Usefulness of quantile regression
   vertical-align: top;
 }
 
-#vtpmtfojnh .gt_row_group_first td {
+#kvkobookru .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#vtpmtfojnh .gt_row_group_first th {
+#kvkobookru .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#vtpmtfojnh .gt_summary_row {
+#kvkobookru .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1776,16 +1809,16 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#vtpmtfojnh .gt_first_summary_row {
+#kvkobookru .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_first_summary_row.thick {
+#kvkobookru .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#vtpmtfojnh .gt_last_summary_row {
+#kvkobookru .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1795,7 +1828,7 @@ Usefulness of quantile regression
   border-bottom-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_grand_summary_row {
+#kvkobookru .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1805,7 +1838,7 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#vtpmtfojnh .gt_first_grand_summary_row {
+#kvkobookru .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1815,7 +1848,7 @@ Usefulness of quantile regression
   border-top-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_last_grand_summary_row_top {
+#kvkobookru .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1825,11 +1858,11 @@ Usefulness of quantile regression
   border-bottom-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_striped {
+#kvkobookru .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#vtpmtfojnh .gt_table_body {
+#kvkobookru .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1838,7 +1871,7 @@ Usefulness of quantile regression
   border-bottom-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_footnotes {
+#kvkobookru .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1852,7 +1885,7 @@ Usefulness of quantile regression
   border-right-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_footnote {
+#kvkobookru .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1861,7 +1894,7 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#vtpmtfojnh .gt_sourcenotes {
+#kvkobookru .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1875,7 +1908,7 @@ Usefulness of quantile regression
   border-right-color: #D3D3D3;
 }
 
-#vtpmtfojnh .gt_sourcenote {
+#kvkobookru .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1883,72 +1916,72 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#vtpmtfojnh .gt_left {
+#kvkobookru .gt_left {
   text-align: left;
 }
 
-#vtpmtfojnh .gt_center {
+#kvkobookru .gt_center {
   text-align: center;
 }
 
-#vtpmtfojnh .gt_right {
+#kvkobookru .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#vtpmtfojnh .gt_font_normal {
+#kvkobookru .gt_font_normal {
   font-weight: normal;
 }
 
-#vtpmtfojnh .gt_font_bold {
+#kvkobookru .gt_font_bold {
   font-weight: bold;
 }
 
-#vtpmtfojnh .gt_font_italic {
+#kvkobookru .gt_font_italic {
   font-style: italic;
 }
 
-#vtpmtfojnh .gt_super {
+#kvkobookru .gt_super {
   font-size: 65%;
 }
 
-#vtpmtfojnh .gt_footnote_marks {
+#kvkobookru .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#vtpmtfojnh .gt_asterisk {
+#kvkobookru .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#vtpmtfojnh .gt_indent_1 {
+#kvkobookru .gt_indent_1 {
   text-indent: 5px;
 }
 
-#vtpmtfojnh .gt_indent_2 {
+#kvkobookru .gt_indent_2 {
   text-indent: 10px;
 }
 
-#vtpmtfojnh .gt_indent_3 {
+#kvkobookru .gt_indent_3 {
   text-indent: 15px;
 }
 
-#vtpmtfojnh .gt_indent_4 {
+#kvkobookru .gt_indent_4 {
   text-indent: 20px;
 }
 
-#vtpmtfojnh .gt_indent_5 {
+#kvkobookru .gt_indent_5 {
   text-indent: 25px;
 }
 
-#vtpmtfojnh .katex-display {
+#kvkobookru .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#vtpmtfojnh div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#kvkobookru div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -2041,29 +2074,29 @@ Usefulness of quantile regression
 </div>
 </div>
 <p>To make it concrete, we can say that it predicts to a 2 year increase in the 95th percentile of age (from 32.9 to 34.9) during the 44 years of the expansion era of the tournament, and a 2.4 year increase in the 99th percentile of age (from 35.6 to 38.0).</p>
-<p>To test the “shape shift of longevity”, we would want to test the difference of the slopes at the upper percentiles compared to at the median. The quantreg package in R, however, does not have the ability to conduct these tests with bootstrapped standard errors that take into account clustering.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> I’ll note that this could be custom built, but given the processing time/speed it would require to run such code, and the scope of this project, I am going to skip this.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></p>
+<p>To formally test the “shape shift of longevity”, we would want to test the difference of the slopes at the upper percentiles compared to at the median. The quantreg package in R, however, does not have the ability to conduct these tests with bootstrapped standard errors that take into account clustering.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> I’ll note that this could be custom built, but given the time to build and the challenges with the processing time/speed it would require to run such code compared to the intended scope of this project, I am going to skip this.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></p>
 <p>Instead, I will use models with standard errors estimated <em>without</em> bootstrap resampling and <em>without</em> taking into account the clustering in calculating these slope differences to at least give some hints of whether we see differences, acknowledging the limitations with these very “rough SE-limitation comparisons”.<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></p>
-<p>I compared the slopes at the median, 95th, and 99th percentiles (using these “rough SE-limitation comparisons”), and there are overall differences. Using follow up pairwise comparisons (with Holm correction), we can see that both the 95th percentile and 99th percentile slopes are significantly bigger than the median, but do not differ from each other.</p>
+<p>I compared the slopes at the median, 95th, and 99th percentiles (using these “rough SE-limitation comparisons”), and there are overall differences. Using follow up pairwise comparisons (with the Holm correction for multiple comparisons), we can see that both the 95th percentile and 99th percentile slopes are significantly larger than the median, but do not differ from each other.</p>
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="hgpnhhnznw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#hgpnhhnznw table {
+<div id="btphivcvvj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#btphivcvvj table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#hgpnhhnznw thead, #hgpnhhnznw tbody, #hgpnhhnznw tfoot, #hgpnhhnznw tr, #hgpnhhnznw td, #hgpnhhnznw th {
+#btphivcvvj thead, #btphivcvvj tbody, #btphivcvvj tfoot, #btphivcvvj tr, #btphivcvvj td, #btphivcvvj th {
   border-style: none;
 }
 
-#hgpnhhnznw p {
+#btphivcvvj p {
   margin: 0;
   padding: 0;
 }
 
-#hgpnhhnznw .gt_table {
+#btphivcvvj .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2089,12 +2122,12 @@ Usefulness of quantile regression
   border-left-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_caption {
+#btphivcvvj .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#hgpnhhnznw .gt_title {
+#btphivcvvj .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2106,7 +2139,7 @@ Usefulness of quantile regression
   border-bottom-width: 0;
 }
 
-#hgpnhhnznw .gt_subtitle {
+#btphivcvvj .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2118,7 +2151,7 @@ Usefulness of quantile regression
   border-top-width: 0;
 }
 
-#hgpnhhnznw .gt_heading {
+#btphivcvvj .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2130,13 +2163,13 @@ Usefulness of quantile regression
   border-right-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_bottom_border {
+#btphivcvvj .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_col_headings {
+#btphivcvvj .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2151,7 +2184,7 @@ Usefulness of quantile regression
   border-right-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_col_heading {
+#btphivcvvj .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2171,7 +2204,7 @@ Usefulness of quantile regression
   overflow-x: hidden;
 }
 
-#hgpnhhnznw .gt_column_spanner_outer {
+#btphivcvvj .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2183,15 +2216,15 @@ Usefulness of quantile regression
   padding-right: 4px;
 }
 
-#hgpnhhnznw .gt_column_spanner_outer:first-child {
+#btphivcvvj .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#hgpnhhnznw .gt_column_spanner_outer:last-child {
+#btphivcvvj .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#hgpnhhnznw .gt_column_spanner {
+#btphivcvvj .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2203,11 +2236,11 @@ Usefulness of quantile regression
   width: 100%;
 }
 
-#hgpnhhnznw .gt_spanner_row {
+#btphivcvvj .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#hgpnhhnznw .gt_group_heading {
+#btphivcvvj .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2233,7 +2266,7 @@ Usefulness of quantile regression
   text-align: left;
 }
 
-#hgpnhhnznw .gt_empty_group_heading {
+#btphivcvvj .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2248,15 +2281,15 @@ Usefulness of quantile regression
   vertical-align: middle;
 }
 
-#hgpnhhnznw .gt_from_md > :first-child {
+#btphivcvvj .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#hgpnhhnznw .gt_from_md > :last-child {
+#btphivcvvj .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#hgpnhhnznw .gt_row {
+#btphivcvvj .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2275,7 +2308,7 @@ Usefulness of quantile regression
   overflow-x: hidden;
 }
 
-#hgpnhhnznw .gt_stub {
+#btphivcvvj .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2288,7 +2321,7 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#hgpnhhnznw .gt_stub_row_group {
+#btphivcvvj .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2302,15 +2335,15 @@ Usefulness of quantile regression
   vertical-align: top;
 }
 
-#hgpnhhnznw .gt_row_group_first td {
+#btphivcvvj .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#hgpnhhnznw .gt_row_group_first th {
+#btphivcvvj .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#hgpnhhnznw .gt_summary_row {
+#btphivcvvj .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2320,16 +2353,16 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#hgpnhhnznw .gt_first_summary_row {
+#btphivcvvj .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_first_summary_row.thick {
+#btphivcvvj .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#hgpnhhnznw .gt_last_summary_row {
+#btphivcvvj .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2339,7 +2372,7 @@ Usefulness of quantile regression
   border-bottom-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_grand_summary_row {
+#btphivcvvj .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2349,7 +2382,7 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#hgpnhhnznw .gt_first_grand_summary_row {
+#btphivcvvj .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2359,7 +2392,7 @@ Usefulness of quantile regression
   border-top-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_last_grand_summary_row_top {
+#btphivcvvj .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2369,11 +2402,11 @@ Usefulness of quantile regression
   border-bottom-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_striped {
+#btphivcvvj .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#hgpnhhnznw .gt_table_body {
+#btphivcvvj .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2382,7 +2415,7 @@ Usefulness of quantile regression
   border-bottom-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_footnotes {
+#btphivcvvj .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2396,7 +2429,7 @@ Usefulness of quantile regression
   border-right-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_footnote {
+#btphivcvvj .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2405,7 +2438,7 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#hgpnhhnznw .gt_sourcenotes {
+#btphivcvvj .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2419,7 +2452,7 @@ Usefulness of quantile regression
   border-right-color: #D3D3D3;
 }
 
-#hgpnhhnznw .gt_sourcenote {
+#btphivcvvj .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2427,72 +2460,72 @@ Usefulness of quantile regression
   padding-right: 5px;
 }
 
-#hgpnhhnznw .gt_left {
+#btphivcvvj .gt_left {
   text-align: left;
 }
 
-#hgpnhhnznw .gt_center {
+#btphivcvvj .gt_center {
   text-align: center;
 }
 
-#hgpnhhnznw .gt_right {
+#btphivcvvj .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#hgpnhhnznw .gt_font_normal {
+#btphivcvvj .gt_font_normal {
   font-weight: normal;
 }
 
-#hgpnhhnznw .gt_font_bold {
+#btphivcvvj .gt_font_bold {
   font-weight: bold;
 }
 
-#hgpnhhnznw .gt_font_italic {
+#btphivcvvj .gt_font_italic {
   font-style: italic;
 }
 
-#hgpnhhnznw .gt_super {
+#btphivcvvj .gt_super {
   font-size: 65%;
 }
 
-#hgpnhhnznw .gt_footnote_marks {
+#btphivcvvj .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#hgpnhhnznw .gt_asterisk {
+#btphivcvvj .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#hgpnhhnznw .gt_indent_1 {
+#btphivcvvj .gt_indent_1 {
   text-indent: 5px;
 }
 
-#hgpnhhnznw .gt_indent_2 {
+#btphivcvvj .gt_indent_2 {
   text-indent: 10px;
 }
 
-#hgpnhhnznw .gt_indent_3 {
+#btphivcvvj .gt_indent_3 {
   text-indent: 15px;
 }
 
-#hgpnhhnznw .gt_indent_4 {
+#btphivcvvj .gt_indent_4 {
   text-indent: 20px;
 }
 
-#hgpnhhnznw .gt_indent_5 {
+#btphivcvvj .gt_indent_5 {
   text-indent: 25px;
 }
 
-#hgpnhhnznw .katex-display {
+#btphivcvvj .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#hgpnhhnznw div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#btphivcvvj div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -2532,7 +2565,7 @@ Usefulness of quantile regression
 </div>
 <p>We have support for the “shape shift of longevity” that oldest players are getting increasingly older, there is a stretching of the tail of the distribution (with the caveats of the “rough SE-limitation comparisons”).</p>
 <div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2541,7 +2574,7 @@ Further visualzing the shape shift of longevity
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>We can visualize this by considering the changing distribution of age over time. The upper tail (as seen in those green and purple sections of the distribution) is stretching out and moving further to the right than the shifts of the median.</p>
 <div class="cell">
@@ -2565,9 +2598,9 @@ Further visualzing the shape shift of longevity
 <section id="is-it-just-goal-keepers" class="level1">
 <h1>Is it just goal keepers?</h1>
 <p>Although it was noted that a surprising number of older players on 2026 squads were field players (that is, the non-goal keeper positions of defenders, midfielders, and forwards), in general many of the oldest players at the 2026 and prior World Cups have been goalkeepers, as they <a href="https://sports.yahoo.com/articles/oldest-players-world-cup-where-150715142.html">“typically face less physical wear and tear than outfield players, allowing many to extend their careers well into their late 30s and 40s.”</a> Thus, it’s reasonable to ask if it’s just goal keepers driving these longevity trends.</p>
-<p>When we split by position, we should be mindful that the sample size per tournament year does get quite small, particularly for goal keepers. Thus the 99th percentiles in particular may become quite unstable and should be interpreted with a bit of caution; I will focus more on the 95th percentile as our primary longevity metric, and even among goal keepers we should note it still represents very small numbers of players.</p>
+<p>When we consider different position, we should be mindful that their sample sizes per tournament year do get quite small, particularly for goal keepers. Thus the 99th percentiles in particular may become quite unstable and should be interpreted with a bit of caution; I will focus more on the 95th percentile as our primary longevity metric, and even among goal keepers we should note it still represents very small numbers of players.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2576,7 +2609,7 @@ Sample size by position details
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>No position group exceeded 200 before 1998, indicating that a 99th percentile represents fewer than the oldest two individuals. Further, prior to the 2026 tournament expansions, there were only between 69 and 99 goal keepers per tournament.</p>
 <div class="cell">
@@ -2587,7 +2620,8 @@ Sample size by position details
 </div>
 </div>
 </div>
-<p>However, we see consistent patterns: Although goal keepers are older overall, all positions show “location shift of longevity” in the direction of ages of their upper percentiles increasing. And again, at least with respect to the raw values of the slopes those upper percentiles may be increasing at greater rates, potentially consistent with “shape shift of longevity” (with the exception of the particularly-concerningly-small-sample size of the 99th percentile for goal keepers, although their 95th percentile shows a trend consistent with others).</p>
+<p>We can implement this with a time by position interaction, and focus on slope of time for each position.<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a></p>
+<p>We see consistent patterns: Although goal keepers are older overall, all positions show “location shift of longevity” in the direction of ages of their upper percentiles increasing. And again, at least with respect to the raw values of the slopes those upper percentiles may be increasing at greater rates, potentially consistent with “shape shift of longevity” (with the exception of the particularly-concerningly-small-sample size of the 99th percentile for goal keepers, although their 95th percentile shows a trend consistent with others).</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" style="width:100.0%"></p>
@@ -2600,23 +2634,23 @@ Sample size by position details
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="xoynvdwbwz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#xoynvdwbwz table {
+<div id="kukkyduhfw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kukkyduhfw table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#xoynvdwbwz thead, #xoynvdwbwz tbody, #xoynvdwbwz tfoot, #xoynvdwbwz tr, #xoynvdwbwz td, #xoynvdwbwz th {
+#kukkyduhfw thead, #kukkyduhfw tbody, #kukkyduhfw tfoot, #kukkyduhfw tr, #kukkyduhfw td, #kukkyduhfw th {
   border-style: none;
 }
 
-#xoynvdwbwz p {
+#kukkyduhfw p {
   margin: 0;
   padding: 0;
 }
 
-#xoynvdwbwz .gt_table {
+#kukkyduhfw .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2642,12 +2676,12 @@ Sample size by position details
   border-left-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_caption {
+#kukkyduhfw .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#xoynvdwbwz .gt_title {
+#kukkyduhfw .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2659,7 +2693,7 @@ Sample size by position details
   border-bottom-width: 0;
 }
 
-#xoynvdwbwz .gt_subtitle {
+#kukkyduhfw .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2671,7 +2705,7 @@ Sample size by position details
   border-top-width: 0;
 }
 
-#xoynvdwbwz .gt_heading {
+#kukkyduhfw .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2683,13 +2717,13 @@ Sample size by position details
   border-right-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_bottom_border {
+#kukkyduhfw .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_col_headings {
+#kukkyduhfw .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2704,7 +2738,7 @@ Sample size by position details
   border-right-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_col_heading {
+#kukkyduhfw .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2724,7 +2758,7 @@ Sample size by position details
   overflow-x: hidden;
 }
 
-#xoynvdwbwz .gt_column_spanner_outer {
+#kukkyduhfw .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2736,15 +2770,15 @@ Sample size by position details
   padding-right: 4px;
 }
 
-#xoynvdwbwz .gt_column_spanner_outer:first-child {
+#kukkyduhfw .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#xoynvdwbwz .gt_column_spanner_outer:last-child {
+#kukkyduhfw .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#xoynvdwbwz .gt_column_spanner {
+#kukkyduhfw .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2756,11 +2790,11 @@ Sample size by position details
   width: 100%;
 }
 
-#xoynvdwbwz .gt_spanner_row {
+#kukkyduhfw .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#xoynvdwbwz .gt_group_heading {
+#kukkyduhfw .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2786,7 +2820,7 @@ Sample size by position details
   text-align: left;
 }
 
-#xoynvdwbwz .gt_empty_group_heading {
+#kukkyduhfw .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2801,15 +2835,15 @@ Sample size by position details
   vertical-align: middle;
 }
 
-#xoynvdwbwz .gt_from_md > :first-child {
+#kukkyduhfw .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#xoynvdwbwz .gt_from_md > :last-child {
+#kukkyduhfw .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#xoynvdwbwz .gt_row {
+#kukkyduhfw .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2828,7 +2862,7 @@ Sample size by position details
   overflow-x: hidden;
 }
 
-#xoynvdwbwz .gt_stub {
+#kukkyduhfw .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2841,7 +2875,7 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xoynvdwbwz .gt_stub_row_group {
+#kukkyduhfw .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2855,15 +2889,15 @@ Sample size by position details
   vertical-align: top;
 }
 
-#xoynvdwbwz .gt_row_group_first td {
+#kukkyduhfw .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#xoynvdwbwz .gt_row_group_first th {
+#kukkyduhfw .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#xoynvdwbwz .gt_summary_row {
+#kukkyduhfw .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2873,16 +2907,16 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xoynvdwbwz .gt_first_summary_row {
+#kukkyduhfw .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_first_summary_row.thick {
+#kukkyduhfw .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#xoynvdwbwz .gt_last_summary_row {
+#kukkyduhfw .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2892,7 +2926,7 @@ Sample size by position details
   border-bottom-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_grand_summary_row {
+#kukkyduhfw .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2902,7 +2936,7 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xoynvdwbwz .gt_first_grand_summary_row {
+#kukkyduhfw .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2912,7 +2946,7 @@ Sample size by position details
   border-top-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_last_grand_summary_row_top {
+#kukkyduhfw .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2922,11 +2956,11 @@ Sample size by position details
   border-bottom-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_striped {
+#kukkyduhfw .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#xoynvdwbwz .gt_table_body {
+#kukkyduhfw .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2935,7 +2969,7 @@ Sample size by position details
   border-bottom-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_footnotes {
+#kukkyduhfw .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2949,7 +2983,7 @@ Sample size by position details
   border-right-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_footnote {
+#kukkyduhfw .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2958,7 +2992,7 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xoynvdwbwz .gt_sourcenotes {
+#kukkyduhfw .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2972,7 +3006,7 @@ Sample size by position details
   border-right-color: #D3D3D3;
 }
 
-#xoynvdwbwz .gt_sourcenote {
+#kukkyduhfw .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2980,72 +3014,72 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xoynvdwbwz .gt_left {
+#kukkyduhfw .gt_left {
   text-align: left;
 }
 
-#xoynvdwbwz .gt_center {
+#kukkyduhfw .gt_center {
   text-align: center;
 }
 
-#xoynvdwbwz .gt_right {
+#kukkyduhfw .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#xoynvdwbwz .gt_font_normal {
+#kukkyduhfw .gt_font_normal {
   font-weight: normal;
 }
 
-#xoynvdwbwz .gt_font_bold {
+#kukkyduhfw .gt_font_bold {
   font-weight: bold;
 }
 
-#xoynvdwbwz .gt_font_italic {
+#kukkyduhfw .gt_font_italic {
   font-style: italic;
 }
 
-#xoynvdwbwz .gt_super {
+#kukkyduhfw .gt_super {
   font-size: 65%;
 }
 
-#xoynvdwbwz .gt_footnote_marks {
+#kukkyduhfw .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#xoynvdwbwz .gt_asterisk {
+#kukkyduhfw .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#xoynvdwbwz .gt_indent_1 {
+#kukkyduhfw .gt_indent_1 {
   text-indent: 5px;
 }
 
-#xoynvdwbwz .gt_indent_2 {
+#kukkyduhfw .gt_indent_2 {
   text-indent: 10px;
 }
 
-#xoynvdwbwz .gt_indent_3 {
+#kukkyduhfw .gt_indent_3 {
   text-indent: 15px;
 }
 
-#xoynvdwbwz .gt_indent_4 {
+#kukkyduhfw .gt_indent_4 {
   text-indent: 20px;
 }
 
-#xoynvdwbwz .gt_indent_5 {
+#kukkyduhfw .gt_indent_5 {
   text-indent: 25px;
 }
 
-#xoynvdwbwz .katex-display {
+#kukkyduhfw .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#xoynvdwbwz div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#kukkyduhfw div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -3236,23 +3270,23 @@ Sample size by position details
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="xalfypkfqf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#xalfypkfqf table {
+<div id="jiwjuvwxwm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jiwjuvwxwm table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#xalfypkfqf thead, #xalfypkfqf tbody, #xalfypkfqf tfoot, #xalfypkfqf tr, #xalfypkfqf td, #xalfypkfqf th {
+#jiwjuvwxwm thead, #jiwjuvwxwm tbody, #jiwjuvwxwm tfoot, #jiwjuvwxwm tr, #jiwjuvwxwm td, #jiwjuvwxwm th {
   border-style: none;
 }
 
-#xalfypkfqf p {
+#jiwjuvwxwm p {
   margin: 0;
   padding: 0;
 }
 
-#xalfypkfqf .gt_table {
+#jiwjuvwxwm .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -3278,12 +3312,12 @@ Sample size by position details
   border-left-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_caption {
+#jiwjuvwxwm .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#xalfypkfqf .gt_title {
+#jiwjuvwxwm .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3295,7 +3329,7 @@ Sample size by position details
   border-bottom-width: 0;
 }
 
-#xalfypkfqf .gt_subtitle {
+#jiwjuvwxwm .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3307,7 +3341,7 @@ Sample size by position details
   border-top-width: 0;
 }
 
-#xalfypkfqf .gt_heading {
+#jiwjuvwxwm .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3319,13 +3353,13 @@ Sample size by position details
   border-right-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_bottom_border {
+#jiwjuvwxwm .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_col_headings {
+#jiwjuvwxwm .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3340,7 +3374,7 @@ Sample size by position details
   border-right-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_col_heading {
+#jiwjuvwxwm .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3360,7 +3394,7 @@ Sample size by position details
   overflow-x: hidden;
 }
 
-#xalfypkfqf .gt_column_spanner_outer {
+#jiwjuvwxwm .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3372,15 +3406,15 @@ Sample size by position details
   padding-right: 4px;
 }
 
-#xalfypkfqf .gt_column_spanner_outer:first-child {
+#jiwjuvwxwm .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#xalfypkfqf .gt_column_spanner_outer:last-child {
+#jiwjuvwxwm .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#xalfypkfqf .gt_column_spanner {
+#jiwjuvwxwm .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3392,11 +3426,11 @@ Sample size by position details
   width: 100%;
 }
 
-#xalfypkfqf .gt_spanner_row {
+#jiwjuvwxwm .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#xalfypkfqf .gt_group_heading {
+#jiwjuvwxwm .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3422,7 +3456,7 @@ Sample size by position details
   text-align: left;
 }
 
-#xalfypkfqf .gt_empty_group_heading {
+#jiwjuvwxwm .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3437,15 +3471,15 @@ Sample size by position details
   vertical-align: middle;
 }
 
-#xalfypkfqf .gt_from_md > :first-child {
+#jiwjuvwxwm .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#xalfypkfqf .gt_from_md > :last-child {
+#jiwjuvwxwm .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#xalfypkfqf .gt_row {
+#jiwjuvwxwm .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3464,7 +3498,7 @@ Sample size by position details
   overflow-x: hidden;
 }
 
-#xalfypkfqf .gt_stub {
+#jiwjuvwxwm .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3477,7 +3511,7 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xalfypkfqf .gt_stub_row_group {
+#jiwjuvwxwm .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3491,15 +3525,15 @@ Sample size by position details
   vertical-align: top;
 }
 
-#xalfypkfqf .gt_row_group_first td {
+#jiwjuvwxwm .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#xalfypkfqf .gt_row_group_first th {
+#jiwjuvwxwm .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#xalfypkfqf .gt_summary_row {
+#jiwjuvwxwm .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3509,16 +3543,16 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xalfypkfqf .gt_first_summary_row {
+#jiwjuvwxwm .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_first_summary_row.thick {
+#jiwjuvwxwm .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#xalfypkfqf .gt_last_summary_row {
+#jiwjuvwxwm .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3528,7 +3562,7 @@ Sample size by position details
   border-bottom-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_grand_summary_row {
+#jiwjuvwxwm .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3538,7 +3572,7 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xalfypkfqf .gt_first_grand_summary_row {
+#jiwjuvwxwm .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3548,7 +3582,7 @@ Sample size by position details
   border-top-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_last_grand_summary_row_top {
+#jiwjuvwxwm .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3558,11 +3592,11 @@ Sample size by position details
   border-bottom-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_striped {
+#jiwjuvwxwm .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#xalfypkfqf .gt_table_body {
+#jiwjuvwxwm .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3571,7 +3605,7 @@ Sample size by position details
   border-bottom-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_footnotes {
+#jiwjuvwxwm .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3585,7 +3619,7 @@ Sample size by position details
   border-right-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_footnote {
+#jiwjuvwxwm .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -3594,7 +3628,7 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xalfypkfqf .gt_sourcenotes {
+#jiwjuvwxwm .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3608,7 +3642,7 @@ Sample size by position details
   border-right-color: #D3D3D3;
 }
 
-#xalfypkfqf .gt_sourcenote {
+#jiwjuvwxwm .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -3616,72 +3650,72 @@ Sample size by position details
   padding-right: 5px;
 }
 
-#xalfypkfqf .gt_left {
+#jiwjuvwxwm .gt_left {
   text-align: left;
 }
 
-#xalfypkfqf .gt_center {
+#jiwjuvwxwm .gt_center {
   text-align: center;
 }
 
-#xalfypkfqf .gt_right {
+#jiwjuvwxwm .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#xalfypkfqf .gt_font_normal {
+#jiwjuvwxwm .gt_font_normal {
   font-weight: normal;
 }
 
-#xalfypkfqf .gt_font_bold {
+#jiwjuvwxwm .gt_font_bold {
   font-weight: bold;
 }
 
-#xalfypkfqf .gt_font_italic {
+#jiwjuvwxwm .gt_font_italic {
   font-style: italic;
 }
 
-#xalfypkfqf .gt_super {
+#jiwjuvwxwm .gt_super {
   font-size: 65%;
 }
 
-#xalfypkfqf .gt_footnote_marks {
+#jiwjuvwxwm .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#xalfypkfqf .gt_asterisk {
+#jiwjuvwxwm .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#xalfypkfqf .gt_indent_1 {
+#jiwjuvwxwm .gt_indent_1 {
   text-indent: 5px;
 }
 
-#xalfypkfqf .gt_indent_2 {
+#jiwjuvwxwm .gt_indent_2 {
   text-indent: 10px;
 }
 
-#xalfypkfqf .gt_indent_3 {
+#jiwjuvwxwm .gt_indent_3 {
   text-indent: 15px;
 }
 
-#xalfypkfqf .gt_indent_4 {
+#jiwjuvwxwm .gt_indent_4 {
   text-indent: 20px;
 }
 
-#xalfypkfqf .gt_indent_5 {
+#jiwjuvwxwm .gt_indent_5 {
   text-indent: 25px;
 }
 
-#xalfypkfqf .katex-display {
+#jiwjuvwxwm .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#xalfypkfqf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#jiwjuvwxwm div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -3724,7 +3758,7 @@ Sample size by position details
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3733,7 +3767,7 @@ Detailing and further visualzing the location shift and shape shift of longevity
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
 
@@ -3753,17 +3787,17 @@ Detailing and further visualzing the location shift and shape shift of longevity
 </div>
 </div>
 </div>
-<p>Overall, there is some support for longevity shape shifting increases among defenders and forwards, a lack of support for any exceptional longevity for midfielders (no shape shifting, but just some overall location shifting at the upper percentile), and ambiguous results for the already-older and smaller sample size of goal keepers. But ultimately, a position analysis was trying to assess if the story of overall increases in longevity in both location shift and shape shift were misleading and just being driven by a goal keepers, and we can definitely say that is not the case, and at least forwards and defenders are contributing.</p>
+<p>Overall, there is some support for longevity shape shifting increases among defenders and forwards, a lack of support for any exceptional longevity for midfielders (no shape shifting, but just some overall location shifting at the upper percentile), and ambiguous results for the already-older and smaller sample size of goal keepers. But ultimately, a position analysis was trying to assess if the story of overall increases in longevity in both location shift and shape shift were misleading and just being driven by a goal keepers, and we can definitively say that is not the case, and at least forwards and defenders are contributing.</p>
 <p>But what about the alternative explanation that it may just be that teams in the expanding formats select older players?</p>
 </section>
 <section id="ruling-out-alternative-explanations-different-squad-choices-because-of-different-teams" class="level1">
 <h1>Ruling out alternative explanations: Different squad choices because of different teams?</h1>
 <section id="expanding-field-of-teams" class="level2">
 <h2 class="anchored" data-anchor-id="expanding-field-of-teams">Expanding field of teams?</h2>
-<p>As the World Cup has expanded, perhaps it is the additional teams who make different selections — for example, teams who rarely get to go to the World Cup may reward veterans who have stuck with their national program but have rarely or never been able to play in a World Cup. One fairly straightforward way to investigate claims about different ‘types’ of teams making different age selections would be to think separately about the more traditional or “core” teams (those who frequently qualify for the World Cup) and the “non-core” teams who are either newly or rarely appearing in World Cup tournaments. Essentially, do the location and especially shape shift of longevity hold true for both types of teams?</p>
-<p>While only Brazil has qualified for all 23 World Cups, since 1930 there are 10 teams with at least 15 appearances that I will define as the “core” teams.<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> The “core” teams account for 180 squads (appearances of a team in a particular year) in the expansion era of the World Cup. The remaining 74 “non-core” teams participating in the expansion era account for 353 squads (appearances of team per year), including 15 teams with single appearances.<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a></p>
+<p>As the World Cup has expanded, perhaps it is the additional teams who make different selections — for example, teams who rarely get to go to the World Cup may reward veterans who have stuck with their national program but have rarely or never been able to play in a World Cup. One fairly straightforward way to investigate claims about different “types” of teams making different age selections would be to think separately about the more traditional or “core” teams (those who frequently qualify for the World Cup) and the “non-core” teams who are either newly or rarely appearing in World Cup tournaments. Essentially, do the location and especially shape shift of longevity hold true for both types of teams?</p>
+<p>While only Brazil has qualified for all 23 World Cups, since 1930 there are 10 teams with at least 15 appearances that I will define as the “core” teams.<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a> The “core” teams account for 180 squads (appearances of a team in a particular year) in the expansion era of the World Cup. The remaining 74 “non-core” teams participating in the expansion era account for 353 squads (appearances of team per year), including 15 teams with single appearances.<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a></p>
 <div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3772,28 +3806,28 @@ Core teams
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="mhdxwgioij" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#mhdxwgioij table {
+<div id="pohjllrrbs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#pohjllrrbs table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#mhdxwgioij thead, #mhdxwgioij tbody, #mhdxwgioij tfoot, #mhdxwgioij tr, #mhdxwgioij td, #mhdxwgioij th {
+#pohjllrrbs thead, #pohjllrrbs tbody, #pohjllrrbs tfoot, #pohjllrrbs tr, #pohjllrrbs td, #pohjllrrbs th {
   border-style: none;
 }
 
-#mhdxwgioij p {
+#pohjllrrbs p {
   margin: 0;
   padding: 0;
 }
 
-#mhdxwgioij .gt_table {
+#pohjllrrbs .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -3819,12 +3853,12 @@ Core teams
   border-left-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_caption {
+#pohjllrrbs .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#mhdxwgioij .gt_title {
+#pohjllrrbs .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3836,7 +3870,7 @@ Core teams
   border-bottom-width: 0;
 }
 
-#mhdxwgioij .gt_subtitle {
+#pohjllrrbs .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3848,7 +3882,7 @@ Core teams
   border-top-width: 0;
 }
 
-#mhdxwgioij .gt_heading {
+#pohjllrrbs .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3860,13 +3894,13 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_bottom_border {
+#pohjllrrbs .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_col_headings {
+#pohjllrrbs .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3881,7 +3915,7 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_col_heading {
+#pohjllrrbs .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3901,7 +3935,7 @@ Core teams
   overflow-x: hidden;
 }
 
-#mhdxwgioij .gt_column_spanner_outer {
+#pohjllrrbs .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3913,15 +3947,15 @@ Core teams
   padding-right: 4px;
 }
 
-#mhdxwgioij .gt_column_spanner_outer:first-child {
+#pohjllrrbs .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#mhdxwgioij .gt_column_spanner_outer:last-child {
+#pohjllrrbs .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#mhdxwgioij .gt_column_spanner {
+#pohjllrrbs .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3933,11 +3967,11 @@ Core teams
   width: 100%;
 }
 
-#mhdxwgioij .gt_spanner_row {
+#pohjllrrbs .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#mhdxwgioij .gt_group_heading {
+#pohjllrrbs .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3963,7 +3997,7 @@ Core teams
   text-align: left;
 }
 
-#mhdxwgioij .gt_empty_group_heading {
+#pohjllrrbs .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3978,15 +4012,15 @@ Core teams
   vertical-align: middle;
 }
 
-#mhdxwgioij .gt_from_md > :first-child {
+#pohjllrrbs .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#mhdxwgioij .gt_from_md > :last-child {
+#pohjllrrbs .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#mhdxwgioij .gt_row {
+#pohjllrrbs .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4005,7 +4039,7 @@ Core teams
   overflow-x: hidden;
 }
 
-#mhdxwgioij .gt_stub {
+#pohjllrrbs .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4018,7 +4052,7 @@ Core teams
   padding-right: 5px;
 }
 
-#mhdxwgioij .gt_stub_row_group {
+#pohjllrrbs .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4032,15 +4066,15 @@ Core teams
   vertical-align: top;
 }
 
-#mhdxwgioij .gt_row_group_first td {
+#pohjllrrbs .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#mhdxwgioij .gt_row_group_first th {
+#pohjllrrbs .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#mhdxwgioij .gt_summary_row {
+#pohjllrrbs .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4050,16 +4084,16 @@ Core teams
   padding-right: 5px;
 }
 
-#mhdxwgioij .gt_first_summary_row {
+#pohjllrrbs .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_first_summary_row.thick {
+#pohjllrrbs .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#mhdxwgioij .gt_last_summary_row {
+#pohjllrrbs .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4069,7 +4103,7 @@ Core teams
   border-bottom-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_grand_summary_row {
+#pohjllrrbs .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4079,7 +4113,7 @@ Core teams
   padding-right: 5px;
 }
 
-#mhdxwgioij .gt_first_grand_summary_row {
+#pohjllrrbs .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4089,7 +4123,7 @@ Core teams
   border-top-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_last_grand_summary_row_top {
+#pohjllrrbs .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4099,11 +4133,11 @@ Core teams
   border-bottom-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_striped {
+#pohjllrrbs .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#mhdxwgioij .gt_table_body {
+#pohjllrrbs .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4112,7 +4146,7 @@ Core teams
   border-bottom-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_footnotes {
+#pohjllrrbs .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4126,7 +4160,7 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_footnote {
+#pohjllrrbs .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -4135,7 +4169,7 @@ Core teams
   padding-right: 5px;
 }
 
-#mhdxwgioij .gt_sourcenotes {
+#pohjllrrbs .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4149,7 +4183,7 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#mhdxwgioij .gt_sourcenote {
+#pohjllrrbs .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -4157,72 +4191,72 @@ Core teams
   padding-right: 5px;
 }
 
-#mhdxwgioij .gt_left {
+#pohjllrrbs .gt_left {
   text-align: left;
 }
 
-#mhdxwgioij .gt_center {
+#pohjllrrbs .gt_center {
   text-align: center;
 }
 
-#mhdxwgioij .gt_right {
+#pohjllrrbs .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#mhdxwgioij .gt_font_normal {
+#pohjllrrbs .gt_font_normal {
   font-weight: normal;
 }
 
-#mhdxwgioij .gt_font_bold {
+#pohjllrrbs .gt_font_bold {
   font-weight: bold;
 }
 
-#mhdxwgioij .gt_font_italic {
+#pohjllrrbs .gt_font_italic {
   font-style: italic;
 }
 
-#mhdxwgioij .gt_super {
+#pohjllrrbs .gt_super {
   font-size: 65%;
 }
 
-#mhdxwgioij .gt_footnote_marks {
+#pohjllrrbs .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#mhdxwgioij .gt_asterisk {
+#pohjllrrbs .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#mhdxwgioij .gt_indent_1 {
+#pohjllrrbs .gt_indent_1 {
   text-indent: 5px;
 }
 
-#mhdxwgioij .gt_indent_2 {
+#pohjllrrbs .gt_indent_2 {
   text-indent: 10px;
 }
 
-#mhdxwgioij .gt_indent_3 {
+#pohjllrrbs .gt_indent_3 {
   text-indent: 15px;
 }
 
-#mhdxwgioij .gt_indent_4 {
+#pohjllrrbs .gt_indent_4 {
   text-indent: 20px;
 }
 
-#mhdxwgioij .gt_indent_5 {
+#pohjllrrbs .gt_indent_5 {
   text-indent: 25px;
 }
 
-#mhdxwgioij .katex-display {
+#pohjllrrbs .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#mhdxwgioij div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#pohjllrrbs div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -4274,23 +4308,23 @@ Core teams
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="pqqukdzgan" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#pqqukdzgan table {
+<div id="edvkeoyeuc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#edvkeoyeuc table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#pqqukdzgan thead, #pqqukdzgan tbody, #pqqukdzgan tfoot, #pqqukdzgan tr, #pqqukdzgan td, #pqqukdzgan th {
+#edvkeoyeuc thead, #edvkeoyeuc tbody, #edvkeoyeuc tfoot, #edvkeoyeuc tr, #edvkeoyeuc td, #edvkeoyeuc th {
   border-style: none;
 }
 
-#pqqukdzgan p {
+#edvkeoyeuc p {
   margin: 0;
   padding: 0;
 }
 
-#pqqukdzgan .gt_table {
+#edvkeoyeuc .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -4316,12 +4350,12 @@ Core teams
   border-left-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_caption {
+#edvkeoyeuc .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#pqqukdzgan .gt_title {
+#edvkeoyeuc .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -4333,7 +4367,7 @@ Core teams
   border-bottom-width: 0;
 }
 
-#pqqukdzgan .gt_subtitle {
+#edvkeoyeuc .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -4345,7 +4379,7 @@ Core teams
   border-top-width: 0;
 }
 
-#pqqukdzgan .gt_heading {
+#edvkeoyeuc .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -4357,13 +4391,13 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_bottom_border {
+#edvkeoyeuc .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_col_headings {
+#edvkeoyeuc .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4378,7 +4412,7 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_col_heading {
+#edvkeoyeuc .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4398,7 +4432,7 @@ Core teams
   overflow-x: hidden;
 }
 
-#pqqukdzgan .gt_column_spanner_outer {
+#edvkeoyeuc .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4410,15 +4444,15 @@ Core teams
   padding-right: 4px;
 }
 
-#pqqukdzgan .gt_column_spanner_outer:first-child {
+#edvkeoyeuc .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#pqqukdzgan .gt_column_spanner_outer:last-child {
+#edvkeoyeuc .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#pqqukdzgan .gt_column_spanner {
+#edvkeoyeuc .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -4430,11 +4464,11 @@ Core teams
   width: 100%;
 }
 
-#pqqukdzgan .gt_spanner_row {
+#edvkeoyeuc .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#pqqukdzgan .gt_group_heading {
+#edvkeoyeuc .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4460,7 +4494,7 @@ Core teams
   text-align: left;
 }
 
-#pqqukdzgan .gt_empty_group_heading {
+#edvkeoyeuc .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4475,15 +4509,15 @@ Core teams
   vertical-align: middle;
 }
 
-#pqqukdzgan .gt_from_md > :first-child {
+#edvkeoyeuc .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#pqqukdzgan .gt_from_md > :last-child {
+#edvkeoyeuc .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#pqqukdzgan .gt_row {
+#edvkeoyeuc .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4502,7 +4536,7 @@ Core teams
   overflow-x: hidden;
 }
 
-#pqqukdzgan .gt_stub {
+#edvkeoyeuc .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4515,7 +4549,7 @@ Core teams
   padding-right: 5px;
 }
 
-#pqqukdzgan .gt_stub_row_group {
+#edvkeoyeuc .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4529,15 +4563,15 @@ Core teams
   vertical-align: top;
 }
 
-#pqqukdzgan .gt_row_group_first td {
+#edvkeoyeuc .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#pqqukdzgan .gt_row_group_first th {
+#edvkeoyeuc .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#pqqukdzgan .gt_summary_row {
+#edvkeoyeuc .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4547,16 +4581,16 @@ Core teams
   padding-right: 5px;
 }
 
-#pqqukdzgan .gt_first_summary_row {
+#edvkeoyeuc .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_first_summary_row.thick {
+#edvkeoyeuc .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#pqqukdzgan .gt_last_summary_row {
+#edvkeoyeuc .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4566,7 +4600,7 @@ Core teams
   border-bottom-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_grand_summary_row {
+#edvkeoyeuc .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4576,7 +4610,7 @@ Core teams
   padding-right: 5px;
 }
 
-#pqqukdzgan .gt_first_grand_summary_row {
+#edvkeoyeuc .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4586,7 +4620,7 @@ Core teams
   border-top-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_last_grand_summary_row_top {
+#edvkeoyeuc .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4596,11 +4630,11 @@ Core teams
   border-bottom-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_striped {
+#edvkeoyeuc .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#pqqukdzgan .gt_table_body {
+#edvkeoyeuc .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4609,7 +4643,7 @@ Core teams
   border-bottom-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_footnotes {
+#edvkeoyeuc .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4623,7 +4657,7 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_footnote {
+#edvkeoyeuc .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -4632,7 +4666,7 @@ Core teams
   padding-right: 5px;
 }
 
-#pqqukdzgan .gt_sourcenotes {
+#edvkeoyeuc .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4646,7 +4680,7 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#pqqukdzgan .gt_sourcenote {
+#edvkeoyeuc .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -4654,72 +4688,72 @@ Core teams
   padding-right: 5px;
 }
 
-#pqqukdzgan .gt_left {
+#edvkeoyeuc .gt_left {
   text-align: left;
 }
 
-#pqqukdzgan .gt_center {
+#edvkeoyeuc .gt_center {
   text-align: center;
 }
 
-#pqqukdzgan .gt_right {
+#edvkeoyeuc .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#pqqukdzgan .gt_font_normal {
+#edvkeoyeuc .gt_font_normal {
   font-weight: normal;
 }
 
-#pqqukdzgan .gt_font_bold {
+#edvkeoyeuc .gt_font_bold {
   font-weight: bold;
 }
 
-#pqqukdzgan .gt_font_italic {
+#edvkeoyeuc .gt_font_italic {
   font-style: italic;
 }
 
-#pqqukdzgan .gt_super {
+#edvkeoyeuc .gt_super {
   font-size: 65%;
 }
 
-#pqqukdzgan .gt_footnote_marks {
+#edvkeoyeuc .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#pqqukdzgan .gt_asterisk {
+#edvkeoyeuc .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#pqqukdzgan .gt_indent_1 {
+#edvkeoyeuc .gt_indent_1 {
   text-indent: 5px;
 }
 
-#pqqukdzgan .gt_indent_2 {
+#edvkeoyeuc .gt_indent_2 {
   text-indent: 10px;
 }
 
-#pqqukdzgan .gt_indent_3 {
+#edvkeoyeuc .gt_indent_3 {
   text-indent: 15px;
 }
 
-#pqqukdzgan .gt_indent_4 {
+#edvkeoyeuc .gt_indent_4 {
   text-indent: 20px;
 }
 
-#pqqukdzgan .gt_indent_5 {
+#edvkeoyeuc .gt_indent_5 {
   text-indent: 25px;
 }
 
-#pqqukdzgan .katex-display {
+#edvkeoyeuc .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#pqqukdzgan div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#edvkeoyeuc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -4790,23 +4824,23 @@ Core teams
 </div>
 <div class="cell-output-display">
 
-<div id="uynxmmwtzr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#uynxmmwtzr table {
+<div id="jakriqfrhf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jakriqfrhf table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#uynxmmwtzr thead, #uynxmmwtzr tbody, #uynxmmwtzr tfoot, #uynxmmwtzr tr, #uynxmmwtzr td, #uynxmmwtzr th {
+#jakriqfrhf thead, #jakriqfrhf tbody, #jakriqfrhf tfoot, #jakriqfrhf tr, #jakriqfrhf td, #jakriqfrhf th {
   border-style: none;
 }
 
-#uynxmmwtzr p {
+#jakriqfrhf p {
   margin: 0;
   padding: 0;
 }
 
-#uynxmmwtzr .gt_table {
+#jakriqfrhf .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -4832,12 +4866,12 @@ Core teams
   border-left-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_caption {
+#jakriqfrhf .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#uynxmmwtzr .gt_title {
+#jakriqfrhf .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -4849,7 +4883,7 @@ Core teams
   border-bottom-width: 0;
 }
 
-#uynxmmwtzr .gt_subtitle {
+#jakriqfrhf .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -4861,7 +4895,7 @@ Core teams
   border-top-width: 0;
 }
 
-#uynxmmwtzr .gt_heading {
+#jakriqfrhf .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -4873,13 +4907,13 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_bottom_border {
+#jakriqfrhf .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_col_headings {
+#jakriqfrhf .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4894,7 +4928,7 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_col_heading {
+#jakriqfrhf .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4914,7 +4948,7 @@ Core teams
   overflow-x: hidden;
 }
 
-#uynxmmwtzr .gt_column_spanner_outer {
+#jakriqfrhf .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4926,15 +4960,15 @@ Core teams
   padding-right: 4px;
 }
 
-#uynxmmwtzr .gt_column_spanner_outer:first-child {
+#jakriqfrhf .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#uynxmmwtzr .gt_column_spanner_outer:last-child {
+#jakriqfrhf .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#uynxmmwtzr .gt_column_spanner {
+#jakriqfrhf .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -4946,11 +4980,11 @@ Core teams
   width: 100%;
 }
 
-#uynxmmwtzr .gt_spanner_row {
+#jakriqfrhf .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#uynxmmwtzr .gt_group_heading {
+#jakriqfrhf .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4976,7 +5010,7 @@ Core teams
   text-align: left;
 }
 
-#uynxmmwtzr .gt_empty_group_heading {
+#jakriqfrhf .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4991,15 +5025,15 @@ Core teams
   vertical-align: middle;
 }
 
-#uynxmmwtzr .gt_from_md > :first-child {
+#jakriqfrhf .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#uynxmmwtzr .gt_from_md > :last-child {
+#jakriqfrhf .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#uynxmmwtzr .gt_row {
+#jakriqfrhf .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5018,7 +5052,7 @@ Core teams
   overflow-x: hidden;
 }
 
-#uynxmmwtzr .gt_stub {
+#jakriqfrhf .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -5031,7 +5065,7 @@ Core teams
   padding-right: 5px;
 }
 
-#uynxmmwtzr .gt_stub_row_group {
+#jakriqfrhf .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -5045,15 +5079,15 @@ Core teams
   vertical-align: top;
 }
 
-#uynxmmwtzr .gt_row_group_first td {
+#jakriqfrhf .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#uynxmmwtzr .gt_row_group_first th {
+#jakriqfrhf .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#uynxmmwtzr .gt_summary_row {
+#jakriqfrhf .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -5063,16 +5097,16 @@ Core teams
   padding-right: 5px;
 }
 
-#uynxmmwtzr .gt_first_summary_row {
+#jakriqfrhf .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_first_summary_row.thick {
+#jakriqfrhf .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#uynxmmwtzr .gt_last_summary_row {
+#jakriqfrhf .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5082,7 +5116,7 @@ Core teams
   border-bottom-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_grand_summary_row {
+#jakriqfrhf .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -5092,7 +5126,7 @@ Core teams
   padding-right: 5px;
 }
 
-#uynxmmwtzr .gt_first_grand_summary_row {
+#jakriqfrhf .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5102,7 +5136,7 @@ Core teams
   border-top-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_last_grand_summary_row_top {
+#jakriqfrhf .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5112,11 +5146,11 @@ Core teams
   border-bottom-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_striped {
+#jakriqfrhf .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#uynxmmwtzr .gt_table_body {
+#jakriqfrhf .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -5125,7 +5159,7 @@ Core teams
   border-bottom-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_footnotes {
+#jakriqfrhf .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -5139,7 +5173,7 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_footnote {
+#jakriqfrhf .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -5148,7 +5182,7 @@ Core teams
   padding-right: 5px;
 }
 
-#uynxmmwtzr .gt_sourcenotes {
+#jakriqfrhf .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -5162,7 +5196,7 @@ Core teams
   border-right-color: #D3D3D3;
 }
 
-#uynxmmwtzr .gt_sourcenote {
+#jakriqfrhf .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -5170,72 +5204,72 @@ Core teams
   padding-right: 5px;
 }
 
-#uynxmmwtzr .gt_left {
+#jakriqfrhf .gt_left {
   text-align: left;
 }
 
-#uynxmmwtzr .gt_center {
+#jakriqfrhf .gt_center {
   text-align: center;
 }
 
-#uynxmmwtzr .gt_right {
+#jakriqfrhf .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#uynxmmwtzr .gt_font_normal {
+#jakriqfrhf .gt_font_normal {
   font-weight: normal;
 }
 
-#uynxmmwtzr .gt_font_bold {
+#jakriqfrhf .gt_font_bold {
   font-weight: bold;
 }
 
-#uynxmmwtzr .gt_font_italic {
+#jakriqfrhf .gt_font_italic {
   font-style: italic;
 }
 
-#uynxmmwtzr .gt_super {
+#jakriqfrhf .gt_super {
   font-size: 65%;
 }
 
-#uynxmmwtzr .gt_footnote_marks {
+#jakriqfrhf .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#uynxmmwtzr .gt_asterisk {
+#jakriqfrhf .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#uynxmmwtzr .gt_indent_1 {
+#jakriqfrhf .gt_indent_1 {
   text-indent: 5px;
 }
 
-#uynxmmwtzr .gt_indent_2 {
+#jakriqfrhf .gt_indent_2 {
   text-indent: 10px;
 }
 
-#uynxmmwtzr .gt_indent_3 {
+#jakriqfrhf .gt_indent_3 {
   text-indent: 15px;
 }
 
-#uynxmmwtzr .gt_indent_4 {
+#jakriqfrhf .gt_indent_4 {
   text-indent: 20px;
 }
 
-#uynxmmwtzr .gt_indent_5 {
+#jakriqfrhf .gt_indent_5 {
   text-indent: 25px;
 }
 
-#uynxmmwtzr .katex-display {
+#jakriqfrhf .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#uynxmmwtzr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#jakriqfrhf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -5312,7 +5346,7 @@ Core teams
 <p>Another change in World Cup format is a shift in the numbers of teams by confederation (which maps to regions of the world). In particular, relatively more spots have been given to African (CAF) and Asian (AFC) confederation teams over the expansion era.</p>
 <p>Overall, there is not strong evidence of any noteworthy differences by confederation or the overall findings of location and shape shifts of longevity being driven just by the inclusion of more African and Asian confederation teams. Although Europe (UEFA) does show the smallest magnitude of longevity increases (the smallest slope at the 95th percentile), it still shows directions of coefficients consistent with the overall story. However, these analyses should be interpreted very tentatively given how small sample sizes are when split by confederation.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -5321,7 +5355,7 @@ Confederation differences in longevity, small sample size limitations
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Europe (UEFA) is disproportionately represented at the World Cup, and sample sizes for other confederations are quite small particularly for analyses on extremes like the 95th percentile.</p>
 <div class="cell">
@@ -5339,23 +5373,23 @@ Confederation differences in longevity, small sample size limitations
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="qvlkhobssi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#qvlkhobssi table {
+<div id="gecakgkwuo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#gecakgkwuo table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#qvlkhobssi thead, #qvlkhobssi tbody, #qvlkhobssi tfoot, #qvlkhobssi tr, #qvlkhobssi td, #qvlkhobssi th {
+#gecakgkwuo thead, #gecakgkwuo tbody, #gecakgkwuo tfoot, #gecakgkwuo tr, #gecakgkwuo td, #gecakgkwuo th {
   border-style: none;
 }
 
-#qvlkhobssi p {
+#gecakgkwuo p {
   margin: 0;
   padding: 0;
 }
 
-#qvlkhobssi .gt_table {
+#gecakgkwuo .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -5381,12 +5415,12 @@ Confederation differences in longevity, small sample size limitations
   border-left-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_caption {
+#gecakgkwuo .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#qvlkhobssi .gt_title {
+#gecakgkwuo .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -5398,7 +5432,7 @@ Confederation differences in longevity, small sample size limitations
   border-bottom-width: 0;
 }
 
-#qvlkhobssi .gt_subtitle {
+#gecakgkwuo .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -5410,7 +5444,7 @@ Confederation differences in longevity, small sample size limitations
   border-top-width: 0;
 }
 
-#qvlkhobssi .gt_heading {
+#gecakgkwuo .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -5422,13 +5456,13 @@ Confederation differences in longevity, small sample size limitations
   border-right-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_bottom_border {
+#gecakgkwuo .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_col_headings {
+#gecakgkwuo .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -5443,7 +5477,7 @@ Confederation differences in longevity, small sample size limitations
   border-right-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_col_heading {
+#gecakgkwuo .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -5463,7 +5497,7 @@ Confederation differences in longevity, small sample size limitations
   overflow-x: hidden;
 }
 
-#qvlkhobssi .gt_column_spanner_outer {
+#gecakgkwuo .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -5475,15 +5509,15 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 4px;
 }
 
-#qvlkhobssi .gt_column_spanner_outer:first-child {
+#gecakgkwuo .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qvlkhobssi .gt_column_spanner_outer:last-child {
+#gecakgkwuo .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qvlkhobssi .gt_column_spanner {
+#gecakgkwuo .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -5495,11 +5529,11 @@ Confederation differences in longevity, small sample size limitations
   width: 100%;
 }
 
-#qvlkhobssi .gt_spanner_row {
+#gecakgkwuo .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#qvlkhobssi .gt_group_heading {
+#gecakgkwuo .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5525,7 +5559,7 @@ Confederation differences in longevity, small sample size limitations
   text-align: left;
 }
 
-#qvlkhobssi .gt_empty_group_heading {
+#gecakgkwuo .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -5540,15 +5574,15 @@ Confederation differences in longevity, small sample size limitations
   vertical-align: middle;
 }
 
-#qvlkhobssi .gt_from_md > :first-child {
+#gecakgkwuo .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qvlkhobssi .gt_from_md > :last-child {
+#gecakgkwuo .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qvlkhobssi .gt_row {
+#gecakgkwuo .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5567,7 +5601,7 @@ Confederation differences in longevity, small sample size limitations
   overflow-x: hidden;
 }
 
-#qvlkhobssi .gt_stub {
+#gecakgkwuo .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -5580,7 +5614,7 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#qvlkhobssi .gt_stub_row_group {
+#gecakgkwuo .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -5594,15 +5628,15 @@ Confederation differences in longevity, small sample size limitations
   vertical-align: top;
 }
 
-#qvlkhobssi .gt_row_group_first td {
+#gecakgkwuo .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#qvlkhobssi .gt_row_group_first th {
+#gecakgkwuo .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#qvlkhobssi .gt_summary_row {
+#gecakgkwuo .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -5612,16 +5646,16 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#qvlkhobssi .gt_first_summary_row {
+#gecakgkwuo .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_first_summary_row.thick {
+#gecakgkwuo .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#qvlkhobssi .gt_last_summary_row {
+#gecakgkwuo .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5631,7 +5665,7 @@ Confederation differences in longevity, small sample size limitations
   border-bottom-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_grand_summary_row {
+#gecakgkwuo .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -5641,7 +5675,7 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#qvlkhobssi .gt_first_grand_summary_row {
+#gecakgkwuo .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5651,7 +5685,7 @@ Confederation differences in longevity, small sample size limitations
   border-top-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_last_grand_summary_row_top {
+#gecakgkwuo .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5661,11 +5695,11 @@ Confederation differences in longevity, small sample size limitations
   border-bottom-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_striped {
+#gecakgkwuo .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qvlkhobssi .gt_table_body {
+#gecakgkwuo .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -5674,7 +5708,7 @@ Confederation differences in longevity, small sample size limitations
   border-bottom-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_footnotes {
+#gecakgkwuo .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -5688,7 +5722,7 @@ Confederation differences in longevity, small sample size limitations
   border-right-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_footnote {
+#gecakgkwuo .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -5697,7 +5731,7 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#qvlkhobssi .gt_sourcenotes {
+#gecakgkwuo .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -5711,7 +5745,7 @@ Confederation differences in longevity, small sample size limitations
   border-right-color: #D3D3D3;
 }
 
-#qvlkhobssi .gt_sourcenote {
+#gecakgkwuo .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -5719,72 +5753,72 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#qvlkhobssi .gt_left {
+#gecakgkwuo .gt_left {
   text-align: left;
 }
 
-#qvlkhobssi .gt_center {
+#gecakgkwuo .gt_center {
   text-align: center;
 }
 
-#qvlkhobssi .gt_right {
+#gecakgkwuo .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qvlkhobssi .gt_font_normal {
+#gecakgkwuo .gt_font_normal {
   font-weight: normal;
 }
 
-#qvlkhobssi .gt_font_bold {
+#gecakgkwuo .gt_font_bold {
   font-weight: bold;
 }
 
-#qvlkhobssi .gt_font_italic {
+#gecakgkwuo .gt_font_italic {
   font-style: italic;
 }
 
-#qvlkhobssi .gt_super {
+#gecakgkwuo .gt_super {
   font-size: 65%;
 }
 
-#qvlkhobssi .gt_footnote_marks {
+#gecakgkwuo .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#qvlkhobssi .gt_asterisk {
+#gecakgkwuo .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#qvlkhobssi .gt_indent_1 {
+#gecakgkwuo .gt_indent_1 {
   text-indent: 5px;
 }
 
-#qvlkhobssi .gt_indent_2 {
+#gecakgkwuo .gt_indent_2 {
   text-indent: 10px;
 }
 
-#qvlkhobssi .gt_indent_3 {
+#gecakgkwuo .gt_indent_3 {
   text-indent: 15px;
 }
 
-#qvlkhobssi .gt_indent_4 {
+#gecakgkwuo .gt_indent_4 {
   text-indent: 20px;
 }
 
-#qvlkhobssi .gt_indent_5 {
+#gecakgkwuo .gt_indent_5 {
   text-indent: 25px;
 }
 
-#qvlkhobssi .katex-display {
+#gecakgkwuo .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#qvlkhobssi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#gecakgkwuo div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -5948,23 +5982,23 @@ Confederation differences in longevity, small sample size limitations
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="cojncyzuvx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#cojncyzuvx table {
+<div id="eyjldevqow" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#eyjldevqow table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#cojncyzuvx thead, #cojncyzuvx tbody, #cojncyzuvx tfoot, #cojncyzuvx tr, #cojncyzuvx td, #cojncyzuvx th {
+#eyjldevqow thead, #eyjldevqow tbody, #eyjldevqow tfoot, #eyjldevqow tr, #eyjldevqow td, #eyjldevqow th {
   border-style: none;
 }
 
-#cojncyzuvx p {
+#eyjldevqow p {
   margin: 0;
   padding: 0;
 }
 
-#cojncyzuvx .gt_table {
+#eyjldevqow .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -5990,12 +6024,12 @@ Confederation differences in longevity, small sample size limitations
   border-left-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_caption {
+#eyjldevqow .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#cojncyzuvx .gt_title {
+#eyjldevqow .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -6007,7 +6041,7 @@ Confederation differences in longevity, small sample size limitations
   border-bottom-width: 0;
 }
 
-#cojncyzuvx .gt_subtitle {
+#eyjldevqow .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -6019,7 +6053,7 @@ Confederation differences in longevity, small sample size limitations
   border-top-width: 0;
 }
 
-#cojncyzuvx .gt_heading {
+#eyjldevqow .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -6031,13 +6065,13 @@ Confederation differences in longevity, small sample size limitations
   border-right-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_bottom_border {
+#eyjldevqow .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_col_headings {
+#eyjldevqow .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -6052,7 +6086,7 @@ Confederation differences in longevity, small sample size limitations
   border-right-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_col_heading {
+#eyjldevqow .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -6072,7 +6106,7 @@ Confederation differences in longevity, small sample size limitations
   overflow-x: hidden;
 }
 
-#cojncyzuvx .gt_column_spanner_outer {
+#eyjldevqow .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -6084,15 +6118,15 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 4px;
 }
 
-#cojncyzuvx .gt_column_spanner_outer:first-child {
+#eyjldevqow .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#cojncyzuvx .gt_column_spanner_outer:last-child {
+#eyjldevqow .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#cojncyzuvx .gt_column_spanner {
+#eyjldevqow .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -6104,11 +6138,11 @@ Confederation differences in longevity, small sample size limitations
   width: 100%;
 }
 
-#cojncyzuvx .gt_spanner_row {
+#eyjldevqow .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#cojncyzuvx .gt_group_heading {
+#eyjldevqow .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -6134,7 +6168,7 @@ Confederation differences in longevity, small sample size limitations
   text-align: left;
 }
 
-#cojncyzuvx .gt_empty_group_heading {
+#eyjldevqow .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -6149,15 +6183,15 @@ Confederation differences in longevity, small sample size limitations
   vertical-align: middle;
 }
 
-#cojncyzuvx .gt_from_md > :first-child {
+#eyjldevqow .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#cojncyzuvx .gt_from_md > :last-child {
+#eyjldevqow .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#cojncyzuvx .gt_row {
+#eyjldevqow .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -6176,7 +6210,7 @@ Confederation differences in longevity, small sample size limitations
   overflow-x: hidden;
 }
 
-#cojncyzuvx .gt_stub {
+#eyjldevqow .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -6189,7 +6223,7 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#cojncyzuvx .gt_stub_row_group {
+#eyjldevqow .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -6203,15 +6237,15 @@ Confederation differences in longevity, small sample size limitations
   vertical-align: top;
 }
 
-#cojncyzuvx .gt_row_group_first td {
+#eyjldevqow .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#cojncyzuvx .gt_row_group_first th {
+#eyjldevqow .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#cojncyzuvx .gt_summary_row {
+#eyjldevqow .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -6221,16 +6255,16 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#cojncyzuvx .gt_first_summary_row {
+#eyjldevqow .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_first_summary_row.thick {
+#eyjldevqow .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#cojncyzuvx .gt_last_summary_row {
+#eyjldevqow .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -6240,7 +6274,7 @@ Confederation differences in longevity, small sample size limitations
   border-bottom-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_grand_summary_row {
+#eyjldevqow .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -6250,7 +6284,7 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#cojncyzuvx .gt_first_grand_summary_row {
+#eyjldevqow .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -6260,7 +6294,7 @@ Confederation differences in longevity, small sample size limitations
   border-top-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_last_grand_summary_row_top {
+#eyjldevqow .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -6270,11 +6304,11 @@ Confederation differences in longevity, small sample size limitations
   border-bottom-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_striped {
+#eyjldevqow .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#cojncyzuvx .gt_table_body {
+#eyjldevqow .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -6283,7 +6317,7 @@ Confederation differences in longevity, small sample size limitations
   border-bottom-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_footnotes {
+#eyjldevqow .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -6297,7 +6331,7 @@ Confederation differences in longevity, small sample size limitations
   border-right-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_footnote {
+#eyjldevqow .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -6306,7 +6340,7 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#cojncyzuvx .gt_sourcenotes {
+#eyjldevqow .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -6320,7 +6354,7 @@ Confederation differences in longevity, small sample size limitations
   border-right-color: #D3D3D3;
 }
 
-#cojncyzuvx .gt_sourcenote {
+#eyjldevqow .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -6328,72 +6362,72 @@ Confederation differences in longevity, small sample size limitations
   padding-right: 5px;
 }
 
-#cojncyzuvx .gt_left {
+#eyjldevqow .gt_left {
   text-align: left;
 }
 
-#cojncyzuvx .gt_center {
+#eyjldevqow .gt_center {
   text-align: center;
 }
 
-#cojncyzuvx .gt_right {
+#eyjldevqow .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#cojncyzuvx .gt_font_normal {
+#eyjldevqow .gt_font_normal {
   font-weight: normal;
 }
 
-#cojncyzuvx .gt_font_bold {
+#eyjldevqow .gt_font_bold {
   font-weight: bold;
 }
 
-#cojncyzuvx .gt_font_italic {
+#eyjldevqow .gt_font_italic {
   font-style: italic;
 }
 
-#cojncyzuvx .gt_super {
+#eyjldevqow .gt_super {
   font-size: 65%;
 }
 
-#cojncyzuvx .gt_footnote_marks {
+#eyjldevqow .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#cojncyzuvx .gt_asterisk {
+#eyjldevqow .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#cojncyzuvx .gt_indent_1 {
+#eyjldevqow .gt_indent_1 {
   text-indent: 5px;
 }
 
-#cojncyzuvx .gt_indent_2 {
+#eyjldevqow .gt_indent_2 {
   text-indent: 10px;
 }
 
-#cojncyzuvx .gt_indent_3 {
+#eyjldevqow .gt_indent_3 {
   text-indent: 15px;
 }
 
-#cojncyzuvx .gt_indent_4 {
+#eyjldevqow .gt_indent_4 {
   text-indent: 20px;
 }
 
-#cojncyzuvx .gt_indent_5 {
+#eyjldevqow .gt_indent_5 {
   text-indent: 25px;
 }
 
-#cojncyzuvx .katex-display {
+#eyjldevqow .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#cojncyzuvx div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#eyjldevqow div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -6461,42 +6495,60 @@ Confederation differences in longevity, small sample size limitations
 <section id="sec-data-details" class="level2">
 <h2 class="anchored" data-anchor-id="sec-data-details">Data Details</h2>
 <div style="font-size: 0.85em;">
-<p>This analysis used an excellent <a href="https://www.worldcups.ai/">World Cup database</a> (© 2026 Joshua C. Fjelstudl, Ph.D.&nbsp;published under <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode">CC-BY-SA 4.0 license</a>) of the 1930-2022 World Cups, with tables of players, squads, and team performances.<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a> Player and squad information for 2026 was scrapped from <a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_squads">Wikipedia</a>. For some exploratory analyses (not all included in the interest of scope and clarity), I added in some additional data: Population data came from the <a href="https://cran.r-project.org/web/packages/WDI/">WDI package</a>, supplemented with government data for the separate countries of the <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/timeseries/">United Kingdom</a>. FIFA ranking data is unverified and should be treated with caution, but came from <a href="https://www.kaggle.com/datasets/cashncarry/fifaworldranking/discussion/715112">an updated version in a comment on Kaggle</a>.</p>
-<p>Age was calculated from the date of the start of the tournament, and I included anyone named to a squad, regardless of whether they saw playing time during the tournament.<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a></p>
-<p>The data used as well as code for analyses are available in the <a href="https://github.com/LindsayRankin/mens-world-cup-age">github project repo</a>, and the exact code for this post are available in <a href="https://github.com/LindsayRankin/LindsayRankin.github.io">this website’s repo</a>.</p>
+<p>This analysis used an excellent <a href="https://www.worldcups.ai/">World Cup database</a> (© 2026 Joshua C. Fjelstudl, Ph.D.&nbsp;published under <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode">CC-BY-SA 4.0 license</a>) of the 1930-2022 World Cups, with tables of players, squads, and team performances.<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a> Player and squad information for 2026 was scrapped from <a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_squads">Wikipedia</a>. For some exploratory analyses (not all included in the interest of scope and clarity), I added in some additional measures: Population data came from the <a href="https://cran.r-project.org/web/packages/WDI/">WDI package</a>, supplemented with government data for the separate countries of the <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/timeseries/">United Kingdom</a>. FIFA ranking data is unverified and should be treated with caution, but came from <a href="https://www.kaggle.com/datasets/cashncarry/fifaworldranking/discussion/715112">an updated version in a comment on Kaggle</a>, and used the most recent ranking at the start of each World Cup. I was initially interested in these measures because I thought they might represent the way the larger pool of teams might be driving differences, but I ultimately found the conceptualization of core vs non-core teams and a bit of a confederation exploration to be a cleaner way to address these topics, which is why these measures are not included in any analyses reported here.</p>
+<p>Age was calculated from the date of the start of the tournament, and I included anyone named to a squad, regardless of whether they saw playing time during the tournament.<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a></p>
+<p>The documentation of the data as well as some initial exploratory analysis code are available in a <a href="https://github.com/LindsayRankin/mens-world-cup-age">github project repo</a>. But the cleaner, final code for analyses presented here and a replication of the final data set is available in <a href="https://github.com/LindsayRankin/LindsayRankin.github.io/tree/main/projects/2026-07-09-m-world-cup-age">this website’s repo</a>.</p>
 </div>
 </section>
-<section id="project-context" class="level2">
-<h2 class="anchored" data-anchor-id="project-context">Project Context</h2>
+<section id="reflections-on-this-project" class="level2">
+<h2 class="anchored" data-anchor-id="reflections-on-this-project">Reflections on this Project</h2>
 <div style="font-size: 0.85em;">
-<p>This was just a fun mini-project for me:<br>
-Interest in the topic itself, I wanted to practice some web scrapping, I wanted a project to write up to help me build out a website, this gave me something to work through to figure out how best to organize a Quarto document (particularly with time-intensive simulation code), I ended up learning quantile regression, I dove into making some animated graphics. etc. I am just an every-4-years-bandwagon-World-Cup-football fan — so <a href="mailto:LindsayRankin@gmail.com">please let me know</a> if you think there’s any soccer/football knowledge I am missing!</p>
-<p>This is not an exhaustive analysis, and I focused on a high level story (but making liberal use of click boxes to give some details or explanations) while also putting on a bit of a learning/explaining approach as I dove into quantile regression.</p>
-<p>I would like to document some aspects/examples of how I used AI/LLM (Claude and ChatGPT) in the context of this project. Just some examples to think through how one can use it productively:<br>
+<p>This is not an exhaustive or polished analysis. While I hope it demonstrates some of my quantitative thinking, coding abilities, and communication skills in telling the higher-level story, this was primarily an exploratory project-as-a-learning-process:<br>
 </p>
+<div style="margin-left: 2em;">
+<p>I was interested in this topic itself, I wanted to practice some web scrapping, I wanted a project to write up to help me build my website, this gave me something to work through to figure out how best to organize a Quarto document, I ended up learning quantile regression, I dove into making some animated graphics, and… it kept me doing something productive while watching way too many World Cup games 😂.</p>
+</div>
+<p>Beyond my learning about quantile regression (which is discussed throughout the post above), I want to document some other reflections on this project while it’s still fresh in my mind, to share my learning journey.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-AI/LLM use examples
+Further notes on this project / what I learned
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
+<p>The resampling for bootstrap SEs in quantreg made this code slow to run when developing and making iterative changes. (That is, when using Render to see a preview on my local.) It seems that the cache functions in Quarto are a bit messy and difficult to troubleshoot or debug, so I instead switched to an approach of saving the models from bootstrapping, switching those Quarto code chunks to “eval: false” and loading the saved models in subsequent code chunks. I took a similar approach to creating the videos of the animated histograms.</p>
+<p>As I went through analyses of alternative explanations (position, core vs non core teams, confederation), I was a bit inconsistent in how I modeled them in terms of interactions or split samples. Because this project was so exploratory, the actual analyses were not done in the order presented here, so pieces done at different times had different approaches (some were even started before I began to incorporate quantile regression and I circled back to apply that technique to them later), and I just want to document a few aspects:<br>
+Conceptually, a model with an interaction term or models separately by the interacting variable groups will be the same <em>when there are no other predictors in the model</em> — which was the case here.<br>
+</p>
 <ul>
-<li>I frequently use AI to help me speed through minor coding details of data manipulation/transformation/pretty-ing up a table or graph. Often times these are things I already ‘know’, but it’s sometimes faster to ask AI to get at least a working example that I can then refine, rather than to dig through my own past notes/code.<br>
+<li>With the position analysis, I used interaction terms and emmeans package for pulling out the slopes for each position.<br>
 </li>
-<li>It can also be helpful for navigating new packages like quantreg — for example, I wanted something similar to emmeans for breaking down interaction terms, but as applied to quantreg. I initially found emmeans would not work well with quantreg results, and I started making my own code to relevel the player position and pull out a lower order term. My own code was working pretty well, but as I wanted to do more with those results I stepped back and asked Claude if something like this already exist? I learned there was a known bug in emmeans that was recently fixed, and by updating that package and building on example code from Claude, I was able to streamline this.<br>
+<li>When doing the core vs non-core teams, I took my code from the overall quantile regression analysis, made it into functions to make it easy to re-use, then split the data into core and non-core samples and used those functions.<br>
 </li>
-<li>I turned to Claude to help me learn and implement web scrapping; I quickly realized that once you get the R packages to just pull from a website, it’s really just about string parsing by patterns. Interesting. Claude was pretty bad at the parsing initially, so I did a bit of my own code clean up and a bit of iterative back and forth with Claude for troubleshooting. I also undertook some steps to try to help clean the data (player given vs family names; trying to match it to prior data from the Fjelstudl) to conceptualize how that might be done. It was a bit unnecessary for this particular project, but I had some future projects in mind so I partially pursued this but did not invest the time to clean up every last detail.<br>
+<li>When doing the confederation analysis, I used interaction terms and the emmeans package, but instead of making functions I copy-and-pasted code from the position analysis and just manually updated it with the confederation variable.<br>
 </li>
-<li>Most of the conceptual thinking about the data is my own, but one key use of AI here: After I started with explorations of percentile graphs, I was a bit stumped as to what other analyses approaches would be appropriate. Searching around myself was not as productive as I didn’t know what I didn’t know. But I leaned on Claude for some back and forth explanation of my thinking, using the metaphor of tracking changes in the upper 1% of income over time. It provided a lot of suggestions of different kinds of analyse I might consider (i.e., extreme value theory EVT; survival/duration, sensitivity analysis; GAMLSS distributional regression) and based on some of my own reading about these techniques and a bit of back and forth with Claude, I decided I would go read up on quantile regression. I found it helpful to get ideas from AI I didn’t quite know what I was looking for, but I think exactly how one phrases their instructions and prompts could really drive the suggestions here. Interesting use case to ponder.<br>
+</ul>
+<p>Three different ways to do similar things is pretty messy, and ideally I would have stuck to a consistent approach across all three.<br>
+Using the interaction code and making it into functions (with the interaction variable a argument that could change) would probably have been the most ideal and easiest to modify if I later wanted to add additional predictors in the model. So planning-lesson-learned, but for the current purposes all of these approaches do get us to the same conclusions, so I did not go back and change or clean up those different coding approaches.</p>
+<p>I would also like to document some aspects/examples of how I used AI/LLM (Claude and ChatGPT) in the context of this project, how I think it can (and can’t) be used productively. To distribute across the two for free usage, I tend to use ChatGPT for lower level coding details, and save my usage of Claude (Sonnet 5, usually set to High) for a bit higher level aspects (as I think Claude is better):<br>
+</p>
+<ul>
+<li>I frequently use ChatGPT to help me speed through minor coding details of data manipulation/transformation/pretty-ing up a table or graph. Often times these are things I ‘know’, things that just a few years ago I would have worked out through a combination of checking my own prior notes and code, the package-specific PDF cheat sheets, and a Stack Overflow search. Now it’s often faster to ask ChatGPT and get a working example to trial-and-error. For example, trying to decide between geom_text or annotate on a ggplot, working through aesthetic preferences for things like the slope labels on top of graphs but needing to nudge some up or down so they were not overlapping, trying to format and change organizational details on gt package tables. When I know what I want, am not depending on the AI/LLM for the big picture organization, and have clear details I can articulate, I find AI/LLMs a great aid.<br>
 </li>
-<li>The writing and explanation (and misspellings and type-os) are all my own. Apparently frequent use of the em dash is considered a tell that AI wrote something, which is really unfortunate because I have long been a fan and (over?) user of the em dash — it’s just so handy and another layer on top of parentheses and footnotes and callout boxes, all of which I (over?) use. And in terms of content, just given some of the things Claude said in other back and forths (about analyses to consider, for example), it clearly misunderstood very important conceptual details about the data and the meaning, and I frequently had to redirect it, point out mistakes, etc.; AI cannot yet replace a thoughtful approach to data analysis.</li>
-<li>Please forgive my AI slop image of the old player, I loved it 😂</li>
+<li>Claude was helpful for navigating new packages like quantreg — for example, I wanted something similar to emmeans for breaking down interaction terms, but as applied to quantreg models. I initially found emmeans would not work well with quantreg results, and I started making my own code to pull out a lower order term of the time effect and then relevel the player position to get the slope for each position. This was working pretty well, but as I wanted to do more with those results I kept having to modify my code and was just getting into messy formatting-related issues, so I stepped back and asked Claude if something like this already exists? I learned there was a known bug (preventing it from working well with quantreg) in prior versions of emmeans that was already fixed, so I was able to update that package, give my code to Claude and ask it to help me translate my code into doing the same conceptual process but using emmeans functions. This emmeans result made some further steps easier to do. So, lesson learned that I should have checked on emmeans updates (or other alternatives) earlier and that could be a good thing to ask AI/LLM for information on. But by giving Claude already working code it was much better at translating it to work with emmeans (and I could quickly and easily verify its code was correct). So, overall I could improve that process, but it was a good example of working together with an AI/LLM.<br>
+</li>
+<li>I turned to Claude to help me learn and implement web scrapping which I had very limited prior experience with. I quickly realized that once you get the R packages to just pull from a website, it’s really just about string parsing by patterns, and Wikipedia formats are pretty great for this. Interesting. Claude was pretty bad at the parsing initially, so I did a bit of my own code clean up and a bit of iterative back and forth with Claude for troubleshooting.</li>
+<li>I also undertook some steps to try to help clean the data to conceptualize how that might be done. It was a bit unnecessary for this particular project, but I had some future projects in mind so I partially pursued this. For example, in scrapping names and trying to divide them into given name and family name, I had Claude help me flag any player name that was more than two words to let me easily sort and view it. This made it clear that there were a number of systematic exceptions to the “last” word being the family name (i.e., de, di, van, von, mac). Adding those and iterating again I learned “ben” when used in a Tunisian name was also the beginning of a family name. Prior conceptual knowledge also helped me manually check the Wikipedia name orders (only South Korea was using the order of family and then given name for most of its players). So a bit of coding and human review together let me get the vast majority of given vs family names correctly separated, but I did not want to spend the time to more exhaustively clean up every last detail. Similarly, I pursued some attempts to match returning 2026 players to the identification numbers assigned by Fjelstudl.<br>
+</li>
+<li>Most of the conceptual thinking about the data and analyses is my own, but one key use of AI/LLMs here: After I started with explorations of percentile graphs, I was a bit stumped as to what other analyses approaches would be appropriate. Searching around myself was not as productive as I didn’t know what I didn’t know. But I leaned on Claude for some back and forth explanation of my thinking about this particular data and question, including the metaphor of tracking changes in the upper 1% of income over time. It provided a lot of suggestions of different kinds of analyse I might consider (i.e., extreme value theory EVT; survival/duration, sensitivity analysis; GAMLSS distributional regression; quantile regression) and based on some of my own research about these techniques and a bit of back and forth with Claude, I decided I would read up on quantile regression. I found it helpful to get ideas from AI/LLM when I didn’t quite know what I was looking for, but I think exactly how one phrases their instructions and prompts could really drive the suggestions here. I used a lot of language and prompts to emphasize not agreeing with me, being constructively critical, finding ideas and analysis techniques I may not have considered, etc. But I still think there is a lot of risk of it being overly agreeable or confirming my thinking too much and not helping to find novel ideas. But interesting use case to ponder.<br>
+</li>
+<li>The writing and explanation (and misspellings and type-os) are all my own. I have heard frequent use of the em dash is considered a tell that AI wrote something, which is really unfortunate because I have long been a fan and (over?) user of the em dash — it’s just so handy and another layer on top of parentheses and footnotes and callout boxes, all of which I also (over?) use. And in terms of content, just given some of the things Claude returned in other back and forths (about analyses to consider, for example), it clearly misunderstood very important conceptual details about the data and the meaning, and I frequently had to redirect it, point out mistakes, etc.; AI cannot yet replace a thoughtful approach to data analysis. In addition, I think the process of writing is integral to thinking and learning, which was a primary goal here.</li>
+<li>Finally, please forgive my AI slop image of the old player with a jersey of 40, but I loved it 😂</li>
 </ul>
 </div>
 </div>
@@ -6518,13 +6570,14 @@ AI/LLM use examples
 <li id="fn5"><p>In this initial graph the slopes are per year simply because we can lean on functions built for quantreg and not need customization. But in later visualizations we will represent slopes by multiplying this coefficient by 4 years so that it will represent the change in age expected per World Cup.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn6"><p>In terms of pure speed/burning up my local computer memory, I found by .01 problematically slow; the quantreg plot.rq function needs evenly spaced intervals for the plot, and by using .04 to .99 I will get an estimate for .94 and .99 which is close enough for an initial look to my desired 95th and 99th percentile.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn7"><p>This is just a current, known limitation of the quantreg package, as acknowledged in the anova.rq function help files.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p>Specifically, using summary.rq with clustering and bootstrapped SEs can already be a bit slow running on my local machine. While I did not fully build it out, some initial looks at the resampling and processing steps needed to implement this made it clear it would be very slow, and someone building this would really benefit from a greater understanding than I have of how best to program within R from a speed/efficiency perspective. If this is your jam and you want to do it, you could help improve the quantreg package.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p>My standard errors will likely be too small, and therefore my significance testing will be biased downwards, increasing the risk of Type I errors and producing overly narrow confidence intervals.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Specifically, using summary.rq with clustering and bootstrapped SEs can already be a bit slow running on my local machine. While I did not fully build it out, some initial looks at the resampling and processing steps needed to implement this made it clear it would be very slow, and someone building this would really benefit from a greater understanding than I have of how best to program within R from a speed/efficiency perspective, or implement it using parallel processing.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>My standard errors will likely be too small, and therefore my significance testing p-values will be biased downwards increasing the risk of Type I errors.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn10"><p>The image quality and resolution aspects are not ideal here, but I wanted to include this rough draft as it helped me to make the ideas of shape shift more concrete.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn11"><p>Note that for this analysis, Germany’s number of appearances is counted by including teams of Germany (1934-1938; 1994-present) and West Germany (1954-1990), and they are considered a “core” team. In contrast, no later country is connected to Yugoslavia nor the Soviet Union for purposes of counting its total appearances given that each split into many countries, i.e., Yugoslavia’s 9 appearances through 1998 are not added to Croatia’s 7 appearances since (and overlapping with) 1998, so Croatia is a “non-core” team.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn12"><p>Note that two of these were not exactly single appearances in the same way we think about for other countries: “Serbia and Montenegro” qualified as a team in one tournament after the break of up Yugoslavia but before the two separated; similarly, Slovakia has qualified once since the break up of Czechslovakia separated it from Czech Republic.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn13"><p>At the time of downloading, 2026 data was not yet included.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn14"><p>As noted above, there are a few seeming inconsistencies can arise based on these definitions: <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over">FIFA’s count of eight players over 40</a> included Uruguay’s Fernando Muslera who turned 40 after the start of the 2026 tournament but before his team’s first game; his age in my data would be 39.98631. They also only referred to players in prior tournaments who earned a cap — that is, played actual time — which would exclude, for example, unused squad members like the first 40+ year old Lev Yashin named to a squad with the 1970 Soviet Union team.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p>Conceptually the lower order term of time represents the effect for the position used as the reference group; we can relevel position in repeated models to extract these, but the coding shortcut is to use emmeans package to get each of these slopes. Also, one could also look at the interaction terms to test if the effect of time significantly <em>differed</em> for positions; however, given that I would expect each position to have similar direction of effects, just weaker or stronger, and given the small sample sizes by positions, such comparisons would be under-powered to test small differences. In other words, saying that goal keepers change in age over time at a particular percentile does not significantly differ from the change over time for another position is <em>not</em> particularly convincing when such comparisons are under-powered. For the current goal of assessing if just goal keepers are driving the longevity effects, I would prefer to focus on the slopes for each position separately and make conceptual arguments, rather than using a bunch of under-powered direct tests between positions.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn12"><p>Note that for this analysis, Germany’s number of appearances is counted by including teams of Germany (1934-1938; 1994-present) and West Germany (1954-1990), and they are considered a “core” team. In contrast, no later country is connected to Yugoslavia nor the Soviet Union for purposes of counting its total appearances given that each split into many countries, i.e., Yugoslavia’s 9 appearances through 1998 are not added to Croatia’s 7 appearances since (and overlapping with) 1998, so Croatia is a “non-core” team.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p>Note that two of these were not typical single appearances: “Serbia and Montenegro” qualified as a team in one tournament after the break of up Yugoslavia but before the two separated; similarly, Slovakia has qualified once since the break up of Czechslovakia separated it from Czech Republic.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn14"><p>At the time of downloading, 2026 data was not yet included.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn15"><p>As noted above, there are a few seeming inconsistencies can arise based on these definitions: <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/eight-players-aged-40-or-over">FIFA’s count of eight players over 40</a> included Uruguay’s Fernando Muslera who turned 40 after the start of the 2026 tournament but before his team’s first game; his age in my data would be 39.98631. They also only referred to players in prior tournaments who earned a cap — that is, played actual time — which would exclude, for example, unused squad members like the first 40+ year old Lev Yashin named to a squad with the 1970 Soviet Union team.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

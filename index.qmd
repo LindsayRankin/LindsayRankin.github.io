@@ -18,12 +18,10 @@ about:
       href: mailto:LindsayRankin@gmail.com
 ---
 
-Hi there!
+Hi there! I'm Lindsay Rankin. 
 
-I'm Lindsay Rankin. 
-
-I work in data science, data analysis, statistics, and research.
+I work in data analysis, data science, statistics, and research.
 
 I have a PhD in social psychology with a quantitative methods concentration, where I focused on both experimental and survey research. After my formal education, I continued building my statistics and data skills, particularly a specialization in R programming.
 
-Welcome, and see more [About](/about.qmd) me.
+Welcome, and see more [About](/about.qmd) me or jump to my [Resume](/resume.qmd).
