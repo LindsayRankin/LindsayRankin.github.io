@@ -1,0 +1,659 @@
+---
+title: "NFL 2026 Season: Week 1"
+# subtitle: 
+description: "Time for kick off! Are the Bears continuing their right-side running?"
+date: 09-20-2026
+categories: [R, Chicago Bears, Run]
+draft: false 
+toc: false
+execute:
+  echo: false
+  warning: false
+---
+
+
+```{r}
+#| include: false
+
+# knitr::opts_chunk$set(dev = "ragg_png")
+
+
+library(ggtext)
+library(gt)
+library(nflverse)
+library(tidyverse)
+
+#----------------------------------- 
+########## 
+#----------------------------------- 
+# Custom function for NFL theme on graphs 
+# Credit to Brad Congelio: https://bradcongelio.com/nfl-analytics-with-r-book/ 
+  # section "1.3.2 Unique Offensive Line Combinations vs. Win Percentage": 
+  
+nfl_analytics_theme <- function(..., base_size = 12) {
+  
+  theme(
+    text = element_text(family = "Calibri", #family = "Roboto",
+                        size = base_size,
+                        color = "black"),
+    axis.ticks = element_blank(),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(face = "bold"),
+    plot.title.position = "plot",
+    plot.title = element_markdown(size = 16,
+                                  vjust = .02,
+                                  hjust = 0.5),
+    plot.subtitle = element_markdown(hjust = 0.5),
+    plot.caption = element_markdown(size = 8),
+    panel.grid.minor = element_blank(),
+    panel.grid.major =  element_line(color = "#d0d0d0"),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    plot.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_blank(),
+    legend.background = element_rect(color = "#F7F7F7"),
+    legend.key = element_rect(color = "#F7F7F7"),
+    legend.title = element_text(face = "bold"),
+    legend.title.align = 0.5,
+    strip.text = element_text(face = "bold"))
+}
+
+
+# Notes for instagram embed: 
+# ::: {style="max-width: 300px; margin: 0 auto;"}
+
+# Putting it on the right: 
+# ::: {style="float: right; margin-left: 20px; margin-bottom: 20px; width: 326px; transform: scale(0.85); transform-origin: top right;"}
+
+
+```
+
+Football is back!🎉 And my Chicago Bears 🐻⬇️🏈 offense came out firing 💥🚀 
+
+# Run direction
+
+The Bear's offensive line was (finally! mostly!) a strength last year — the unit overall was ranked as the third best in the league by [PFF](https://www.pff.com/news/nfl-final-2025-nfl-offensive-line-rankings). Left tackle had early issue with performance and later issues with injury (continuing into the 2026 season), and our 2025 center unexpectedly retired at age 27. But the remaining 3 out of 5 O-linemen returning for 2026 are outstanding: 
+
+::: {style="float: left; margin-right: 20px; margin-bottom: 10px; width: 326px; transform: scale(0.85); transform-origin: top left;"}
+<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/reel/DdXKgXuyz55/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/reel/DdXKgXuyz55/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">View this post on Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a><p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;"><a href="https://www.instagram.com/reel/DdXKgXuyz55/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">A post shared by Film Watchers (@film.watchers1)</a></p></div></blockquote>
+<script async src="//www.instagram.com/embed.js"></script>
+::: 
+
+Left guard Joe Thuney was the inaugural 2025 NFL Protector of the Year, right guard Jonah Jackson is solid, and right tackle Darnell Wright is a monster. So, collectively, the right side is solid and **the Bears run right because of Wright.**
+
+(Side note: Darnell Wright is also freakishly athletic and needs to be on the receiving end of a trick-play kinda touchdown pass ASAP.) 
+
+Let's first check out the extent to which the Bears play calling did prefer to go right in 2025, and see if those trends continued into the first week 1 of 2026. 
+
+## Play Calling
+
+The [nflverse](https://nflverse.nflverse.com/) play-by-play data records the direction for rush attempts: left, middle, right.^[The variable is "run_location" but I'm going to prefer the term "direction". Also, I won't get into the detail now, but for future reference the play-by-play data also has an additional note of gap for any left or right direction: guard, tackle, or end.]
+
+```{r data-pbp-run-load-filter}
+#| include: false
+
+#----------------------------------- 
+# LOAD DATA 
+#----------------------------------- 
+
+nflreadr::.clear_cache()
+
+# 2025 regular season and 2026 week 01
+df_pbp_rush_25reg_26wk01 <- bind_rows(
+  # 2025 regular season
+  nflreadr::load_pbp(2025) %>% 
+    filter(season_type == "REG"),
+  # 2026 week 1
+  nflreadr::load_pbp(2026) %>% 
+    filter(week == 1)
+)
+  
+df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>% 
+  mutate(run_gap_dir = case_when(
+      !is.na(run_gap) & !is.na(run_location) ~ paste0(run_location, "_",  run_gap),
+      run_location == "middle" ~ "middle",
+      TRUE ~ NA
+      ) %>% factor(levels = c("left_end",
+                             "left_tackle",
+                             "left_guard",
+                             "middle",
+                             "right_guard",
+                             "right_tackle",
+                             "right_end"),
+                  ordered = TRUE)) %>% 
+  mutate(chicagopos = ifelse(posteam == "CHI", 1, 0)) %>% 
+  # just rushing
+  filter(rush_attempt == 1)
+
+
+#----------------------------------- 
+# FILTERING 
+#----------------------------------- 
+
+### QB Kneel downs are not really runs
+# qb_kneel account for a lot of the missing run_gap_dir
+df_pbp_rush_25reg_26wk01 %>% 
+  count(qb_kneel, run_gap_dir)
+# FILTER to remove qb_kneel
+df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>% 
+  filter(qb_kneel == 0)
+
+
+
+### Two point conversions
+df_pbp_rush_25reg_26wk01 %>% 
+  count(two_point_attempt, is.na(run_gap_dir))
+# FILTER to remove two point conversions, don't have run_gap_dir
+df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>% 
+  filter(two_point_attempt == 0)
+
+
+
+
+### Fumbles (particularly with no gain)
+df_pbp_rush_25reg_26wk01 %>% 
+  count(fumble, is.na(run_gap_dir))
+
+# Fumbles missing run_gap_dir, what is going on? 
+   # break it down by whether the play gained yards 
+df_pbp_rush_25reg_26wk01 %>% 
+  filter(fumble == 1) %>% 
+  count(is.na(run_gap_dir), yards_gained > 0)
+
+# Breaking those down by whether it failed to gain yards: 
+    # When they gain no yards, it is generally a QB fumble so no run_gap_dir because couldn't tell where they would have gone and likely never intended to be a rush
+    df_pbp_rush_25reg_26wk01 %>% 
+      filter(is.na(run_gap_dir) & yards_gained <= 0 & fumble == 1) %>% 
+      select(desc)
+    
+    # Or did gain yards:
+    # The 8 exceptions of fumbles, some gain, but no run_gap_dir were generally QB fumbles (1 punter)
+      # (so some chaotic way the ball was recovered and moved forward)
+    df_pbp_rush_25reg_26wk01 %>% 
+      filter(is.na(run_gap_dir) & yards_gained > 0 & fumble == 1) %>% 
+      select(desc)
+
+# FILTER to remove when if it's a fumble AND is missing run_gap_dir
+    # so keep all non-fumbles, and only keep fumbles if they have run_gap_dir
+df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>% 
+  filter(fumble == 0 | (fumble == 1 & !is.na(run_gap_dir)))
+    
+
+### Illegal forward passes are not really supposed to be run plays
+# The last two missing run_gap_dir are illegal forward passes in 2025; 
+df_pbp_rush_25reg_26wk01 %>% 
+  filter(is.na(run_gap_dir)) %>% 
+  select(desc)
+
+# Other illegal forward passes
+df_pbp_rush_25reg_26wk01 %>% 
+  filter(penalty_type == "Illegal Forward Pass") %>% 
+  select(desc)
+
+# FILTER to remove n=6 Illegal Forward Passes, which includes final n=2 missing run_gap_dir 
+df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>% 
+  filter(is.na(penalty_type) | penalty_type != "Illegal Forward Pass") 
+
+
+### Accounted for all missing on run_gap_dir
+df_pbp_rush_25reg_26wk01 %>% 
+  count(run_location, run_gap_dir) 
+
+
+```
+
+Because I am interested in play calling direction preferences, I am focusing on plays that seem to be intended as rushes (i.e., *not* quarterback scrambles), and plays in which we can interpret the direction (i.e., we won't know to intended direction for rush attempts when there was a fumble in the backfield, just drop those entirely). 
+
+::: {.callout-note collapse="true"}
+## Nitty-gritty details of rush attempts that are excluded
+
+This is the less interesting story to tell, but a major part of the real work of getting familiar with new data: Figuring out the messy details, what do I want to conceptually include or exclude, and what is missing and why.
+
+I will *exclude*: quarterback scrambles (they were intended as passes, and the direction they go is often in reaction to a breakdown rather than a plan), quarterback kneel downs (this isn't really a play, and doesn't have a direction and gap coded anyways), fumbles when there is no run direction (that is, run_location is NA; a lot of these were fumbles by the quarterback so likely occurring before or during the hand off, most result in no gain or losses, and overall it seems we can't interpret the called rush direction). In this data, two point attempts do not have direction information, so I'll have to drop those as well (which is fine, they are rare and a bit conceptually different in overall game-flow-play-calling given their one-shot nature). 
+
+Finally, I also removed 6 plays with penalties for illegal forward passes as these were likely not intended to be running plays. (This was a somewhat incidental find because 2 of these plays had left/right run_location and were the only such non-middle run_location that lacked gap information; upon stumbling on them and investigating all penalty types, I realized I conceptually would like to exclude this particular penalty because I think it indicates that it was not intended to be a run.)
+
+I did not remove any other plays for penalties (possibly a clean up for the future), although overall offensive penalty rates of the remaining data were very low (< 1%). 
+
+I will note that (other than the fumbles) even when a run did not gain positive yards, the data has coded for the (presumably intended) direction and gap. And fumbles with yards gained also had run_location (seemingly, these would mostly be fumbles later down the field). So these plays were all included.
+:::
+
+
+```{r}
+#| include: false
+ 
+# Just penalty details for text
+
+df_pbp_rush_25reg_26wk01 %>% 
+  count(penalty_team == posteam) %>% 
+  mutate(prop = n / sum(n))
+```
+
+I'm primarily interested in my Chicago Bears, but I'm going to compare them to the NFL *when excluding Chicago*, aka the **rest of the NFL**. 
+
+The rest of the NFL is pretty balanced in their split between left and right, and picking either direction a bit more often than the middle across both the 2025 regular season and in the opening week 1 of 2026.
+
+```{r}
+#| include: true
+
+
+df_pbp_rush_25reg_26wk01 %>% 
+  # Remove Chicago
+  filter(chicagopos == 0) %>% 
+  group_by(season, run_location) %>% 
+  summarize(n = n()) %>% # still grouped by season 
+  mutate(prop = n / sum(n)) %>% ungroup() %>% 
+  pivot_wider(names_from = "season", 
+              values_from = c(n, prop)) %>% 
+  relocate(prop_2025, .after = n_2025) %>% 
+  # Add row of Total
+  bind_rows(
+    df_pbp_rush_25reg_26wk01 %>% 
+      # Remove Chicago
+      filter(chicagopos == 0) %>% 
+      group_by(season) %>% 
+      summarize(n = n()) %>% 
+      mutate(run_location = "Total") %>% 
+      pivot_wider(names_from = "season", names_prefix = "n_",
+                  values_from = c(n))
+  ) %>% 
+  # capitalize locations
+  mutate(run_location = run_location %>% str_to_title()) %>% 
+  gt() %>% 
+  tab_spanner(label = "2025 Reg Season",
+            columns = c(n_2025, prop_2025)) %>% 
+  tab_spanner(label = "2026 Week 1",
+          columns = c(n_2026, prop_2026)) %>% 
+  fmt_percent(
+    columns = c(prop_2025, prop_2026),
+    decimals = 1
+  ) %>% 
+  sub_missing(
+    columns = c(prop_2025, prop_2026), 
+    missing_text = ""
+  ) %>% 
+  cols_align(align = "center", columns = c(n_2025, prop_2025, n_2026, prop_2026)) %>% 
+  cols_label(
+    run_location = "Run direction",
+    n_2025 = "n", prop_2025 = "%", n_2026 = "n", prop_2026 = "%"
+  ) %>% 
+  tab_header(title="Rest of NFL (non-Chicago) Rush Attempts by Direction") %>% 
+  tab_options(table.align = "left")
+```
+
+The Bears, on the other hand, are going right by a large margin in 2025 and continuing that trend in the small sample we've seen in week 1 of 2026. 
+
+```{r}
+#| include: true
+
+# Chicago Bears 
+df_pbp_rush_25reg_26wk01 %>% 
+  # Just Chicago
+  filter(chicagopos == 1) %>% 
+  group_by(season, run_location) %>% 
+  summarize(n = n()) %>% # still grouped by season 
+  mutate(prop = n / sum(n)) %>% ungroup() %>% 
+  pivot_wider(names_from = "season", 
+              values_from = c(n, prop)) %>% 
+  relocate(prop_2025, .after = n_2025) %>% 
+  # Add row of Total
+  bind_rows(
+    df_pbp_rush_25reg_26wk01 %>% 
+      # Just Chicago
+      filter(chicagopos == 1) %>% 
+      group_by(season) %>% 
+      summarize(n = n()) %>% 
+      mutate(run_location = "Total") %>% 
+      pivot_wider(names_from = "season", names_prefix = "n_",
+                  values_from = c(n))
+  ) %>% 
+  # capitalize locations
+  mutate(run_location = run_location %>% str_to_title()) %>% 
+  gt() %>% 
+  tab_spanner(label = "2025 Reg Season",
+            columns = c(n_2025, prop_2025)) %>% 
+  tab_spanner(label = "2026 Week 1",
+          columns = c(n_2026, prop_2026)) %>% 
+  fmt_percent(
+    columns = c(prop_2025, prop_2026),
+    decimals = 1
+  ) %>% 
+  sub_missing(
+    columns = c(prop_2025, prop_2026), 
+    missing_text = ""
+  ) %>% 
+  # Highlight cells
+  tab_style(
+    style = cell_fill(color = "#E64100"),
+    locations = cells_body(
+      columns = c(prop_2025, prop_2026),
+      rows = run_location == "Right" #careful, exact match here needed
+    )
+  ) %>% 
+  cols_align(align = "center", columns = c(n_2025, prop_2025, n_2026, prop_2026)) %>% 
+  cols_label(
+    run_location = "Run direction",
+    n_2025 = "n", prop_2025 = "%", n_2026 = "n", prop_2026 = "%"
+  ) %>% 
+  tab_header(title="Chicago Bears Rush Attempts by Direction") %>% 
+  tab_options(table.align = "left")
+
+
+```
+
+### Top Play Calling Rush Direction-Preferences
+
+I had lumped together all the rest of the NFL, so it was all rush attempts by any team other than the Bears. But let's consider each team's breakdown of the percentage of time they run left, middle, or right and look at the top play calling rush direction-preferences: 
+
+Did any teams have as extreme of a direction preference for the run as the Chicago Bears in 2025? 
+
+Nope! 
+
+The Bears were the most extreme in their direction-preference. The Atlanta Falcons liked rushing left (and to a lesser extent right, foregoing rushes up the middle), but not nearly as much as the Bears ran right. 
+
+```{r}
+#| out-width: "100%"
+
+
+top10_playcall <-df_pbp_rush_25reg_26wk01 %>% 
+  # Just 2025
+  filter(season == 2025) %>% 
+  # Offensive team
+  group_by(posteam, run_location) %>% 
+  summarize(n = n()) %>% # still grouped by posteam
+  mutate(prop = n / sum(n)) %>% ungroup() %>% 
+  slice_max(order_by = prop, n = 10, with_ties = FALSE) %>% 
+  mutate(posteam_loc = paste0(posteam, " ", run_location %>% str_to_title())) 
+
+
+# Graphing
+top10_playcall %>% 
+  ggplot(aes(x = reorder(posteam_loc, -prop), 
+             y = prop,
+             color = posteam, fill = posteam
+             )) + 
+  geom_col() + 
+  # value and run_location combined
+  # gap between lines is controlled by the lineheight parameter 
+    # (a fixed multiplier on font size, not an aesthetic — pass it outside aes())
+  geom_text(aes(label = paste0(" ", round(100 * prop, 1), "%\n", 
+                               str_to_title(run_location))),
+            position = position_nudge(y = -0.07),
+            lineheight = 0.85,
+            color = "white",
+            fontface = "bold",
+            size = 4.5) +
+  nflplotR::scale_fill_nfl(alpha = 1) +
+  nflplotR::scale_color_nfl(type = "secondary") +
+  # own aes, no inherited color/fill
+  nflplotR::geom_nfl_logos(
+    aes(x = reorder(posteam_loc, -prop), y = prop, team_abbr = posteam),
+    width = 0.08,
+    inherit.aes = FALSE
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(),
+                     labels = scales::percent_format(),
+                     limits = c(0, .60),
+                     expand = c(0,0)) + 
+  labs(title = "Top Play Calling Rush Directions Preferences (2025 Regular Season)",
+       subtitle = "Top 10 highest direction-preferences of all team",
+       x = "",
+       y = "% of All Team Rush Attempts") +
+  nfl_analytics_theme() + 
+  theme(
+      axis.text.x = element_blank(),
+      panel.grid.major.x = element_blank())
+
+
+```
+
+## Play Execution
+
+### Play Execution Among Top Play Calling Rush Direction-Preferences
+
+But that was just about comparing the play calling in terms of direction preferences. When the Bears do run right (or when any of the teams in the top 10 play calling direction-preferences go in their preferred direction), how successful are those rushes? 
+
+::: {.callout-note collapse="true"}
+## Nitty-gritty details of metrics of "success" 
+
+On the Bear's broadcast I heard a mention of how often run plays went at least 5 yards. While that's a nice round number and good for a broadcast, if a 1st down or even a touchdown is only 1 yard then a rush can be very successful without going 5 yards, and similarly a 5 yard rush is not particularly great on a 3rd & 8. 
+
+My understanding is that at some point analysts started trying to represent success as gaining a certain percentage of the needed yards for first down depending on the down (i.e., 40% of yards on 1st down, 60% on 2nd down, and 100% on 3rd and 4th downs). Better, but still some downsides (that I won't try to dive into here). But the new and improved evolution of this kind of thinking in the nflverse play-by-play data is "success" as an binary indicator of *whether the play leads to any increase in the EPA (expected points earned)*. So I'll be using that metric. 
+
+(I wish I had a specific citation to link to and to clarify this metric-development-history; at this point it's kind of more a newly learned impression of mine that could be slightly inaccurate. But I'll just note that I [got started with some good overviews](../2026-09-19-getting-started-nflverse/index.qmd#getting-started-in-nflverse) from [Introduction to NFL Analytics with R by Brad Congelio](https://bradcongelio.com/nfl-analytics-with-r-book), so conceptual understanding credit likely goes there — and any mistakes or mis-remembering is my own.)
+:::
+
+::: {.callout-note collapse="true"}
+## Nitty-gritty details of rush attempts for play calling vs play execution success
+
+Note here that as we shift from play calling choices to representing play execution with "success", some other conceptual choices of what to include in our rush attempts might be prudent. 
+
+For example, we might consider whether to exclude plays with offensive penalties or with defensive penalties. Because I want to wind down this first week's getting-to-know the data exercise and I want to have a consistent sample across these different play calling vs play execution success investigations (that is, not deal with complexities of how the sample might differ across the questions), I won't go down this road. 
+
+I will note that any further exclusions would remove a minority of total plays so it (hopefully) would not hugely change the overall conclusions here, but a deeper consideration of these aspects would be more ideal.
+
+Maybe some time in the future?
+:::
+
+The Bears were also the most successful among those top play calling rush direction-preferences. 
+
+```{r}
+#| out-width: "100%"
+
+# # Note: To grab appropriate posteam_loc in order
+# top10_playcall %>% pull(posteam_loc) 
+
+
+# Success by top 10 team-direction 
+df_pbp_rush_25reg_26wk01 %>% 
+  # Just 2025
+  filter(season == 2025) %>% 
+  group_by(posteam, run_location) %>% 
+  summarize(n = n(), # count by run_location 
+            prop_success = mean(success),
+            mean_yards_gained = mean(yards_gained),
+            prop_1stDownorTD = mean((first_down == 1 
+                               | rush_touchdown == 1)),
+            .groups = "drop"
+            ) %>% 
+  group_by(posteam) %>% 
+  mutate(prop = n / sum(n)) %>% ungroup() %>% 
+  relocate(prop, .after = n) %>% #View()
+  mutate(posteam_loc = paste0(posteam, " ", run_location %>% str_to_title())) %>% 
+  # Just the top10 team-locations
+  filter(posteam_loc %in% 
+           (top10_playcall %>% pull(posteam_loc))
+         ) %>% 
+  # Factor to order
+  mutate(posteam_loc = factor(posteam_loc,
+                               levels = (top10_playcall %>% pull(posteam_loc)),
+                               ordered = TRUE)) %>% # View()
+  # Graphing
+  ggplot(aes(x = posteam_loc, 
+             y = prop_success,
+             color = posteam, fill = posteam
+             )) + 
+  geom_col() + 
+  # value and run_location combined
+  # gap between lines is controlled by the lineheight parameter 
+    # (a fixed multiplier on font size, not an aesthetic — pass it outside aes())
+  geom_text(aes(label = paste0(" ", round(100 * prop_success, 1), "%\n",
+                               "Success\n", # "Rushing\n",
+                               str_to_title(run_location))),
+            position = position_nudge(y = -0.08), #adjust here to fit
+            lineheight = 0.85,
+            color = "white",
+            fontface = "bold",
+            size = 3.5) + # adjust here to fit "Success"
+  nflplotR::scale_fill_nfl() +
+  nflplotR::scale_color_nfl(type = "secondary") +
+  # own aes, no inherited color/fill
+  nflplotR::geom_nfl_logos(
+    aes(x = reorder(posteam_loc, -prop_success), y = prop_success, team_abbr = posteam),
+    width = 0.08,
+    inherit.aes = FALSE
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(),
+                     labels = scales::percent_format(),
+                     limits = c(0, .60),
+                     expand = c(0,0)) + 
+  labs(title = "Success of the Top Direction-Preferences (2025 Regular Season)",
+       subtitle = "Of the top 10 play calling direction-preferences, what % of those rush attempts are successful?",
+       caption = "Note: Teams remain in order of their 1-10 rank on play calling direction-preference",
+       x = "",
+       y = "% Rushes Successful") +
+  nfl_analytics_theme() + 
+  theme(
+      axis.text.x = element_blank(),
+      panel.grid.major.x = element_blank()
+      ) 
+
+
+```
+
+How does that 51.6% success rate going right stack up against the best success rates for teams running in particular directions? 
+
+### Top Play Execution, Regardless of Play Calling Rush Direction-Preferences
+
+That is, let's drop the play calling preferences entirely and consider every team and each of the three possible directions: 
+
+Regardless of how frequently a team choose to go any particular direction, what team-direction combinations had the highest overall success rates? 
+
+The Bears going right was among the most successful team-direction combinations in the 2025 season, and they were even marginally more successful going straight up the middle (which we know from the prior tables they do quite a bit less often than the rest of the NFL average). 
+
+```{r}
+#| output: true
+#| out-width: "100%"
+
+# Success by team-direction 
+top10_playexecution <- df_pbp_rush_25reg_26wk01 %>% 
+  # Just 2025
+  filter(season == 2025) %>% 
+  group_by(posteam, run_location) %>% 
+  summarize(n = n(), # count by run_location 
+            prop_success = mean(success),
+            mean_yards_gained = mean(yards_gained),
+            prop_1stDownorTD = mean((first_down == 1 
+                               | rush_touchdown == 1)),
+            .groups = "drop"
+            ) %>% 
+  group_by(posteam) %>% 
+  mutate(prop = n / sum(n)) %>% ungroup() %>% 
+  relocate(prop, .after = n) %>% #View()
+  slice_max(order_by = prop_success, n = 10, with_ties = FALSE) %>%
+  mutate(posteam_loc = paste0(posteam, " ", run_location %>% str_to_title())) 
+
+
+# Graphing
+top10_playexecution %>% 
+  ggplot(aes(x = reorder(posteam_loc, -prop_success), 
+             y = prop_success,
+             color = posteam, fill = posteam
+             )) + 
+  geom_col() + 
+  # value and run_location combined
+  # gap between lines is controlled by the lineheight parameter 
+    # (a fixed multiplier on font size, not an aesthetic — pass it outside aes())
+  geom_text(aes(label = paste0(" ", round(100 * prop_success, 1), "%\n",
+                               "Success\n", # "Rushing\n",
+                               str_to_title(run_location))),
+            position = position_nudge(y = -0.08), #adjust here to fit
+            lineheight = 0.85,
+            color = "white",
+            fontface = "bold",
+            size = 3.5) + # adjust here to fit "Success"
+  nflplotR::scale_fill_nfl() +
+  nflplotR::scale_color_nfl(type = "secondary") +
+  # own aes, no inherited color/fill
+  nflplotR::geom_nfl_logos(
+    aes(x = reorder(posteam_loc, -prop_success), y = prop_success, team_abbr = posteam),
+    width = 0.08,
+    inherit.aes = FALSE
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(),
+                     labels = scales::percent_format(),
+                     limits = c(0, .60),
+                     expand = c(0,0)) + 
+  labs(title = "Top Rushing Success of Team-Directions (2025 Regular Season)",
+       subtitle = "Top 10 highest rush success among all team-direction combinations",
+       x = "",
+       y = "% Rushes Successful") +
+  nfl_analytics_theme() + 
+  theme(
+      axis.text.x = element_blank(),
+      panel.grid.major.x = element_blank()
+      ) 
+
+```
+Wanting to wind down this first week's getting-to-know the data exercise, I am going to stop myself from too much detail to follow up on this, or looking at success in such a small sample of 2026 (i.e., the Titans had a 100% success rate going left in 2026 week 1... based on all of three runs). 
+
+But a few conceptual aspects to point out about the 2025 data and ideas that might be picked up in the future: 
+
+Of these top 10 team-direction success rates, the Bears are using the middle the least relative to other groups (that is, they run up the middle only 16.3% of the time whereas the next lowest usage among these top 10 success rates among all team-direction combination is that Denver runs up the middle only 21.1% of the time). 
+
+Why would the Bears not run up the middle more often if they are successful? 
+
+It's successful, but in looking at the yards gained it's quite low relative to the others — so it's likely a result of being selectively but successfully used in short yardage situations. This may be true of some of these other top 10s because the middle is heavily represented in this graph, but across the league running up the middle averages fewer yards than either left or right directions. 
+
+In fact, if we look at it the other way, we know from our prior graphs that the Bears going right is far more common than any other team-direction combo (at 51.5%), and among these top 10 success rates (among all team-direction combination) the next most common team-direction play call is that Buffalo goes right 39.1% of the time.
+
+Thus, there is not much of an element of surprise or situational selectivity in the Bears running right as it's the single most common team-direction preference — but it is also one of the most successful team-direction combinations. 
+
+In 2025 the Bears ran right often, and they did it very well. And they've started week 1 of 2026 off calling runs to the right — and we'll see how well it works again this year as the season goes on. 
+
+Bear Down! 🐻⬇️🏈
+
+```{r exploratory-not-included}
+#| include: false
+#| eval: false
+
+
+# Just some details for the final paragraph... 
+  # wanting to stop putting too much time into week 1
+
+# High success but low usage, why? 
+  # Probably short yardage situations
+
+# Yards by direction across the whole league 
+# Middle gains less
+df_pbp_rush_25reg_26wk01 %>% 
+  # Just 2025
+  filter(season == 2025) %>% 
+  group_by(run_location) %>% 
+  summarize(n = n(), # count by run_location 
+            mean_yards_gained = mean(yards_gained),
+            prop_success = mean(success),
+            .groups = "drop"
+            ) 
+
+
+########## The top 10 success, what else is going on?
+# use: top10_playexecution %>% pull(posteam_loc)
+
+# For those top 10, how many yards are they gaining? 
+  # May be successful but using certain directions in short yardage situations
+# Average yards 
+  # Bears don't necessarily stand out here for the Right... but its no element of surprise, consistent
+df_pbp_rush_25reg_26wk01 %>% 
+  # Just 2025
+  filter(season == 2025) %>% 
+  group_by(posteam, run_location) %>% 
+  summarize(n = n(), 
+            prop_success = mean(success),
+            mean_yards_gained = mean(yards_gained),
+            #median_yards_gained = median(yards_gained),
+            prop_1stDownorTD = mean((first_down == 1 
+                               | rush_touchdown == 1)),
+            .groups = "drop"
+            ) %>% 
+  group_by(posteam) %>% 
+  mutate(prop = n / sum(n)) %>% ungroup() %>% 
+  relocate(prop, .after = n) %>% 
+  mutate(posteam_loc = paste0(posteam, " ", run_location %>% str_to_title())) %>% 
+  filter(posteam_loc %in% (top10_playexecution %>% pull(posteam_loc))) %>%
+  mutate(posteam_loc = factor(posteam_loc,
+                              levels = (top10_playexecution %>% pull(posteam_loc)),
+                              ordered = TRUE)) %>% 
+  arrange(prop)
+  #arrange(mean_yards_gained)
+
+```
