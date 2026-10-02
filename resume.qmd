@@ -15,14 +15,19 @@ resources:
 </object>
 ```
 
-# Further Details (aka a Long Resume)
+# Further Details
 
 ## Freelance Work
 
 The statistics and quantitative research focus of my PhD allowed me to build a freelance career in research and data analysis/statistics.\
 In the past several years, I have expanded into data science, particularly by developing R coding skills.
 
-My freelance work can be quite varied, but I can categorize it into roughly the following four buckets and provide some examples or details:
+My freelance work is quite varied, but I can categorize it into four buckets:
+
+  1. Data science\
+  2. Data Analysis / Research Projects\
+  3. Project Coaching / Consulting\
+  4. Tutoring\
 
 ::: {.callout-note collapse="true"}
 ## Reviews

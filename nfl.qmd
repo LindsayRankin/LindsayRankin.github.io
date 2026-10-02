@@ -1,0 +1,24 @@
+---
+title: "NFL Data! 🏈"
+listing:
+  contents: nfl
+  type: default #grid # or `default` or `table`; each type has its own set of yaml options to include
+  sort: "date desc" # can also sort on more than one field
+  categories: true # allows you to sort posts by assigned categories 
+
+---
+
+Just for fun! \
+
+::: {style="margin-left: 2em;"}
+Stats are often mentioned during NFL broadcasts, and I often have questions.
+
+I'm curious to learn more about the evolution of analytics in the NFL, how do [sabermetric](https://en.wikipedia.org/wiki/Sabermetrics)-like approaches get translated to this more complicated football context?\
+
+And my team is finally relevant and exciting, [BEAR DOWN CHICAGO BEARS!](https://www.chicagobears.com/)🐻⬇️🏈
+:::
+
+So let's starting exploring NFL data, make some fun graphs, and practice quick-turnaround small-scale write ups (and maybe, eventually, use this to try to learn some new data skills and get into some more complicated football analytics). \
+\
+\
+

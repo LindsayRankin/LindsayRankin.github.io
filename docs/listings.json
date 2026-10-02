@@ -1,5 +1,13 @@
 [
   {
+    "listing": "/nfl.html",
+    "items": [
+      "/nfl/2026-09-26-week02/index.html",
+      "/nfl/2026-09-20-week01/index.html",
+      "/nfl/2026-09-19-getting-started-nflverse/index.html"
+    ]
+  },
+  {
     "listing": "/projects.html",
     "items": [
       "/projects/2026-07-09-m-world-cup-age/index.html"
