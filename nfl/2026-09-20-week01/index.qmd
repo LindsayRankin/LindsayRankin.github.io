@@ -78,7 +78,7 @@ The Bear's offensive line was (finally! mostly!) a strength last year — the un
 <script async src="//www.instagram.com/embed.js"></script>
 ::: 
 
-Left guard Joe Thuney was the inaugural 2025 NFL Protector of the Year, right guard Jonah Jackson is solid, and right tackle Darnell Wright is a monster. So, collectively, the right side is solid and **the Bears run right because of Wright.**
+Left guard Joe Thuney was the inaugural 2025 NFL Protector of the Year, right guard Jonah Jackson is solid, and right tackle Darnell Wright is a monster. Given the left tackle issues, it makes the right side the strength and **the Bears run right because of Wright.**
 
 (Side note: Darnell Wright is also freakishly athletic and needs to be on the receiving end of a trick-play kinda touchdown pass ASAP.) 
 
@@ -121,13 +121,31 @@ df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>%
                              "right_end"),
                   ordered = TRUE)) %>% 
   mutate(chicagopos = ifelse(posteam == "CHI", 1, 0)) %>% 
-  # just rushing
-  filter(rush_attempt == 1)
+  # just rushing... may be some inconsistencies across these to check
+  filter(play_type == "run" | rush_attempt == 1 | rush == 1)
 
 
 #----------------------------------- 
 # FILTERING 
 #----------------------------------- 
+
+##### Update (because filter above):
+### exclude play_type == "no_play"
+df_pbp_rush_25reg_26wk01 %>% 
+  count(play_type)
+df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>% 
+  filter(play_type != "no_play")
+
+##### Update:
+### QB Scrambles get coded as play_type == "run" and pass == 1 (which are incidentally all also rush_attempt == 1)
+  # intended as passes, remove from data about rush
+df_pbp_rush_25reg_26wk01 %>% 
+  count(qb_scramble)
+# FILTER to remove qb_scramble
+df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>% 
+  filter(qb_scramble == 0)
+
+
 
 ### QB Kneel downs are not really runs
 # qb_kneel account for a lot of the missing run_gap_dir
@@ -189,32 +207,44 @@ df_pbp_rush_25reg_26wk01 %>%
   filter(penalty_type == "Illegal Forward Pass") %>% 
   select(desc)
 
-# FILTER to remove n=6 Illegal Forward Passes, which includes final n=2 missing run_gap_dir 
-df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>% 
-  filter(is.na(penalty_type) | penalty_type != "Illegal Forward Pass") 
+# Update: NOT removed
+# Could filter, but it's just 3; also in other years these sometimes reflect later illegal laterals on the play, not the QB; so updating to skill this removal
+# # Previously (but now not): FILTER to remove n=3 Illegal Forward Passes, which includes final n=2 missing run_gap_dir 
+# df_pbp_rush_25reg_26wk01 <- df_pbp_rush_25reg_26wk01 %>% 
+#   filter(is.na(penalty_type) | penalty_type != "Illegal Forward Pass") 
 
 
 ### Accounted for all missing on run_gap_dir
 df_pbp_rush_25reg_26wk01 %>% 
   count(run_location, run_gap_dir) 
 
+### 
+df_pbp_rush_25reg_26wk01 %>%
+  count(play_type, rush, rush_attempt)
 
 ```
 
-Because I am interested in play calling direction preferences, I am focusing on plays that seem to be intended as rushes (i.e., *not* quarterback scrambles), and plays in which we can interpret the direction (i.e., we won't know to intended direction for rush attempts when there was a fumble in the backfield, just drop those entirely). 
+Because I am interested in play calling direction preferences, I am focusing on plays that seem to be intended as rushes (i.e., *not* quarterback scrambles), and plays in which we can interpret the direction (i.e., we may not have a coding of the intended direction for rush attempts when there was a fumble in the backfield before the hand off). 
 
 ::: {.callout-note collapse="true"}
-## Nitty-gritty details of rush attempts that are excluded
+## Nitty-gritty details of runs that are excluded
 
-This is the less interesting story to tell, but a major part of the real work of getting familiar with new data: Figuring out the messy details, what do I want to conceptually include or exclude, and what is missing and why.
+This is the less interesting story to tell, but a major part of the real work of getting familiar with new data: Figuring out the messy details, what do I want to conceptually include or exclude, and what is missing and why. The [Data Dictionary](https://nflreadr.nflverse.com/articles/dictionary_pbp.html) is a starting point, but the exact details can be tricky — particularly for how plays get represented when they are not so straight forward (i.e., an intended pass breaks down and becomes a run; a fumble happens; there are penalties before the snap or during the play, and they may nullify the play or be added on to the end result). 
 
-I will *exclude*: quarterback scrambles (they were intended as passes, and the direction they go is often in reaction to a breakdown rather than a plan), quarterback kneel downs (this isn't really a play, and doesn't have a direction and gap coded anyways), fumbles when there is no run direction (that is, run_location is NA; a lot of these were fumbles by the quarterback so likely occurring before or during the hand off, most result in no gain or losses, and overall it seems we can't interpret the called rush direction). In this data, two point attempts do not have direction information, so I'll have to drop those as well (which is fine, they are rare and a bit conceptually different in overall game-flow-play-calling given their one-shot nature). 
+I start by including play_type == "run" or when rush == 1 or when rush_attempt == 1, and then examining any inconsistencies and other things I find that don't fit my conceptualization of run play calling. (Note that by the end of cleaning, these "or's" became "and's"; that is, all plays that remain were play_type == "run" & rush == 1 & rush_attempt == 1.)
 
-Finally, I also removed 6 plays with penalties for illegal forward passes as these were likely not intended to be running plays. (This was a somewhat incidental find because 2 of these plays had left/right run_location and were the only such non-middle run_location that lacked gap information; upon stumbling on them and investigating all penalty types, I realized I conceptually would like to exclude this particular penalty because I think it indicates that it was not intended to be a run.)
+I will *exclude*: 
 
-I did not remove any other plays for penalties (possibly a clean up for the future), although overall offensive penalty rates of the remaining data were very low (< 1%). 
+  - quarterback scrambles (they were intended as passes, and the direction they go is often in reaction to a breakdown rather than a plan)
+  - quarterback kneel downs (this isn't really a play, and doesn't have a direction and gap coded anyways) 
+  - fumbles when there is no run direction (that is, run_location is NA; spot checking these, a lot were fumbles by the quarterback so likely occurring before or during the hand off, most result in no gain or losses, and overall it seems we can't interpret the called rush direction)
+  - two point attempts (they do not have direction information in this data anyways, but conceptually they are also a bit different in overall game-flow-play-calling given their one-shot nature)
 
-I will note that (other than the fumbles) even when a run did not gain positive yards, the data has coded for the (presumably intended) direction and gap. And fumbles with yards gained also had run_location (seemingly, these would mostly be fumbles later down the field). So these plays were all included.
+I removed any play_type == "no_play" when the snap or intended play is nullified by a penalty.\
+I did *not* remove any other plays with penalties, as these may be on offense or defense and could be offsetting or declined or added on to the end of runs.\
+I do not yet fully understand the handling of penalties within the nflverse, and I will need to spend more time with understanding how this is represented in this data, what are the conventions/norms are for dealing with these types of plays. But I will note that of the run plays in the sample I have defined, overall offensive penalty rates of the remaining data were very low (< 1%).\ 
+
+I will note that (other than some fumbles) even when a run did not gain positive yards, the data has coded for the (presumably intended) direction and gap. And fumbles with yards gained also had run_location (seemingly, these would mostly be fumbles later down the field). So these plays were all included.
 :::
 
 
@@ -230,7 +260,7 @@ df_pbp_rush_25reg_26wk01 %>%
 
 I'm primarily interested in my Chicago Bears, but I'm going to compare them to the NFL *when excluding Chicago*, aka the **rest of the NFL**. 
 
-The rest of the NFL is pretty balanced in their split between left and right, and picking either direction a bit more often than the middle across both the 2025 regular season and in the opening week 1 of 2026.
+The rest of the NFL was pretty balanced in their split between left and right in 2025, and picking either direction a bit more often than the middle. Week 1 of 2026 did show a bit of a preference for running to the left.  
 
 ```{r}
 #| include: true
@@ -348,7 +378,7 @@ Did any teams have as extreme of a direction preference for the run as the Chica
 
 Nope! 
 
-The Bears were the most extreme in their direction-preference. The Atlanta Falcons liked rushing left (and to a lesser extent right, foregoing rushes up the middle), but not nearly as much as the Bears ran right. 
+The Bears were the most extreme in their direction-preference. The Tampa Bay Buccaneers and the Atlanta Falcons liked rushing left (and to a lesser extent the Falcons also liked going right, foregoing rushes up the middle), but not nearly as much as the Bears ran right. 
 
 ```{r}
 #| out-width: "100%"
@@ -510,7 +540,7 @@ df_pbp_rush_25reg_26wk01 %>%
 
 ```
 
-How does that 51.6% success rate going right stack up against the best success rates for teams running in particular directions? 
+How does that success rate going right stack up against the best success rates for teams running in particular directions? 
 
 ### Top Play Execution, Regardless of Play Calling Rush Direction-Preferences
 
@@ -584,21 +614,23 @@ top10_playexecution %>%
       ) 
 
 ```
-Wanting to wind down this first week's getting-to-know the data exercise, I am going to stop myself from too much detail to follow up on this, or looking at success in such a small sample of 2026 (i.e., the Titans had a 100% success rate going left in 2026 week 1... based on all of three runs). 
+Wanting to wind down this first week's getting-to-know the data exercise, I am going to stop myself from too much detail to follow up on this, or looking at success in such a small sample of 2026 (i.e., the Titans had a 100% success rate going left in 2026 week 1... based on two runs in that direction). 
 
 But a few conceptual aspects to point out about the 2025 data and ideas that might be picked up in the future: 
 
-Of these top 10 team-direction success rates, the Bears are using the middle the least relative to other groups (that is, they run up the middle only 16.3% of the time whereas the next lowest usage among these top 10 success rates among all team-direction combination is that Denver runs up the middle only 21.1% of the time). 
+::: {style="margin-left: 2em;"}
+Of these top 10 team-direction success rates, the Bears are using the middle the least relative to other groups (that is, they run up the middle only 16.6% of the time whereas the next lowest usage among these top 10 success rates is that Denver runs up the middle only 20.3% of the time). 
 
 Why would the Bears not run up the middle more often if they are successful? 
 
-It's successful, but in looking at the yards gained it's quite low relative to the others — so it's likely a result of being selectively but successfully used in short yardage situations. This may be true of some of these other top 10s because the middle is heavily represented in this graph, but across the league running up the middle averages fewer yards than either left or right directions. 
+It's successful, but it's average yards gained is quite low (as is Denver's runs up the middle) — so it's likely a result of being successfully but selectively used primarily in short yardage situations. This may be true of some of these other top 10s: The middle is heavily represented in this graph, but across the league running up the middle averages fewer yards than either left or right directions. 
 
-In fact, if we look at it the other way, we know from our prior graphs that the Bears going right is far more common than any other team-direction combo (at 51.5%), and among these top 10 success rates (among all team-direction combination) the next most common team-direction play call is that Buffalo goes right 39.1% of the time.
+In fact, if we look at it the other way, we know from our prior graphs that the Bears going right is far more common than any other team-direction combo (at 52.8%), and among these top 10 success rates (among all team-direction combination) the next most common team-direction play call is that Buffalo goes right 39.1% of the time.
+:::
 
-Thus, there is not much of an element of surprise or situational selectivity in the Bears running right as it's the single most common team-direction preference — but it is also one of the most successful team-direction combinations. 
+Overall, there is not much of an element of surprise or situational selectivity in the Bears running right as it's the single most common team-direction preference — but it is also one of the most successful team-direction combinations. 
 
-In 2025 the Bears ran right often, and they did it very well. And they've started week 1 of 2026 off calling runs to the right — and we'll see how well it works again this year as the season goes on. 
+In 2025 the Bears ran right often, and they did it very well. And they've started week 1 of 2026 off calling runs to the right. We'll see how well it works again this year. 
 
 Bear Down! 🐻⬇️🏈
 
@@ -625,6 +657,18 @@ df_pbp_rush_25reg_26wk01 %>%
             .groups = "drop"
             ) 
 
+
+# 2026 is just to small to look at success
+df_pbp_rush_25reg_26wk01 %>% 
+  # Just 2026
+  filter(season == 2026) %>% 
+  group_by(posteam, run_location) %>% 
+  summarize(n = n(), # count by run_location 
+            mean_yards_gained = mean(yards_gained),
+            prop_success = mean(success),
+            .groups = "drop"
+            ) %>% 
+  arrange(-prop_success)
 
 ########## The top 10 success, what else is going on?
 # use: top10_playexecution %>% pull(posteam_loc)

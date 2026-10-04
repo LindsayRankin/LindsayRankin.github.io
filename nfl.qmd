@@ -8,17 +8,18 @@ listing:
 
 ---
 
-Just for fun! \
+Just for fun! I watch *a lot* of football. And:\
 
 ::: {style="margin-left: 2em;"}
 Stats are often mentioned during NFL broadcasts, and I often have questions.
 
 I'm curious to learn more about the evolution of analytics in the NFL, how do [sabermetric](https://en.wikipedia.org/wiki/Sabermetrics)-like approaches get translated to this more complicated football context?\
 
-And my team is finally relevant and exciting, [BEAR DOWN CHICAGO BEARS!](https://www.chicagobears.com/)🐻⬇️🏈
+My team is finally relevant and exciting, [BEAR DOWN CHICAGO BEARS!](https://www.chicagobears.com/)🐻⬇️🏈
 :::
 
-So let's starting exploring NFL data, make some fun graphs, and practice quick-turnaround small-scale write ups (and maybe, eventually, use this to try to learn some new data skills and get into some more complicated football analytics). \
+So let's starting exploring NFL data, make some fun graphs, and practice quick-turnaround small-scale write ups.\
+(And maybe, eventually, use this to try to learn some new data skills and get into some more complicated football analytics). \
 \
 \
 
