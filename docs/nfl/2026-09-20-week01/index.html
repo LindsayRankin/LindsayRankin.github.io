@@ -260,54 +260,62 @@ View this post on Instagram
 </blockquote>
 <script async="" src="//www.instagram.com/embed.js"></script>
 </div>
-<p>Left guard Joe Thuney was the inaugural 2025 NFL Protector of the Year, right guard Jonah Jackson is solid, and right tackle Darnell Wright is a monster. So, collectively, the right side is solid and <strong>the Bears run right because of Wright.</strong></p>
+<p>Left guard Joe Thuney was the inaugural 2025 NFL Protector of the Year, right guard Jonah Jackson is solid, and right tackle Darnell Wright is a monster. Given the left tackle issues, it makes the right side the strength and <strong>the Bears run right because of Wright.</strong></p>
 <p>(Side note: Darnell Wright is also freakishly athletic and needs to be on the receiving end of a trick-play kinda touchdown pass ASAP.)</p>
 <p>Let’s first check out the extent to which the Bears play calling did prefer to go right in 2025, and see if those trends continued into the first week 1 of 2026.</p>
 <section id="play-calling" class="level2">
 <h2 class="anchored" data-anchor-id="play-calling">Play Calling</h2>
 <p>The <a href="https://nflverse.nflverse.com/">nflverse</a> play-by-play data records the direction for rush attempts: left, middle, right.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p>Because I am interested in play calling direction preferences, I am focusing on plays that seem to be intended as rushes (i.e., <em>not</em> quarterback scrambles), and plays in which we can interpret the direction (i.e., we won’t know to intended direction for rush attempts when there was a fumble in the backfield, just drop those entirely).</p>
+<p>Because I am interested in play calling direction preferences, I am focusing on plays that seem to be intended as rushes (i.e., <em>not</em> quarterback scrambles), and plays in which we can interpret the direction (i.e., we may not have a coding of the intended direction for rush attempts when there was a fumble in the backfield before the hand off).</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Nitty-gritty details of rush attempts that are excluded
+<span class="screen-reader-only">Note</span>Nitty-gritty details of runs that are excluded
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>This is the less interesting story to tell, but a major part of the real work of getting familiar with new data: Figuring out the messy details, what do I want to conceptually include or exclude, and what is missing and why.</p>
-<p>I will <em>exclude</em>: quarterback scrambles (they were intended as passes, and the direction they go is often in reaction to a breakdown rather than a plan), quarterback kneel downs (this isn’t really a play, and doesn’t have a direction and gap coded anyways), fumbles when there is no run direction (that is, run_location is NA; a lot of these were fumbles by the quarterback so likely occurring before or during the hand off, most result in no gain or losses, and overall it seems we can’t interpret the called rush direction). In this data, two point attempts do not have direction information, so I’ll have to drop those as well (which is fine, they are rare and a bit conceptually different in overall game-flow-play-calling given their one-shot nature).</p>
-<p>Finally, I also removed 6 plays with penalties for illegal forward passes as these were likely not intended to be running plays. (This was a somewhat incidental find because 2 of these plays had left/right run_location and were the only such non-middle run_location that lacked gap information; upon stumbling on them and investigating all penalty types, I realized I conceptually would like to exclude this particular penalty because I think it indicates that it was not intended to be a run.)</p>
-<p>I did not remove any other plays for penalties (possibly a clean up for the future), although overall offensive penalty rates of the remaining data were very low (&lt; 1%).</p>
-<p>I will note that (other than the fumbles) even when a run did not gain positive yards, the data has coded for the (presumably intended) direction and gap. And fumbles with yards gained also had run_location (seemingly, these would mostly be fumbles later down the field). So these plays were all included.</p>
+<p>This is the less interesting story to tell, but a major part of the real work of getting familiar with new data: Figuring out the messy details, what do I want to conceptually include or exclude, and what is missing and why. The <a href="https://nflreadr.nflverse.com/articles/dictionary_pbp.html">Data Dictionary</a> is a starting point, but the exact details can be tricky — particularly for how plays get represented when they are not so straight forward (i.e., an intended pass breaks down and becomes a run; a fumble happens; there are penalties before the snap or during the play, and they may nullify the play or be added on to the end result).</p>
+<p>I start by including play_type == “run” or when rush == 1 or when rush_attempt == 1, and then examining any inconsistencies and other things I find that don’t fit my conceptualization of run play calling. (Note that by the end of cleaning, these “or’s” became “and’s”; that is, all plays that remain were play_type == “run” &amp; rush == 1 &amp; rush_attempt == 1.)</p>
+<p>I will <em>exclude</em>:</p>
+<ul>
+<li>quarterback scrambles (they were intended as passes, and the direction they go is often in reaction to a breakdown rather than a plan)</li>
+<li>quarterback kneel downs (this isn’t really a play, and doesn’t have a direction and gap coded anyways)</li>
+<li>fumbles when there is no run direction (that is, run_location is NA; spot checking these, a lot were fumbles by the quarterback so likely occurring before or during the hand off, most result in no gain or losses, and overall it seems we can’t interpret the called rush direction)</li>
+<li>two point attempts (they do not have direction information in this data anyways, but conceptually they are also a bit different in overall game-flow-play-calling given their one-shot nature)</li>
+</ul>
+<p>I removed any play_type == “no_play” when the snap or intended play is nullified by a penalty.<br>
+I did <em>not</em> remove any other plays with penalties, as these may be on offense or defense and could be offsetting or declined or added on to the end of runs.<br>
+I do not yet fully understand the handling of penalties within the nflverse, and I will need to spend more time with understanding how this is represented in this data, what are the conventions/norms are for dealing with these types of plays. But I will note that of the run plays in the sample I have defined, overall offensive penalty rates of the remaining data were very low (&lt; 1%).&nbsp;</p>
+<p>I will note that (other than some fumbles) even when a run did not gain positive yards, the data has coded for the (presumably intended) direction and gap. And fumbles with yards gained also had run_location (seemingly, these would mostly be fumbles later down the field). So these plays were all included.</p>
 </div>
 </div>
 </div>
 <p>I’m primarily interested in my Chicago Bears, but I’m going to compare them to the NFL <em>when excluding Chicago</em>, aka the <strong>rest of the NFL</strong>.</p>
-<p>The rest of the NFL is pretty balanced in their split between left and right, and picking either direction a bit more often than the middle across both the 2025 regular season and in the opening week 1 of 2026.</p>
+<p>The rest of the NFL was pretty balanced in their split between left and right in 2025, and picking either direction a bit more often than the middle. Week 1 of 2026 did show a bit of a preference for running to the left.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="dhzppqrdav" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#dhzppqrdav table {
+<div id="iirskebfkj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#iirskebfkj table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#dhzppqrdav thead, #dhzppqrdav tbody, #dhzppqrdav tfoot, #dhzppqrdav tr, #dhzppqrdav td, #dhzppqrdav th {
+#iirskebfkj thead, #iirskebfkj tbody, #iirskebfkj tfoot, #iirskebfkj tr, #iirskebfkj td, #iirskebfkj th {
   border-style: none;
 }
 
-#dhzppqrdav p {
+#iirskebfkj p {
   margin: 0;
   padding: 0;
 }
 
-#dhzppqrdav .gt_table {
+#iirskebfkj .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -333,12 +341,12 @@ View this post on Instagram
   border-left-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_caption {
+#iirskebfkj .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#dhzppqrdav .gt_title {
+#iirskebfkj .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -350,7 +358,7 @@ View this post on Instagram
   border-bottom-width: 0;
 }
 
-#dhzppqrdav .gt_subtitle {
+#iirskebfkj .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -362,7 +370,7 @@ View this post on Instagram
   border-top-width: 0;
 }
 
-#dhzppqrdav .gt_heading {
+#iirskebfkj .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -374,13 +382,13 @@ View this post on Instagram
   border-right-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_bottom_border {
+#iirskebfkj .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_col_headings {
+#iirskebfkj .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -395,7 +403,7 @@ View this post on Instagram
   border-right-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_col_heading {
+#iirskebfkj .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -415,7 +423,7 @@ View this post on Instagram
   overflow-x: hidden;
 }
 
-#dhzppqrdav .gt_column_spanner_outer {
+#iirskebfkj .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -427,15 +435,15 @@ View this post on Instagram
   padding-right: 4px;
 }
 
-#dhzppqrdav .gt_column_spanner_outer:first-child {
+#iirskebfkj .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#dhzppqrdav .gt_column_spanner_outer:last-child {
+#iirskebfkj .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#dhzppqrdav .gt_column_spanner {
+#iirskebfkj .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -447,11 +455,11 @@ View this post on Instagram
   width: 100%;
 }
 
-#dhzppqrdav .gt_spanner_row {
+#iirskebfkj .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#dhzppqrdav .gt_group_heading {
+#iirskebfkj .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -477,7 +485,7 @@ View this post on Instagram
   text-align: left;
 }
 
-#dhzppqrdav .gt_empty_group_heading {
+#iirskebfkj .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -492,15 +500,15 @@ View this post on Instagram
   vertical-align: middle;
 }
 
-#dhzppqrdav .gt_from_md > :first-child {
+#iirskebfkj .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#dhzppqrdav .gt_from_md > :last-child {
+#iirskebfkj .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#dhzppqrdav .gt_row {
+#iirskebfkj .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -519,7 +527,7 @@ View this post on Instagram
   overflow-x: hidden;
 }
 
-#dhzppqrdav .gt_stub {
+#iirskebfkj .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -532,7 +540,7 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#dhzppqrdav .gt_stub_row_group {
+#iirskebfkj .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -546,15 +554,15 @@ View this post on Instagram
   vertical-align: top;
 }
 
-#dhzppqrdav .gt_row_group_first td {
+#iirskebfkj .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#dhzppqrdav .gt_row_group_first th {
+#iirskebfkj .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#dhzppqrdav .gt_summary_row {
+#iirskebfkj .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -564,16 +572,16 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#dhzppqrdav .gt_first_summary_row {
+#iirskebfkj .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_first_summary_row.thick {
+#iirskebfkj .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#dhzppqrdav .gt_last_summary_row {
+#iirskebfkj .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -583,7 +591,7 @@ View this post on Instagram
   border-bottom-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_grand_summary_row {
+#iirskebfkj .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -593,7 +601,7 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#dhzppqrdav .gt_first_grand_summary_row {
+#iirskebfkj .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -603,7 +611,7 @@ View this post on Instagram
   border-top-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_last_grand_summary_row_top {
+#iirskebfkj .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -613,11 +621,11 @@ View this post on Instagram
   border-bottom-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_striped {
+#iirskebfkj .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#dhzppqrdav .gt_table_body {
+#iirskebfkj .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -626,7 +634,7 @@ View this post on Instagram
   border-bottom-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_footnotes {
+#iirskebfkj .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -640,7 +648,7 @@ View this post on Instagram
   border-right-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_footnote {
+#iirskebfkj .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -649,7 +657,7 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#dhzppqrdav .gt_sourcenotes {
+#iirskebfkj .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -663,7 +671,7 @@ View this post on Instagram
   border-right-color: #D3D3D3;
 }
 
-#dhzppqrdav .gt_sourcenote {
+#iirskebfkj .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -671,72 +679,72 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#dhzppqrdav .gt_left {
+#iirskebfkj .gt_left {
   text-align: left;
 }
 
-#dhzppqrdav .gt_center {
+#iirskebfkj .gt_center {
   text-align: center;
 }
 
-#dhzppqrdav .gt_right {
+#iirskebfkj .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#dhzppqrdav .gt_font_normal {
+#iirskebfkj .gt_font_normal {
   font-weight: normal;
 }
 
-#dhzppqrdav .gt_font_bold {
+#iirskebfkj .gt_font_bold {
   font-weight: bold;
 }
 
-#dhzppqrdav .gt_font_italic {
+#iirskebfkj .gt_font_italic {
   font-style: italic;
 }
 
-#dhzppqrdav .gt_super {
+#iirskebfkj .gt_super {
   font-size: 65%;
 }
 
-#dhzppqrdav .gt_footnote_marks {
+#iirskebfkj .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#dhzppqrdav .gt_asterisk {
+#iirskebfkj .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#dhzppqrdav .gt_indent_1 {
+#iirskebfkj .gt_indent_1 {
   text-indent: 5px;
 }
 
-#dhzppqrdav .gt_indent_2 {
+#iirskebfkj .gt_indent_2 {
   text-indent: 10px;
 }
 
-#dhzppqrdav .gt_indent_3 {
+#iirskebfkj .gt_indent_3 {
   text-indent: 15px;
 }
 
-#dhzppqrdav .gt_indent_4 {
+#iirskebfkj .gt_indent_4 {
   text-indent: 20px;
 }
 
-#dhzppqrdav .gt_indent_5 {
+#iirskebfkj .gt_indent_5 {
   text-indent: 25px;
 }
 
-#dhzppqrdav .katex-display {
+#iirskebfkj .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#dhzppqrdav div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#iirskebfkj div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -772,31 +780,31 @@ View this post on Instagram
 <tbody class="gt_table_body">
 <tr class="odd">
 <td class="gt_row gt_left" headers="run_location">Left</td>
-<td class="gt_row gt_center" headers="n_2025">4945</td>
-<td class="gt_row gt_center" headers="prop_2025">36.4%</td>
-<td class="gt_row gt_center" headers="n_2026">291</td>
-<td class="gt_row gt_center" headers="prop_2026">36.5%</td>
+<td class="gt_row gt_center" headers="n_2025">4608</td>
+<td class="gt_row gt_center" headers="prop_2025">36.7%</td>
+<td class="gt_row gt_center" headers="n_2026">271</td>
+<td class="gt_row gt_center" headers="prop_2026">37.1%</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="run_location">Middle</td>
-<td class="gt_row gt_center" headers="n_2025">3694</td>
+<td class="gt_row gt_center" headers="n_2025">3414</td>
 <td class="gt_row gt_center" headers="prop_2025">27.2%</td>
-<td class="gt_row gt_center" headers="n_2026">229</td>
-<td class="gt_row gt_center" headers="prop_2026">28.7%</td>
+<td class="gt_row gt_center" headers="n_2026">212</td>
+<td class="gt_row gt_center" headers="prop_2026">29.0%</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="run_location">Right</td>
-<td class="gt_row gt_center" headers="n_2025">4945</td>
-<td class="gt_row gt_center" headers="prop_2025">36.4%</td>
-<td class="gt_row gt_center" headers="n_2026">277</td>
-<td class="gt_row gt_center" headers="prop_2026">34.8%</td>
+<td class="gt_row gt_center" headers="n_2025">4522</td>
+<td class="gt_row gt_center" headers="prop_2025">36.0%</td>
+<td class="gt_row gt_center" headers="n_2026">247</td>
+<td class="gt_row gt_center" headers="prop_2026">33.8%</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="run_location">Total</td>
-<td class="gt_row gt_center" headers="n_2025">13584</td>
+<td class="gt_row gt_center" headers="n_2025">12544</td>
 <td class="gt_row gt_center" headers="prop_2025"><br>
 </td>
-<td class="gt_row gt_center" headers="n_2026">797</td>
+<td class="gt_row gt_center" headers="n_2026">730</td>
 <td class="gt_row gt_center" headers="prop_2026"><br>
 </td>
 </tr>
@@ -809,23 +817,23 @@ View this post on Instagram
 <p>The Bears, on the other hand, are going right by a large margin in 2025 and continuing that trend in the small sample we’ve seen in week 1 of 2026.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="kjvcrmwecb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#kjvcrmwecb table {
+<div id="vawtcvhsgi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vawtcvhsgi table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#kjvcrmwecb thead, #kjvcrmwecb tbody, #kjvcrmwecb tfoot, #kjvcrmwecb tr, #kjvcrmwecb td, #kjvcrmwecb th {
+#vawtcvhsgi thead, #vawtcvhsgi tbody, #vawtcvhsgi tfoot, #vawtcvhsgi tr, #vawtcvhsgi td, #vawtcvhsgi th {
   border-style: none;
 }
 
-#kjvcrmwecb p {
+#vawtcvhsgi p {
   margin: 0;
   padding: 0;
 }
 
-#kjvcrmwecb .gt_table {
+#vawtcvhsgi .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -851,12 +859,12 @@ View this post on Instagram
   border-left-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_caption {
+#vawtcvhsgi .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#kjvcrmwecb .gt_title {
+#vawtcvhsgi .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -868,7 +876,7 @@ View this post on Instagram
   border-bottom-width: 0;
 }
 
-#kjvcrmwecb .gt_subtitle {
+#vawtcvhsgi .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -880,7 +888,7 @@ View this post on Instagram
   border-top-width: 0;
 }
 
-#kjvcrmwecb .gt_heading {
+#vawtcvhsgi .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -892,13 +900,13 @@ View this post on Instagram
   border-right-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_bottom_border {
+#vawtcvhsgi .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_col_headings {
+#vawtcvhsgi .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -913,7 +921,7 @@ View this post on Instagram
   border-right-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_col_heading {
+#vawtcvhsgi .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -933,7 +941,7 @@ View this post on Instagram
   overflow-x: hidden;
 }
 
-#kjvcrmwecb .gt_column_spanner_outer {
+#vawtcvhsgi .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -945,15 +953,15 @@ View this post on Instagram
   padding-right: 4px;
 }
 
-#kjvcrmwecb .gt_column_spanner_outer:first-child {
+#vawtcvhsgi .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#kjvcrmwecb .gt_column_spanner_outer:last-child {
+#vawtcvhsgi .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#kjvcrmwecb .gt_column_spanner {
+#vawtcvhsgi .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -965,11 +973,11 @@ View this post on Instagram
   width: 100%;
 }
 
-#kjvcrmwecb .gt_spanner_row {
+#vawtcvhsgi .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#kjvcrmwecb .gt_group_heading {
+#vawtcvhsgi .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -995,7 +1003,7 @@ View this post on Instagram
   text-align: left;
 }
 
-#kjvcrmwecb .gt_empty_group_heading {
+#vawtcvhsgi .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1010,15 +1018,15 @@ View this post on Instagram
   vertical-align: middle;
 }
 
-#kjvcrmwecb .gt_from_md > :first-child {
+#vawtcvhsgi .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#kjvcrmwecb .gt_from_md > :last-child {
+#vawtcvhsgi .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#kjvcrmwecb .gt_row {
+#vawtcvhsgi .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1037,7 +1045,7 @@ View this post on Instagram
   overflow-x: hidden;
 }
 
-#kjvcrmwecb .gt_stub {
+#vawtcvhsgi .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1050,7 +1058,7 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#kjvcrmwecb .gt_stub_row_group {
+#vawtcvhsgi .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1064,15 +1072,15 @@ View this post on Instagram
   vertical-align: top;
 }
 
-#kjvcrmwecb .gt_row_group_first td {
+#vawtcvhsgi .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#kjvcrmwecb .gt_row_group_first th {
+#vawtcvhsgi .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#kjvcrmwecb .gt_summary_row {
+#vawtcvhsgi .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1082,16 +1090,16 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#kjvcrmwecb .gt_first_summary_row {
+#vawtcvhsgi .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_first_summary_row.thick {
+#vawtcvhsgi .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#kjvcrmwecb .gt_last_summary_row {
+#vawtcvhsgi .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1101,7 +1109,7 @@ View this post on Instagram
   border-bottom-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_grand_summary_row {
+#vawtcvhsgi .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1111,7 +1119,7 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#kjvcrmwecb .gt_first_grand_summary_row {
+#vawtcvhsgi .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1121,7 +1129,7 @@ View this post on Instagram
   border-top-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_last_grand_summary_row_top {
+#vawtcvhsgi .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1131,11 +1139,11 @@ View this post on Instagram
   border-bottom-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_striped {
+#vawtcvhsgi .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#kjvcrmwecb .gt_table_body {
+#vawtcvhsgi .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1144,7 +1152,7 @@ View this post on Instagram
   border-bottom-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_footnotes {
+#vawtcvhsgi .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1158,7 +1166,7 @@ View this post on Instagram
   border-right-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_footnote {
+#vawtcvhsgi .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1167,7 +1175,7 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#kjvcrmwecb .gt_sourcenotes {
+#vawtcvhsgi .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1181,7 +1189,7 @@ View this post on Instagram
   border-right-color: #D3D3D3;
 }
 
-#kjvcrmwecb .gt_sourcenote {
+#vawtcvhsgi .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1189,72 +1197,72 @@ View this post on Instagram
   padding-right: 5px;
 }
 
-#kjvcrmwecb .gt_left {
+#vawtcvhsgi .gt_left {
   text-align: left;
 }
 
-#kjvcrmwecb .gt_center {
+#vawtcvhsgi .gt_center {
   text-align: center;
 }
 
-#kjvcrmwecb .gt_right {
+#vawtcvhsgi .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#kjvcrmwecb .gt_font_normal {
+#vawtcvhsgi .gt_font_normal {
   font-weight: normal;
 }
 
-#kjvcrmwecb .gt_font_bold {
+#vawtcvhsgi .gt_font_bold {
   font-weight: bold;
 }
 
-#kjvcrmwecb .gt_font_italic {
+#vawtcvhsgi .gt_font_italic {
   font-style: italic;
 }
 
-#kjvcrmwecb .gt_super {
+#vawtcvhsgi .gt_super {
   font-size: 65%;
 }
 
-#kjvcrmwecb .gt_footnote_marks {
+#vawtcvhsgi .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#kjvcrmwecb .gt_asterisk {
+#vawtcvhsgi .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#kjvcrmwecb .gt_indent_1 {
+#vawtcvhsgi .gt_indent_1 {
   text-indent: 5px;
 }
 
-#kjvcrmwecb .gt_indent_2 {
+#vawtcvhsgi .gt_indent_2 {
   text-indent: 10px;
 }
 
-#kjvcrmwecb .gt_indent_3 {
+#vawtcvhsgi .gt_indent_3 {
   text-indent: 15px;
 }
 
-#kjvcrmwecb .gt_indent_4 {
+#vawtcvhsgi .gt_indent_4 {
   text-indent: 20px;
 }
 
-#kjvcrmwecb .gt_indent_5 {
+#vawtcvhsgi .gt_indent_5 {
   text-indent: 25px;
 }
 
-#kjvcrmwecb .katex-display {
+#vawtcvhsgi .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#kjvcrmwecb div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#vawtcvhsgi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1290,31 +1298,31 @@ View this post on Instagram
 <tbody class="gt_table_body">
 <tr class="odd">
 <td class="gt_row gt_left" headers="run_location">Left</td>
-<td class="gt_row gt_center" headers="n_2025">156</td>
-<td class="gt_row gt_center" headers="prop_2025">32.2%</td>
-<td class="gt_row gt_center" headers="n_2026">13</td>
-<td class="gt_row gt_center" headers="prop_2026">33.3%</td>
+<td class="gt_row gt_center" headers="n_2025">135</td>
+<td class="gt_row gt_center" headers="prop_2025">30.6%</td>
+<td class="gt_row gt_center" headers="n_2026">9</td>
+<td class="gt_row gt_center" headers="prop_2026">28.1%</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="run_location">Middle</td>
-<td class="gt_row gt_center" headers="n_2025">79</td>
-<td class="gt_row gt_center" headers="prop_2025">16.3%</td>
-<td class="gt_row gt_center" headers="n_2026">8</td>
-<td class="gt_row gt_center" headers="prop_2026">20.5%</td>
+<td class="gt_row gt_center" headers="n_2025">73</td>
+<td class="gt_row gt_center" headers="prop_2025">16.6%</td>
+<td class="gt_row gt_center" headers="n_2026">7</td>
+<td class="gt_row gt_center" headers="prop_2026">21.9%</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="run_location">Right</td>
-<td class="gt_row gt_center" headers="n_2025">250</td>
-<td class="gt_row gt_center" headers="prop_2025" style="background-color: #E64100">51.5%</td>
-<td class="gt_row gt_center" headers="n_2026">18</td>
-<td class="gt_row gt_center" headers="prop_2026" style="background-color: #E64100">46.2%</td>
+<td class="gt_row gt_center" headers="n_2025">233</td>
+<td class="gt_row gt_center" headers="prop_2025" style="background-color: #E64100">52.8%</td>
+<td class="gt_row gt_center" headers="n_2026">16</td>
+<td class="gt_row gt_center" headers="prop_2026" style="background-color: #E64100">50.0%</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="run_location">Total</td>
-<td class="gt_row gt_center" headers="n_2025">485</td>
+<td class="gt_row gt_center" headers="n_2025">441</td>
 <td class="gt_row gt_center" headers="prop_2025"><br>
 </td>
-<td class="gt_row gt_center" headers="n_2026">39</td>
+<td class="gt_row gt_center" headers="n_2026">32</td>
 <td class="gt_row gt_center" headers="prop_2026"><br>
 </td>
 </tr>
@@ -1329,7 +1337,7 @@ View this post on Instagram
 <p>I had lumped together all the rest of the NFL, so it was all rush attempts by any team other than the Bears. But let’s consider each team’s breakdown of the percentage of time they run left, middle, or right and look at the top play calling rush direction-preferences:</p>
 <p>Did any teams have as extreme of a direction preference for the run as the Chicago Bears in 2025?</p>
 <p>Nope!</p>
-<p>The Bears were the most extreme in their direction-preference. The Atlanta Falcons liked rushing left (and to a lesser extent right, foregoing rushes up the middle), but not nearly as much as the Bears ran right.</p>
+<p>The Bears were the most extreme in their direction-preference. The Tampa Bay Buccaneers and the Atlanta Falcons liked rushing left (and to a lesser extent the Falcons also liked going right, foregoing rushes up the middle), but not nearly as much as the Bears ran right.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -1393,7 +1401,7 @@ View this post on Instagram
 </div>
 </div>
 </div>
-<p>How does that 51.6% success rate going right stack up against the best success rates for teams running in particular directions?</p>
+<p>How does that success rate going right stack up against the best success rates for teams running in particular directions?</p>
 </section>
 <section id="top-play-execution-regardless-of-play-calling-rush-direction-preferences" class="level3">
 <h3 class="anchored" data-anchor-id="top-play-execution-regardless-of-play-calling-rush-direction-preferences">Top Play Execution, Regardless of Play Calling Rush Direction-Preferences</h3>
@@ -1409,14 +1417,16 @@ View this post on Instagram
 </div>
 </div>
 </div>
-<p>Wanting to wind down this first week’s getting-to-know the data exercise, I am going to stop myself from too much detail to follow up on this, or looking at success in such a small sample of 2026 (i.e., the Titans had a 100% success rate going left in 2026 week 1… based on all of three runs).</p>
+<p>Wanting to wind down this first week’s getting-to-know the data exercise, I am going to stop myself from too much detail to follow up on this, or looking at success in such a small sample of 2026 (i.e., the Titans had a 100% success rate going left in 2026 week 1… based on two runs in that direction).</p>
 <p>But a few conceptual aspects to point out about the 2025 data and ideas that might be picked up in the future:</p>
-<p>Of these top 10 team-direction success rates, the Bears are using the middle the least relative to other groups (that is, they run up the middle only 16.3% of the time whereas the next lowest usage among these top 10 success rates among all team-direction combination is that Denver runs up the middle only 21.1% of the time).</p>
+<div style="margin-left: 2em;">
+<p>Of these top 10 team-direction success rates, the Bears are using the middle the least relative to other groups (that is, they run up the middle only 16.6% of the time whereas the next lowest usage among these top 10 success rates is that Denver runs up the middle only 20.3% of the time).</p>
 <p>Why would the Bears not run up the middle more often if they are successful?</p>
-<p>It’s successful, but in looking at the yards gained it’s quite low relative to the others — so it’s likely a result of being selectively but successfully used in short yardage situations. This may be true of some of these other top 10s because the middle is heavily represented in this graph, but across the league running up the middle averages fewer yards than either left or right directions.</p>
-<p>In fact, if we look at it the other way, we know from our prior graphs that the Bears going right is far more common than any other team-direction combo (at 51.5%), and among these top 10 success rates (among all team-direction combination) the next most common team-direction play call is that Buffalo goes right 39.1% of the time.</p>
-<p>Thus, there is not much of an element of surprise or situational selectivity in the Bears running right as it’s the single most common team-direction preference — but it is also one of the most successful team-direction combinations.</p>
-<p>In 2025 the Bears ran right often, and they did it very well. And they’ve started week 1 of 2026 off calling runs to the right — and we’ll see how well it works again this year as the season goes on.</p>
+<p>It’s successful, but it’s average yards gained is quite low (as is Denver’s runs up the middle) — so it’s likely a result of being successfully but selectively used primarily in short yardage situations. This may be true of some of these other top 10s: The middle is heavily represented in this graph, but across the league running up the middle averages fewer yards than either left or right directions.</p>
+<p>In fact, if we look at it the other way, we know from our prior graphs that the Bears going right is far more common than any other team-direction combo (at 52.8%), and among these top 10 success rates (among all team-direction combination) the next most common team-direction play call is that Buffalo goes right 39.1% of the time.</p>
+</div>
+<p>Overall, there is not much of an element of surprise or situational selectivity in the Bears running right as it’s the single most common team-direction preference — but it is also one of the most successful team-direction combinations.</p>
+<p>In 2025 the Bears ran right often, and they did it very well. And they’ve started week 1 of 2026 off calling runs to the right. We’ll see how well it works again this year.</p>
 <p>Bear Down! 🐻⬇️🏈</p>
 
 
