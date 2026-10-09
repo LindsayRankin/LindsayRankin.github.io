@@ -1,0 +1,748 @@
+---
+title: "NFL 2026 Season: Week 4"
+# subtitle: 
+description: "Getting thisclose to the goal line, but not scoring points?"
+date: 10-07-2026
+categories: [R, Chicago Bears, Red Zone, Points]
+draft: false 
+toc: false
+execute:
+  echo: false
+  warning: false
+---
+
+
+```{r}
+#| include: false
+
+# for football emojis on graph
+knitr::opts_chunk$set(dev = "ragg_png")
+
+
+library(ggtext)
+library(gt)
+library(nflverse)
+library(tidyverse)
+
+#----------------------------------- 
+########## 
+#----------------------------------- 
+# Custom function for NFL theme on graphs 
+# Credit to Brad Congelio: https://bradcongelio.com/nfl-analytics-with-r-book/ 
+  # section "1.3.2 Unique Offensive Line Combinations vs. Win Percentage": 
+  
+nfl_analytics_theme <- function(..., base_size = 12) {
+  
+  theme(
+    text = element_text(family = "Calibri", #family = "Roboto",
+                        size = base_size,
+                        color = "black"),
+    axis.ticks = element_blank(),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(face = "bold"),
+    plot.title.position = "plot",
+    plot.title = element_markdown(size = 16,
+                                  vjust = .02,
+                                  hjust = 0.5),
+    plot.subtitle = element_markdown(hjust = 0.5),
+    plot.caption = element_markdown(size = 8),
+    panel.grid.minor = element_blank(),
+    panel.grid.major =  element_line(color = "#d0d0d0"),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    plot.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_blank(),
+    legend.background = element_rect(color = "#F7F7F7"),
+    legend.key = element_rect(color = "#F7F7F7"),
+    legend.title = element_text(face = "bold"),
+    legend.title.align = 0.5,
+    strip.text = element_text(face = "bold"))
+}
+
+
+```
+
+```{r notes-variables-available}
+
+# Variables likely of interest: 
+# https://nflreadr.nflverse.com/articles/dictionary_pbp.html
+# 
+# 
+# fixed_drive	Manually created drive number in a game.
+# fixed_drive_result	Manually created drive result.
+# drive_play_count	Numeric value of how many regular plays happened in a given drive.	
+# drive_inside20	Binary indicator if the offense was able to get inside the opponents 20 yard line.
+# drive_ended_with_score	Binary indicator the drive ended with a score.	
+# drive_quarter_start	Numeric value indicating in which quarter the given drive has started.	
+# drive_quarter_end	Numeric value indicating in which quarter the given drive has ended.
+# score_differential	Score differential between the posteam and defteam at the start of the play.
+# result	Equals home_score - away_score and means the game outcome from the perspective of the home team.
+
+
+```
+
+The Bears failed to score in really short yardage situations in week 4. Credit to the Jets' goal line defense. But it also seems like a frequent problem for the Bears offense this season. 
+
+It ***feels*** like the Bears are uniquely struggling at scoring points when they are ***incredibly close*** to the goal line.\
+Is it just a feeling, or is there any data to back up my hunch? \
+(That is, can I somewhat cherry-pick/not-fully-objectively run some analyses to express my pain through some data storytelling? 😂)
+
+More generally: **How are teams performing in close to goal drives in the 2026 season?**
+
+I'm not interested in just the red zone (inside the 20 yard line), but even closer: \
+Drives that make it within 10 yards, which I will call "close to goal drives". 
+
+::: {.callout-note collapse="true"}
+## Nitty-gritty details of "close to goal drives"
+
+Using the [nflverse data](#datacitation), I am defining this as is any drive that has a single play in the drive starting from 10 yards or closer to the opponents goal line. (Note that yardage is always recorded at whole increments, and "within 10 yards" usage in football includes right at the 10 yard line, so less than *or equal to* the 10 yard line, <= 10). This will include drives that made it within 10 yards but then went backwards (through penalties or tackles/going out of bounds behind the line of scrimmage). 
+
+Note that these drives do not necessarily have "goal to go" situations (a team could make it within 10 yards but the first down marker is short of the goal line, and they end the drive via a score, turnover, or time expiring). We could have use the term "low red zone", but I just prefer to call this sample "close to goal drives".
+
+Any drive that never starts a down within 10 yards of the goal line is *not* included — conceptually this means we are not looking at overall offensive scoring, as a team could be offensively highly effective and scoring longer touchdowns (or kicking field goals) without ever having a down inside of 10.  
+
+I'm just conceptually interested right now in when a team gets close (<= 10 yards), how are they performing — are they able to punch it in the end zone or at least score points?
+
+Note that I am excluding from analyses two drives that did get within the 10 yard line but ended with QB kneel downs at the end of the game — these were teams winning and closing out the game, and this scenarios do not conceptually represent the failure to score points in close yardage that I'm interested in. (Specifically: Both in week 4, the Seahawks beating the Chargers and the Vikings beating the Dolphins.)
+
+:::
+
+```{r data-pbp-neargoalline-load-filter}
+#| include: false
+
+#----------------------------------- 
+# LOAD DATA 
+#----------------------------------- 
+
+nflreadr::.clear_cache()
+
+# All 2026 games, up to week 4 (when currently doing this; want future runs to be consistent)
+   # Offensive plays (no kickoffs, no extra points or two points, and remove no_play penalties and timeouts)
+df_allpbp26 <- nflreadr::load_pbp(2026) %>% 
+  # Analysis occurring at week 4
+  filter(week <= 4) %>% 
+  filter(!is.na(play_type)) %>% 
+  # take out non-offensive plays
+  filter(!play_type %in% c("no_play", "extra_point", "kickoff")) %>% 
+  # exclude two point attempts
+  filter(two_point_attempt == 0)
+
+
+#----------------------------------- 
+# SET UP - Drives within 10 yards
+#----------------------------------- 
+
+# Data Dictionary: 
+# drive, fixed_drive
+
+# Drives close to goal line, within 10 yards and their outcomes
+df_summary_goalline_drives <- df_allpbp26 %>% 
+    # limit to those within 10 yards
+    filter(yardline_100 <= 10) %>% 
+    select(game_id, posteam, fixed_drive, play_id,
+           # if we want to just use this data set for analyses:
+           qb_kneel, # some end of game kneel downs
+           yardline_100, # to calculate closest they got
+           fixed_drive_result, drive_ended_with_score,
+           drive_play_count, drive_quarter_start, drive_quarter_end, 
+           score_differential, result
+           ) %>% 
+    group_by(game_id, posteam, fixed_drive) %>% 
+    mutate(# number of plays run within 10 yards 
+             # (note: not same as plays run after getting within 10 if they go backwards)
+           goallinedrive_n_plays_wi10yd = sum(n()),
+           # closest any play got; can later filter on this
+           goallinedrive_closestyd = min(yardline_100),
+           # drive ends with qb_kneel
+           goallinedrive_qb_kneel_end = last(qb_kneel)) %>% ungroup() %>% 
+    select(-play_id, -qb_kneel, -yardline_100) %>% # drop original/unique before distinct
+    # one summary per drive
+    distinct()  %>% 
+  # drive_ended_with_score 0/1 includes Opp Touchdown as 1
+  # so calculate and use new version
+  mutate(drive_ended_with_off_score = ifelse(
+    fixed_drive_result %in% c("Touchdown", "Field goal"),
+    1, 0
+  )) %>% 
+  # Simplified outcome for scoring
+  mutate(fixed_drive_result_score = factor(
+    case_when(
+      fixed_drive_result == "Touchdown" ~ "Touchdown",
+      fixed_drive_result == "Field goal" ~ "Field goal",
+      TRUE ~ "No points"),
+    levels = c("No points", "Field goal", "Touchdown"),
+    ordered = TRUE
+  )) %>% 
+  # Simplified outcome for points; ASSUMPTION HERE of 7 for TD
+  mutate(fixed_drive_result_points = case_when(
+    fixed_drive_result_score == "Touchdown" ~ 7, # could consider 6; 6.5; etc.
+    fixed_drive_result_score == "Field goal" ~ 3,
+    fixed_drive_result_score == "No points" ~ 0,
+  )) 
+
+# # Yup, the one opposing touchdown was the Giants v Cardinals end of game pick 6 
+# df_allpbp26 %>% filter(yardline_100 <= 10, fixed_drive_result == "Opp touchdown") %>%
+#   relocate(desc)
+
+
+#----------------------------------- 
+# FILTERING
+#----------------------------------- 
+
+
+### QB kneel downs at the end of game
+# Two games do end with qb kneel downs within the 10, exclude for later analysis
+# df_summary_goalline_drives %>%
+#   filter(goallinedrive_qb_kneel_end == 1)
+# 
+# df_allpbp26 %>% 
+#   filter(yardline_100 <= 10 & qb_kneel == 1 & fixed_drive_result == "End of half") %>% 
+#   relocate(desc, game_id)
+### Exclude qb kneel downs to end a game even if they were within 10 yards
+  # conceptually not like failed conversions to points
+  # two: "2026_04_LAC_SEA" "2026_04_MIA_MIN"
+df_summary_goalline_drives <- df_summary_goalline_drives %>% 
+  filter(goallinedrive_qb_kneel_end == 0) %>% 
+  select(-goallinedrive_qb_kneel_end)
+
+
+    #---
+    # Not used... attaching to full pbp data
+    #---
+        # ### Do not need this, but in the future may be conceptually interesting
+        # # Join to original pbp data to have indicator for all plays of any drives that made it near the goal line
+        # # Filter only plays part of drives that get near goal line
+        # df_pbp_goalline_drives <- df_allpbp26 %>% 
+        #   left_join(df_summary_goalline_drives %>% 
+        #               select(# to join on:
+        #                 game_id, posteam, fixed_drive, 
+        #                 # newly calculated summaries: 
+        #                 fixed_drive_result_score, fixed_drive_result_points,
+        #                 goallinedrive_closestyd, goallinedrive_n_plays_wi10yd),
+        #             by = join_by(game_id, posteam, fixed_drive)) %>% 
+        #   relocate(fixed_drive, fixed_drive_result_score, fixed_drive_result_points,
+        #            goallinedrive_closestyd, goallinedrive_n_plays_wi10yd, 
+        #            .after = drive) %>% 
+        #   # Keep only drives within 10 yards (that didn't end in kneel down)
+        #     # aka those in the df_summary_goalline_drives
+        #   filter(!is.na(goallinedrive_n_plays_wi10yd)) 
+    #---
+    # END: Not used...
+    #---
+
+
+```
+
+```{r summary}
+#| include: false
+
+### Summary numbers 
+
+
+# # df_summary_goalline_drives variables of interest:
+# drive_ended_with_off_score
+# fixed_drive_result_score
+# fixed_drive_result_points
+# goallinedrive_closestyd 
+# goallinedrive_n_plays_wi10yd
+
+
+
+df_summary_goalline_drives %>% 
+  count(drive_ended_with_off_score, fixed_drive_result)
+
+
+# Count of drives that made it within 10 yards, 5 yards, 1 yard
+df_summary_goalline_drives %>% nrow() %>% paste0(" within 10 yards")
+df_summary_goalline_drives %T>% 
+  { count(., goallinedrive_closestyd <= 5) %>% mutate(prop = n / sum(n)) %>% print() } %>% 
+  count(goallinedrive_closestyd <= 1) %>% mutate(prop = n / sum(n)) %>% print()
+
+
+# Proportion scoring when within 10 yards, 5 yards, 1 yard
+  # Very similar: 90, 89, 87
+df_summary_goalline_drives %>% count(drive_ended_with_off_score) %>% mutate(prop = n/sum(n))
+df_summary_goalline_drives %T>% 
+  { filter(., goallinedrive_closestyd <= 5) %>%
+      count(drive_ended_with_off_score) %>% 
+      mutate(prop = n/sum(n)) %>% print() } %>% 
+  filter(goallinedrive_closestyd <= 1) %>% 
+  count(drive_ended_with_off_score) %>% 
+  mutate(prop = n/sum(n)) %>% print()
+
+
+```
+
+Taking a look at the percentage of time each team scores when a drive makes it inside of 10 years, 15 of 32 teams scored on every close to goal drive.
+
+
+```{r graph-prop-anyscore}
+#| fig-width: 12
+#| fig-asp: 1.2
+#| output-width: "100%"
+
+
+# Order by team prop score, tie breaker of mean_points
+team_prop_score_order <- df_summary_goalline_drives %>% 
+  group_by(posteam) %>% 
+  summarize(n = n(),
+            prop_score = mean(drive_ended_with_off_score),
+            # tie breaker
+            mean_points = mean(fixed_drive_result_points)) %>% 
+  arrange(prop_score, mean_points) %>% pull(posteam)
+
+
+# Proportion of time a team scores when within 10
+df_summary_goalline_drives %>% 
+  group_by(posteam) %>% 
+  summarize(n = n(),
+            prop_score = mean(drive_ended_with_off_score)) %>% 
+  # slice_min(order_by = prop_score, n = 10, with_ties = FALSE) %>% 
+  # to stagger positions of logos on y axis to fit/minimize overlap
+  left_join(
+    data.frame(posteam = team_prop_score_order, 
+               team_logo_position = rep(c(-.05, -.01), 16)
+                 #seq(-.02, .29, by =.01)
+                 # rep(c(-.02, 1.02), 16))
+               ), 
+    by = join_by(posteam)
+  ) %>% 
+  # to use order based on prop_score BUT ALSO tie break of points
+  mutate(posteam = factor(posteam, levels = team_prop_score_order, ordered = TRUE)) %>% 
+  ggplot(aes(x=prop_score,
+             y=posteam, 
+             # visual team colors in bars
+             color = posteam, fill = posteam
+             )) + 
+  geom_col() + # "#005a32"
+  geom_text(aes(label = # scales (vs round) better, will put in .0% 
+                  scales::percent(prop_score, accuracy = 0.1),
+                x = prop_score - .06,
+                ),
+          vjust = .5,
+          color = "white",
+          fontface = "bold",
+          size = 4) +
+  nflplotR::scale_fill_nfl() +
+  nflplotR::scale_color_nfl(type = "secondary") +
+  # own aes, no inherited color/fill
+  nflplotR::geom_nfl_logos(
+    aes(x = team_logo_position, # created in df to stagger; old: x = -.04, 
+        y = posteam, 
+        team_abbr = posteam),
+    width = 0.06,
+    inherit.aes = FALSE
+  ) +
+  scale_x_continuous(breaks = scales::pretty_breaks(),
+                   labels = scales::percent_format(),
+                   limits = c(-.05, 1),
+                   #expand = c(-.04,0)
+                   ) + 
+  labs(title = "Scoring on Drives Within 10 Yards of Goal (2026 Weeks 1-4)",
+     # subtitle = "Top 10 Worst Teams at Close to Goal Drive Scoring",
+     caption = "Ordered by percentage score, with ties further ordered by average points (counted touchdown as 7)",
+     x = "% Score (Field Goal or Touchdown)",
+     y = ""
+     ) +
+  nfl_analytics_theme() + 
+  theme( 
+    axis.text.y = element_blank(),
+    #panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_blank())
+
+  
+```
+Overall, even the worst teams are more often than not going to walk away from a close to goal drive with points (that is, greater than 50% of the time).\
+But the worst teams at close to goal drive scoring are the Titans and Eagles, with the Bears not far behind as the third worst and scoring just 71.4% of the time. 
+
+But scoring a touchdown is much better than settling for a field goal, so we could also think of the average points a team scores on a close to goal drive.^[No points and field goals are obviously 0 and 3, respectively, but I will count a touchdown as 7 points which assumes a successful extra point attempt (because it is by far the most common follow up scenario). I am not looking at the actual follow up, because situational football would heavily influence when a team might go for a 2 point conversion, which has higher failure to convert rates.]
+
+This story is slightly different, and dramatically so for some teams: The Dolphins, for example, have scored 100% of the time they've made it within 10 yards — but they are usually settling for field goals and end up as the worst at average points for close to goal drives. 
+
+The Bears are 5th worst in average points for close to goal drives, so also doing pretty bad at close to goal drives by this metric. 
+
+```{r graph-prop-scoretype}
+#| fig-width: 12
+#| fig-asp: 1.2
+#| output-width: "100%"
+
+
+# Want to force graph to be taller to fit all teams; would like width to dynamically adjust to webpage
+# Different options:
+# in {fig.width = 6, fig.height = 8}
+
+
+# Order defined as average points per trip
+  # count touchdown as 7, even though could be 6, 7, or 8
+team_points_order <- df_summary_goalline_drives %>% 
+  group_by(posteam) %>% 
+  summarize(n = n(),
+            mean_points = mean(fixed_drive_result_points)) %>% 
+  arrange(mean_points) %>% pull(posteam)
+
+
+# Breaking down proportions of scores into TD vs Field Goals 
+df_summary_goalline_drives %>% 
+  group_by(posteam) %>% 
+  count(fixed_drive_result_score) %>% 
+  mutate(prop = n/sum(n)) %>% ungroup() %>% 
+  # to stagger positions of logos on y axis to fit/minimize overlap
+  left_join(
+    data.frame(posteam = team_points_order, 
+               fixed_drive_result_score = rep("Touchdown", 32),
+               team_logo_position = rep(c(-.05, -.01), 16)
+                 #seq(-.02, .29, by =.01)
+                 # rep(c(-.02, 1.02), 16))
+               ), 
+    by = join_by(posteam, fixed_drive_result_score)
+  ) %>% 
+  # sort teams by point order; 
+    # summarizing / count makes fixed_drive_result_score lose ordered factor, re-set
+  mutate(posteam = factor(posteam, levels = team_points_order, ordered = TRUE),
+         fixed_drive_result_score = factor(
+           fixed_drive_result_score,
+           levels = c("No points", "Field goal", "Touchdown"), 
+           ordered = TRUE)) %>%
+  arrange(posteam, fixed_drive_result_score) %>% 
+  ggplot(aes(x=prop, y=posteam, 
+             fill=fixed_drive_result_score)) + 
+  geom_col() + 
+  # Add percentage label to each
+  geom_text(aes(label = scales::percent(prop, accuracy = 0.1)),
+          # use position because of stacked bars, not in aes
+          position = position_stack(vjust = 0.5),
+          color = "white",
+          fontface = "bold",
+          size = 5) +
+  scale_fill_manual(values = c("No points" = "darkred",
+                             "Field goal" = "#41ab5d",
+                             "Touchdown" = "#005a32"
+                             )) +
+  # own aes, no inherited color/fill
+  nflplotR::geom_nfl_logos(
+    aes(x = team_logo_position, # created in df to stagger 
+        y = posteam, 
+        team_abbr = posteam),
+    width = 0.06,
+    inherit.aes = FALSE
+  ) +
+  scale_x_continuous(breaks = scales::pretty_breaks(),
+                   labels = scales::percent_format(),
+                   #limits = c(0, .60),
+                   expand = c(.04,0)) + 
+  labs(title = "Scoring on Drives Within 10 Yards of Goal (2026 Weeks 1-4)",
+     caption = "Note: Teams ordered by average points per drive within 10 yards of goal (touchdown counted as 7)",
+     x = "",
+     y = "",
+     fill = "Drive Scoring Result") +
+  nfl_analytics_theme() + 
+  theme( 
+    axis.text.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position = "top",
+    legend.background = element_rect(fill = "transparent"))
+
+```  
+
+So, yes, the Bears are still doing quite bad at getting points on close to goal drives... but the salience of these frustrating endings might be even better demonstrated when we think not of rates and percentages, but pure counts. 
+
+The Bears have tied the Saints for the most drives within 10 yards of goal (14 drives for each team) — but the Saints have always managed to score. The Bears 4 drives inside the 10 that resulted in no points is the single worst in the NFL — the Titans, Eagles, and Packers follow, each with 3 trips within 10 yards of goal that have ended without points. 
+
+```{r plot-count-anyscore}
+#| fig-width: 12
+#| fig-asp: 1.2
+#| output-width: "100%"
+
+
+####### Very different base rates of how often a team ends up in this part of the field 
+
+team_freq_order <- df_summary_goalline_drives %>% 
+  group_by(posteam) %>% 
+  summarize(n = n(),
+            # tie breaker
+            mean_points = mean(fixed_drive_result_points)) %>% 
+  arrange(n, -mean_points) %>% pull(posteam)
+
+
+df_summary_goalline_drives %>% 
+  group_by(posteam) %>% 
+  count(fixed_drive_result_score) %>% ungroup() %>% 
+  # to stagger positions of logos on y axis to fit/minimize overlap
+  left_join(
+    data.frame(posteam = team_freq_order, 
+               fixed_drive_result_score = rep("Touchdown", 32),
+               team_logo_position = rep(c(-.05, -.01), 16)
+                 #seq(-.02, .29, by =.01)
+                 # rep(c(-.02, 1.02), 16))
+               ), 
+    by = join_by(posteam, fixed_drive_result_score)
+  ) %>% 
+  # sort teams by point order
+  mutate(posteam = factor(posteam, levels = team_freq_order, ordered = TRUE),
+         fixed_drive_result_score = factor(
+           fixed_drive_result_score,
+           levels = c("No points", "Field goal", "Touchdown"), 
+           ordered = TRUE)) %>%
+  arrange(posteam, fixed_drive_result_score) %>% 
+  ggplot(aes(x=n, y=posteam, 
+             fill=fixed_drive_result_score)) + 
+  geom_col() + 
+  # Add value label to each
+  geom_text(aes(label = n),
+          # use position because of stacked bars, not in aes
+          position = position_stack(vjust = 0.5),
+          color = "white",
+          fontface = "bold",
+          size = 5) +
+  scale_fill_manual(values = c("No points" = "darkred",
+                             "Field goal" = "#41ab5d",
+                             "Touchdown" = "#005a32"
+                             )) +
+  # own aes, no inherited color/fill
+  nflplotR::geom_nfl_logos(
+    aes(x = team_logo_position*11, # created in df to stagger, but now not prop scale 
+        y = posteam, 
+        team_abbr = posteam),
+    width = 0.06,
+    inherit.aes = FALSE
+  ) +
+  scale_x_continuous(breaks = 1:14,
+                 expand = c(.04,0)
+                 ) + 
+  scale_y_discrete(# logos getting chopped top and bottom
+               expand = c(.03,.03)
+               ) + 
+  labs(title = "Scoring on Drives Within 10 Yards of Goal (2026 Weeks 1-4)",
+     caption = "Note: Teams ordered by most frequent drives, then by least average points scored (touchdown counted as 7)",
+     x = "Number of Drives",
+     y = "",
+     fill = "Drive Scoring Result") +
+  nfl_analytics_theme() + 
+  theme( 
+    axis.text.y = element_blank(),
+    #panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position = "top",
+    legend.background = element_rect(fill = "transparent"))
+
+
+```
+
+If we really want to inflict some fan pain, we can think of the closest any down got to the goal line among these drives that ended up with no points. 
+
+The Bear managed to get to the 1 yard line and end up with no points on 3 different drives (and once at the 5 yard line), looking quite a bit worse than even the next worse (the Eagles with a failure at the 1, the 2, and the 7). 😖
+
+::: {.callout-note collapse="true"}
+## Specific drives (to relive the pain)
+
+- Week 2 Swift fumble against the Vikings
+- Week 3 replay review overturned Loveland breaking the plane and Odunze later dropped a touchdown pass against the Eagles
+- Week 4 the multiple replay reviews overturning touchdowns on the opening drive against the Jets 
+
+The drive that made it to the 5 yard line was the week 2 Vikings match up where Caleb Williams may(?) have been about to score before going down with a non-contract hamstring injury, and the subsequent field goal attempt was blocked.
+
+At least the Eagles failure at the 1 yard line was against the Bears defense, with a pick of QB Dalton by our rookie safety Thieneman. Let's take some solace in that? 🤷😂
+
+:::
+
+
+```{r plot-nopoints-closestyd}
+#| fig-width: 8
+#| fig-asp: 1.2
+#| output-width: "100%"
+
+
+
+# Visual of closest field position on these no point goal line drives
+
+
+# sort on "No points" n, then by closest yardage (min, then mean)
+team_nopoints_countGT1 <- df_summary_goalline_drives %>% 
+  filter(fixed_drive_result_score == "No points") %>% # error on Render
+  group_by(posteam) %>% 
+  summarize(n = n(),
+    min_goallinedrive_closestyd = min(goallinedrive_closestyd),
+    mean_goallinedrive_closestyd = mean(goallinedrive_closestyd)) %>% 
+  arrange(-min_goallinedrive_closestyd, n, -mean_goallinedrive_closestyd) %>% 
+  #filter(n >= 1) %>% 
+  pull(posteam)
+  
+
+# visual offset for stacking when at the same yardage
+offset <- .30
+
+# Data summary to graph 
+  # Want stacking vs non-stacking (not jittering) for overlapping yardage
+  # And want to implement with emoji as point
+df_plot_closestyd_nopoints <- df_summary_goalline_drives %>%
+  filter(posteam %in% team_nopoints_countGT1, 
+         fixed_drive_result_score == "No points") %>% 
+  # just for simplicity
+  select(posteam, goallinedrive_closestyd) %>% 
+  # Apply specific ordering I want
+  mutate(posteam = factor(posteam, levels = team_nopoints_countGT1, ordered = TRUE)) %>%
+  arrange(posteam) %>% 
+  # Matches factor ordering, changed to number
+  mutate(y_numeric_base = as.numeric(factor(posteam))) %>% 
+  # Group by exact coordinates to find overlaps
+  group_by(posteam, goallinedrive_closestyd) %>%
+  # Assign an index (1, 2, or 3) to each point at this exact yd per team
+  mutate(dup_index = row_number()) %>%
+  ungroup() %>%
+  # Add a tiny decimal offset to the numeric Y baseline for duplicates
+  # Adjust the multiplier offset above to control how closely the footballs stack
+  # Just customizing it as it's two teams
+  mutate(y_stacked_posteam = case_when(
+    posteam == "TEN" & dup_index == 1 & goallinedrive_closestyd == 7 ~ y_numeric_base + (offset/2),
+    posteam == "TEN" & dup_index == 2 & goallinedrive_closestyd == 7 ~ y_numeric_base - (offset/2),
+    # Here is just Bears, top of graph so bias all upward by offset/3:
+      # Then order based on arrange and how I want them visually to overlap
+    posteam == "CHI" & dup_index == 1 & goallinedrive_closestyd == 1 ~ y_numeric_base + offset + offset/3, 
+    posteam == "CHI" & dup_index == 2 ~ y_numeric_base + offset/3, 
+    posteam == "CHI" & dup_index == 3 ~ y_numeric_base - offset + offset/3,
+    # All others:
+    dup_index == 1 ~ y_numeric_base)) %>% 
+  arrange(posteam, dup_index)
+
+
+# Graphing actual position on the field
+  # using modified y to control stacking/not-jittering
+df_plot_closestyd_nopoints %>% 
+  ggplot(aes(x = goallinedrive_closestyd, y = y_stacked_posteam)) +
+  geom_text(label = "🏈", size = 6) +
+  # Overwrite the numeric Y axis labels back to posteam
+  scale_y_continuous(  
+    breaks = 1:length(unique(df_plot_closestyd_nopoints$posteam)),
+    labels = levels(df_plot_closestyd_nopoints$posteam),
+    expand = expansion(mult = c(.025, .015)) # c(.0005, .3)
+  ) +
+  scale_x_continuous(breaks = 1:10,
+    # breaks = 0:10,
+    # labels = c("Goal line", as.character(1:10)),
+    # expand = c(0,0)
+               ) + 
+  # own aes, no inherited color/fill
+  nflplotR::geom_nfl_logos(
+    aes(x = 0,
+        # because of y axis mapping of teams to numbers
+        y = y_numeric_base, # because of stacking numeric base
+        team_abbr = posteam),
+    width = 0.08,
+    inherit.aes = FALSE
+  ) +
+  labs(title = "Closest Yardage of Non-Scoring Drives (2026 Weeks 1-4)",
+     x = "Closest Yardage of Any Play of a Non-Scoring Drive",
+     y = "") +
+  nfl_analytics_theme() + 
+  theme( 
+    axis.text.y = element_blank(),
+    # Set the panel background color to green
+    panel.background = element_rect(fill = "darkgreen", colour = NA),
+    # Set vertical major and minor grid lines to white
+    panel.grid.major.x = element_line(color = "white", linewidth = 2.5),
+    panel.grid.major.y = element_line(color = "darkgrey", linewidth = .25),
+    )
+```
+
+But the Bears also end up at the 1 yard line more often than other teams. Although they have the highest number of no point results from drives that make it to the 1, they also are tied (with the 49ers and Lions) in second place with 5 touchdowns on drives inside the 1 (behind only the Bills with 6), and like only the Broncos and Cowboys they have also successfully kicked a field goal on drives inside the 1. 
+
+
+```{r plot-drives1yd-count-anyscore}
+#| fig-width: 12
+#| fig-asp: 1.2
+#| output-width: "100%"
+
+
+####### Very different base rates of how often a team ends up in this part of the field 
+
+team_freq_order <- df_summary_goalline_drives %>% 
+  filter(goallinedrive_closestyd == 1) %>% 
+  group_by(posteam) %>% 
+  summarize(n = n(),
+            # tie breaker
+            mean_points = mean(fixed_drive_result_points)) %>% 
+  arrange(n, -mean_points) %>% pull(posteam)
+
+
+df_summary_goalline_drives %>% 
+  filter(goallinedrive_closestyd == 1) %>% 
+  group_by(posteam) %>% 
+  count(fixed_drive_result_score) %>% ungroup() %>% 
+  # to stagger positions of logos on y axis to fit/minimize overlap
+  left_join(
+    data.frame(posteam = team_freq_order, 
+               fixed_drive_result_score = rep("Touchdown", 25),
+               team_logo_position = rep(c(-.05, -.01), 13)[-1]
+                 #seq(-.02, .29, by =.01)
+                 # rep(c(-.02, 1.02), 16))
+               ), 
+    by = join_by(posteam, fixed_drive_result_score)
+  ) %>% 
+  # code not robust enough to deal with logo position staggering when there is no touchdown
+    # just a manual fix here to show LV (doesn't get a logo position because of no touchdown)
+  mutate(team_logo_position = if_else(posteam == "LV", -.01, team_logo_position)) %>% 
+  # sort teams by point order
+  mutate(posteam = factor(posteam, levels = team_freq_order, ordered = TRUE),
+         fixed_drive_result_score = factor(
+           fixed_drive_result_score,
+           levels = c("No points", "Field goal", "Touchdown"), 
+           ordered = TRUE)) %>%
+  arrange(posteam, fixed_drive_result_score) %>% 
+  ggplot(aes(x=n, y=posteam, 
+             fill=fixed_drive_result_score)) + 
+  geom_col() + 
+  # Add value label to each
+  geom_text(aes(label = n),
+          # use position because of stacked bars, not in aes
+          position = position_stack(vjust = 0.5),
+          color = "white",
+          fontface = "bold",
+          size = 5) +
+  scale_fill_manual(values = c("No points" = "darkred",
+                             "Field goal" = "#41ab5d",
+                             "Touchdown" = "#005a32"
+                             )) +
+  # own aes, no inherited color/fill
+  nflplotR::geom_nfl_logos(
+    aes(x = team_logo_position*11, # created in df to stagger, but now not prop scale 
+        y = posteam, 
+        team_abbr = posteam),
+    width = 0.06,
+    inherit.aes = FALSE
+  ) +
+  scale_x_continuous(breaks = 1:14,
+                 expand = c(.04,0)
+                 ) + 
+  scale_y_discrete(# logos getting chopped top and bottom
+               expand = c(.03,.03)
+               ) + 
+  labs(title = "Scoring on Drives Within 1 Yards of Goal (2026 Weeks 1-4)",
+     caption = "Note: Teams ordered by most frequent drives, then by least average points scored (touchdown counted as 7)",
+     x = "Number of Drives",
+     y = "",
+     fill = "Drive Scoring Result") +
+  nfl_analytics_theme() + 
+  theme( 
+    axis.text.y = element_blank(),
+    #panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position = "top",
+    legend.background = element_rect(fill = "transparent"))
+
+
+```
+
+
+So there is definite room for improvement, they may really need to convert those close situations into touchdowns to get wins later in the season. 
+
+But that was all a bit negative, so let's re-frame:\
+The Bear's offense is moving the ball to be able to get down that close so often, and a fuller picture of overall offensive production and points looks pretty good.\
+This game was won with another backup QB (second string was ready to go this week).\
+And so far the defense has been exceeding expectations.
+
+3-1, Bear Down! 🐻⬇️🏈
+
+___
+#### Data citation {#datacitation}
+
+Carl S, Baldwin B, Sharpe L, Ho T, Edwards J (2025). *nflverse: Easily Install and Load the 'nflverse'*. R package version 1.0.3, [https://nflverse.nflverse.com/](https://nflverse.nflverse.com/).
