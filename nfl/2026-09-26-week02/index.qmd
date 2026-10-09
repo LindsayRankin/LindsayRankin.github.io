@@ -337,4 +337,10 @@ plot_df %>%
   theme(panel.grid.major.y = element_blank()
         )
 ```
+___
+#### Data citation {#datacitation}
+
+Boice J, Scheinkman A for ABC News Internet Ventures (2021). *Can You Beat FiveThirtyEight's NFL Predictions?*. Github repository, last commit f7d430b Sept 7, 2021, [https://github.com/fivethirtyeight/nfl-elo-game/blob/master/data/nfl_games.csv](https://github.com/fivethirtyeight/nfl-elo-game/blob/master/data/nfl_games.csv).
+
+Carl S, Baldwin B, Sharpe L, Ho T, Edwards J (2025). *nflverse: Easily Install and Load the 'nflverse'*. R package version 1.0.3, [https://nflverse.nflverse.com/](https://nflverse.nflverse.com/).
 

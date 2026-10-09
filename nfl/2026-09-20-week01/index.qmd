@@ -86,7 +86,7 @@ Let's first check out the extent to which the Bears play calling did prefer to g
 
 ## Play Calling
 
-The [nflverse](https://nflverse.nflverse.com/) play-by-play data records the direction for rush attempts: left, middle, right.^[The variable is "run_location" but I'm going to prefer the term "direction". Also, I won't get into the detail now, but for future reference the play-by-play data also has an additional note of gap for any left or right direction: guard, tackle, or end.]
+The [nflverse play-by-play data](#datacitation) records the direction for rush attempts: left, middle, right.^[The variable is "run_location" but I'm going to prefer the term "direction". Also, I won't get into the detail now, but for future reference the play-by-play data also has an additional note of gap for any left or right direction: guard, tackle, or end.]
 
 ```{r data-pbp-run-load-filter}
 #| include: false
@@ -701,3 +701,7 @@ df_pbp_rush_25reg_26wk01 %>%
   #arrange(mean_yards_gained)
 
 ```
+___
+#### Data citation {#datacitation}
+
+Carl S, Baldwin B, Sharpe L, Ho T, Edwards J (2025). *nflverse: Easily Install and Load the 'nflverse'*. R package version 1.0.3, [https://nflverse.nflverse.com/](https://nflverse.nflverse.com/).

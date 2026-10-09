@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Lindsay Rankin">
-<meta name="dcterms.date" content="2026-10-02">
-<meta name="description" content="With a 3rd string QB, will the Bears continue their right-side running?">
+<meta name="dcterms.date" content="2026-10-07">
+<meta name="description" content="Getting thisclose to the goal line, but not scoring points?">
 
-<title>NFL 2026 Season: Week 3 – Lindsay Rankin</title>
+<title>NFL 2026 Season: Week 4 – Lindsay Rankin</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -129,18 +129,17 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page">
-      <h1 class="title">NFL 2026 Season: Week 3</h1>
+      <h1 class="title">NFL 2026 Season: Week 4</h1>
                   <div>
         <div class="description">
-          With a 3rd string QB, will the Bears continue their right-side running?
+          Getting thisclose to the goal line, but not scoring points?
         </div>
       </div>
                           <div class="quarto-categories">
                 <div class="quarto-category">R</div>
                 <div class="quarto-category">Chicago Bears</div>
-                <div class="quarto-category">Run</div>
-                <div class="quarto-category">Pass</div>
-                <div class="quarto-category">QB</div>
+                <div class="quarto-category">Red Zone</div>
+                <div class="quarto-category">Points</div>
               </div>
                   </div>
   </div>
@@ -158,7 +157,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">October 2, 2026</p>
+        <p class="date">October 7, 2026</p>
       </div>
     </div>
     
@@ -177,276 +176,117 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>QB1 Caleb Williams was out with the hamstring injury suffered in week 2, QB2 Tyson Bagent was in the concussion protocol for most of the week and not taking reps at practice. QB3 Case Keenum was up, and the Bears were playing a team that last year they dominated primarily by running the ball.</p>
-<p>Let’s set the scene!</p>
-<section id="black-friday-2025-week-13-bears-at-eagles" class="level1">
-<h1>Black Friday 2025, Week 13, Bears at Eagles</h1>
-<p>After an 0-2 start to the 2025 season, the Bears started stacking some wins, including a number of come from behind victories — but against some not-top-tier-teams (i.e., Las Vegas Raiders, New York Giants, Washington Commanders, Cincinnati Bengals).</p>
-<p>The game against the Eagles was a chance to make a statement <a href="https://www.nfl.com/news/bears-eagles-on-black-friday-what-we-learned-from-chicago-s-24-15-win">win against a quality team, and the Bears did just that, particularly with a dominating run game.</a></p>
-<p>What did their run play calling look like in 2025 against the Eagles?</p>
+<p>The Bears failed to score in really short yardage situations in week 4. Credit to the Jets’ goal line defense. But it also seems like a frequent problem for the Bears offense this season.</p>
+<p>It <strong><em>feels</em></strong> like the Bears are uniquely struggling at scoring points when they are <strong><em>incredibly close</em></strong> to the goal line.<br>
+Is it just a feeling, or is there any data to back up my hunch?<br>
+(That is, can I somewhat cherry-pick/not-fully-objectively run some analyses to express my pain through some data storytelling? 😂)</p>
+<p>More generally: <strong>How are teams performing in close to goal drives in the 2026 season?</strong></p>
+<p>I’m not interested in just the red zone (inside the 20 yard line), but even closer:<br>
+Drives that make it within 10 yards, which I will call “close to goal drives”.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Nitty-gritty details of rush attempts that are excluded
+<span class="screen-reader-only">Note</span>Nitty-gritty details of “close to goal drives”
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>I will stick the the <a href="../2026-09-20-week01/#play-calling">definitions I used in week 1 for rush attempts</a> (i.e., exclude QB scrambles and kneel downs, exclude play_type “no_play”, but other plays with penalties remain).</p>
+<p>Using the <a href="#datacitation">nflverse data</a>, I am defining this as is any drive that has a single play in the drive starting from 10 yards or closer to the opponents goal line. (Note that yardage is always recorded at whole increments, and “within 10 yards” usage in football includes right at the 10 yard line, so less than <em>or equal to</em> the 10 yard line, &lt;= 10). This will include drives that made it within 10 yards but then went backwards (through penalties or tackles/going out of bounds behind the line of scrimmage).</p>
+<p>Note that these drives do not necessarily have “goal to go” situations (a team could make it within 10 yards but the first down marker is short of the goal line, and they end the drive via a score, turnover, or time expiring). We could have use the term “low red zone”, but I just prefer to call this sample “close to goal drives”.</p>
+<p>Any drive that never starts a down within 10 yards of the goal line is <em>not</em> included — conceptually this means we are not looking at overall offensive scoring, as a team could be offensively highly effective and scoring longer touchdowns (or kicking field goals) without ever having a down inside of 10.</p>
+<p>I’m just conceptually interested right now in when a team gets close (&lt;= 10 yards), how are they performing — are they able to punch it in the end zone or at least score points?</p>
+<p>Note that I am excluding from analyses two drives that did get within the 10 yard line but ended with QB kneel downs at the end of the game — these were teams winning and closing out the game, and this scenarios do not conceptually represent the failure to score points in close yardage that I’m interested in. (Specifically: Both in week 4, the Seahawks beating the Chargers and the Vikings beating the Dolphins.)</p>
 </div>
 </div>
 </div>
-</section>
-<section id="run-direction" class="level1">
-<h1>Run Direction</h1>
-<p>In their 2025 Black Friday match up against the Eagles, the Bears were consistent with their <a href="../../nfl/2026-09-20-week01/index.html">general trends of running to the right.</a></p>
-<div class="cell">
+<p>Taking a look at the percentage of time each team scores when a drive makes it inside of 10 years, 15 of 32 teams scored on every close to goal drive.</p>
+<div class="cell" data-output-width="100%">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/graph-prop-anyscore-1.png" class="img-fluid figure-img" width="1152"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>In this 2026 week 3 Monday Night Football game, they still avoided the middle (the only run there was the 1 yard delayed QB sneak by Case Keenum for a touchdown), but they actually (slightly) preferred the left side over the right! 🤔</p>
-<div class="cell">
+<p>Overall, even the worst teams are more often than not going to walk away from a close to goal drive with points (that is, greater than 50% of the time).<br>
+But the worst teams at close to goal drive scoring are the Titans and Eagles, with the Bears not far behind as the third worst and scoring just 71.4% of the time.</p>
+<p>But scoring a touchdown is much better than settling for a field goal, so we could also think of the average points a team scores on a close to goal drive.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>This story is slightly different, and dramatically so for some teams: The Dolphins, for example, have scored 100% of the time they’ve made it within 10 yards — but they are usually settling for field goals and end up as the worst at average points for close to goal drives.</p>
+<p>The Bears are 5th worst in average points for close to goal drives, so also doing pretty bad at close to goal drives by this metric.</p>
+<div class="cell" data-output-width="100%">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/graph-prop-scoretype-1.png" class="img-fluid figure-img" width="1152"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>What happened? During the broadcast, Troy Aikman pointed out a play where the right tackle and guard (Darnell Wright and Jonah Jackson) took off at the snap and pulled out to the left to block: “Can’t always run right? Run them out to the left and then get Luther Burden in behind it.”<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<div style="float: left; margin-right: 20px; margin-bottom: 10px; width: 326px; transform: scale(0.85); transform-origin: top left;">
-<blockquote class="instagram-media blockquote" data-instgrm-captioned="" data-instgrm-permalink="https://www.instagram.com/reel/Dd4H1yJxMYE/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
-<div style="padding:16px;">
-<a href="https://www.instagram.com/reel/Dd4H1yJxMYE/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank">
-<div style=" display: flex; flex-direction: row; align-items: center;">
-<div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;">
-
-</div>
-<div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;">
-<div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;">
-
-</div>
-<div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;">
-
-</div>
-</div>
-</div>
-<div style="padding: 19% 0;">
-
-</div>
-<div style="display:block; height:50px; margin:0 auto 12px; width:50px;">
-<svg width="50px" height="50px" viewbox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xlink="https://www.w3.org/1999/xlink">
-<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g>
-</svg>
-</div>
-<div style="padding-top: 8px;">
-<div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">
-View this post on Instagram
-</div>
-</div>
-<div style="padding: 12.5% 0;">
-
-</div>
-<div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;">
+<p>So, yes, the Bears are still doing quite bad at getting points on close to goal drives… but the salience of these frustrating endings might be even better demonstrated when we think not of rates and percentages, but pure counts.</p>
+<p>The Bears have tied the Saints for the most drives within 10 yards of goal (14 drives for each team) — but the Saints have always managed to score. The Bears 4 drives inside the 10 that resulted in no points is the single worst in the NFL — the Titans, Eagles, and Packers follow, each with 3 trips within 10 yards of goal that have ended without points.</p>
+<div class="cell" data-output-width="100%">
+<div class="cell-output-display">
 <div>
-<div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);">
-
-</div>
-<div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;">
-
-</div>
-<div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);">
-
-</div>
-</div>
-<div style="margin-left: 8px;">
-<div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;">
-
-</div>
-<div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)">
-
-</div>
-</div>
-<div style="margin-left: auto;">
-<div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);">
-
-</div>
-<div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);">
-
-</div>
-<div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);">
-
+<figure class="figure">
+<p><img src="index_files/figure-html/plot-count-anyscore-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
 </div>
 </div>
 </div>
-<div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;">
-<div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;">
-
-</div>
-<div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;">
-
-</div>
-</div>
-</a>
-<p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;">
-<a href="https://www.instagram.com/reel/Dd4H1yJxMYE/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">A post shared by Coach Dan Casey (<span class="citation" data-cites="coachdancasey">@coachdancasey</span>)</a>
-</p>
-</div>
-</blockquote>
-<script async="" src="//www.instagram.com/embed.js"></script>
-</div>
-<p>Even more surprising, some sharp-eyed film watchers caught a 3rd &amp; 1 in the 4th quarter<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> where the Bears just flipped their offensive line, with right tackle and guard (Wright and Jackson) lined up on the left side. Check it out:<br>
-⬅⬅⬅🎥</p>
-<p>Those two plays would make the difference of the left side vs right side slight preference in this game.</p>
-<p>That is, the left-right split is 16 vs 15, and if we instead categorize it as literally who they choose to run behind, it flips to 17 plays in favor of Jackson and Wright’s side (vs 14 plays the other direction), a 53.1% preference.</p>
-<p>So the Bears still want to run behind Wright and Jackson, they just occasionally mixed up how they did so. 😂</p>
-<p>If the run was dominating the game plan, we might start to dig into the success metrics. But! Despite hearing a lot of pregame talk about the strength of the Bear’s run game and needing to rely on it to help a third string QB who hadn’t started a regular-season game in 1,009 days… that wasn’t how the game played out.</p>
-</section>
-<section id="play-calls-run-vs-pass" class="level1">
-<h1>Play Calls: Run vs Pass</h1>
-<p>Case Keenum came out slinging the ball! I want to look at the offensive plays calls, how often the Bears called a run or pass play.</p>
+<p>If we really want to inflict some fan pain, we can think of the closest any down got to the goal line among these drives that ended up with no points.</p>
+<p>The Bear managed to get to the 1 yard line and end up with no points on 3 different drives (and once at the 5 yard line), looking quite a bit worse than even the next worse (the Eagles with a failure at the 1, the 2, and the 7). 😖</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Nitty-gritty details of classifying run and pass
+<span class="screen-reader-only">Note</span>Specific drives (to relive the pain)
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>I counted QB scrambles as passes because a scramble generally indicates an <em>plan</em> to pass, but a breakdown forces a run. The Bears offense only had 2 QB scrambles in 2025 and 1 in 2026 (each for 4-5 yards). I excluded QB kneel downs, punts, extra points, two point attempts (in theory although there were none), and kickoffs. Thus, the remaining offensive plays are all run or pass.</p>
-<p>Similar to the run plays above, I exclude any play_type of “no_play” (generally penalties before the snap or that nullify the play), but I am leaving in other plays with penalties (for now… a fuller understanding of best practices for dealing with plays with penalties is something I need to learn <a href="../2026-09-20-week01/#play-calling">as mentioned previously</a>).</p>
+<ul>
+<li>Week 2 Swift fumble against the Vikings</li>
+<li>Week 3 replay review overturned Loveland breaking the plane and Odunze later dropped a touchdown pass against the Eagles</li>
+<li>Week 4 the multiple replay reviews overturning touchdowns on the opening drive against the Jets</li>
+</ul>
+<p>The drive that made it to the 5 yard line was the week 2 Vikings match up where Caleb Williams may(?) have been about to score before going down with a non-contract hamstring injury, and the subsequent field goal attempt was blocked.</p>
+<p>At least the Eagles failure at the 1 yard line was against the Bears defense, with a pick of QB Dalton by our rookie safety Thieneman. Let’s take some solace in that? 🤷😂</p>
 </div>
 </div>
 </div>
-<p>Overall, there was a small jump in the passing rate, and a switch to preferring the pass over run — although both games were just barely on either side of being pretty evenly balanced offensive.</p>
-<div class="cell">
+<div class="cell" data-output-width="100%">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/plot-nopoints-closestyd-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>But if we break it down to the four quarters, the 2025 Bears had a pass-happy 2nd quarter, but were otherwise pretty run dominant across the other three quarters.</p>
-<p>In 2026, we might interpret it as a 4th quarter where they ran the ball to bleed the clock and salt away the game with a commanding lead, but <strong>the rest of the 2026 game plan was much more pass dominant, especially in the middle half of the game.</strong></p>
-<div class="cell">
+<p>But the Bears also end up at the 1 yard line more often than other teams. Although they have the highest number of no point results from drives that make it to the 1, they also are tied (with the 49ers and Lions) in second place with 5 touchdowns on drives inside the 1 (behind only the Bills with 6), and like only the Broncos and Cowboys they have also successfully kicked a field goal on drives inside the 1.</p>
+<div class="cell" data-output-width="100%">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/plot-drives1yd-count-anyscore-1.png" class="img-fluid figure-img" width="1152"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Ben Johnson had never coached a starting quarterback who wasn’t a number 1 overall draft pick. So he decided to send Case Keenum out there throwing it all over the place. 😂</p>
-<p>And it was successful. 🎯</p>
-<p>We get to some pretty small sample sizes if we were to try to look at success rates while continuing to split runs versus passes <em>by quarter</em> (i.e., in the 2026 game the Bears only had 4 runs in each of the 3rd and 4th quarters), so we’ll just zoom back out to the game overall.</p>
-<p>The run was used less this year, but it was pretty consistent in it’s success rate. But <strong>the 2026 Bears were much more successful with pass plays against the Eagles than they were in 2025.</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Such a fun game and a great moment for Keenum.</p>
-<p>Bear Down! 🐻⬇️🏈</p>
-<blockquote class="instagram-media blockquote" data-instgrm-captioned="" data-instgrm-permalink="https://www.instagram.com/reel/Dd2xskVvmb0/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
-<div style="padding:16px;">
-<a href="https://www.instagram.com/reel/Dd2xskVvmb0/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank">
-<div style=" display: flex; flex-direction: row; align-items: center;">
-<div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;">
-
-</div>
-<div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;">
-<div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;">
-
-</div>
-<div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;">
-
-</div>
-</div>
-</div>
-<div style="padding: 19% 0;">
-
-</div>
-<div style="display:block; height:50px; margin:0 auto 12px; width:50px;">
-<svg width="50px" height="50px" viewbox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xlink="https://www.w3.org/1999/xlink">
-<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g>
-</svg>
-</div>
-<div style="padding-top: 8px;">
-<div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">
-View this post on Instagram
-</div>
-</div>
-<div style="padding: 12.5% 0;">
-
-</div>
-<div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;">
-<div>
-<div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);">
-
-</div>
-<div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;">
-
-</div>
-<div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);">
-
-</div>
-</div>
-<div style="margin-left: 8px;">
-<div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;">
-
-</div>
-<div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)">
-
-</div>
-</div>
-<div style="margin-left: auto;">
-<div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);">
-
-</div>
-<div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);">
-
-</div>
-<div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);">
-
-</div>
-</div>
-</div>
-<div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;">
-<div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;">
-
-</div>
-<div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;">
-
-</div>
-</div>
-</a>
-<p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;">
-<a href="https://www.instagram.com/reel/Dd2xskVvmb0/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">A post shared by NFL (<span class="citation" data-cites="nfl">@nfl</span>)</a>
-</p>
-</div>
-</blockquote>
-<script async="" src="//www.instagram.com/embed.js"></script>
+<p>So there is definite room for improvement, they may really need to convert those close situations into touchdowns to get wins later in the season.</p>
+<p>But that was all a bit negative, so let’s re-frame:<br>
+The Bear’s offense is moving the ball to be able to get down that close so often, and a fuller picture of overall offensive production and points looks pretty good.<br>
+This game was won with another backup QB (second string was ready to go this week).<br>
+And so far the defense has been exceeding expectations.</p>
+<p>3-1, Bear Down! 🐻⬇️🏈</p>
 <hr>
 <section id="datacitation" class="level4">
 <h4 class="anchored" data-anchor-id="datacitation">Data citation</h4>
@@ -454,14 +294,12 @@ View this post on Instagram
 
 
 </section>
-</section>
 
 
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>At the first quarter 10 minute mark in the broadcast, corresponding to a replay of nflverse play_id 271 a “left” run for a 7 yard gain.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>11:13 left in 4th quarter, 3rd &amp; 1 Monangai ran left for a 6 yard gain, nflverse play_id 3338<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>No points and field goals are obviously 0 and 3, respectively, but I will count a touchdown as 7 points which assumes a successful extra point attempt (because it is by far the most common follow up scenario). I am not looking at the actual follow up, because situational football would heavily influence when a team might go for a 2 point conversion, which has higher failure to convert rates.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

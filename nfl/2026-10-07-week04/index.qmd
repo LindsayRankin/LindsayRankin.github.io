@@ -1,7 +1,7 @@
 ---
 title: "NFL 2026 Season: Week 4"
 # subtitle: 
-description: "Getting that close to the goal line and not come away with points"
+description: "Getting thisclose to the goal line, but not scoring points?"
 date: 10-07-2026
 categories: [R, Chicago Bears, Red Zone, Points]
 draft: false 
@@ -89,21 +89,20 @@ Is it just a feeling, or is there any data to back up my hunch? \
 More generally: **How are teams performing in close to goal drives in the 2026 season?**
 
 I'm not interested in just the red zone (inside the 20 yard line), but even closer: \
-Drives that make it within 10 yards.\
-These are not necessarily always "goal to go" situations in terms of first down markers, we could say "low red zone", but I'm going to call these "close to goal drives". 
+Drives that make it within 10 yards, which I will call "close to goal drives". 
 
 ::: {.callout-note collapse="true"}
 ## Nitty-gritty details of "close to goal drives"
 
-This is any drive that has a single play in the drive starting from 10 yards or closer to the opponents goal line. (Note that yardage is always recorded at whole increments, and "within 10 yards" usage in football includes right at the 10 yard line, so less than *or equal to* the 10 yard line, <= 10). This will include drives that made it within 10 yards but then went backwards (through penalties or tackles/going out of bounds behind the line of scrimmage). 
+Using the [nflverse data](#datacitation), I am defining this as is any drive that has a single play in the drive starting from 10 yards or closer to the opponents goal line. (Note that yardage is always recorded at whole increments, and "within 10 yards" usage in football includes right at the 10 yard line, so less than *or equal to* the 10 yard line, <= 10). This will include drives that made it within 10 yards but then went backwards (through penalties or tackles/going out of bounds behind the line of scrimmage). 
 
-Note that these drives do not necessarily have "goal to go" situations (a team could make it within 10 yards but the first down marker is short of the goal line, and they end the drive via a score, turnover, or time expiring). Hence the terminology of referring to this sample as "close to goal drives" rather than "goal to go". 
+Note that these drives do not necessarily have "goal to go" situations (a team could make it within 10 yards but the first down marker is short of the goal line, and they end the drive via a score, turnover, or time expiring). We could have use the term "low red zone", but I just prefer to call this sample "close to goal drives".
 
 Any drive that never starts a down within 10 yards of the goal line is *not* included — conceptually this means we are not looking at overall offensive scoring, as a team could be offensively highly effective and scoring longer touchdowns (or kicking field goals) without ever having a down inside of 10.  
 
 I'm just conceptually interested right now in when a team gets close (<= 10 yards), how are they performing — are they able to punch it in the end zone or at least score points?
 
-Note that I am excluding from analyses two drives that did get within the 10 yard line but ended with QB kneel downs at the end of the game — these were teams winning and do not conceptually represent the failure to score points in close yardage that I'm interested in. (Specifically: Both in week 4, the Seahawks beating the Chargers and the Vikings beating the Dolphins.)
+Note that I am excluding from analyses two drives that did get within the 10 yard line but ended with QB kneel downs at the end of the game — these were teams winning and closing out the game, and this scenarios do not conceptually represent the failure to score points in close yardage that I'm interested in. (Specifically: Both in week 4, the Seahawks beating the Chargers and the Vikings beating the Dolphins.)
 
 :::
 
@@ -206,31 +205,30 @@ df_summary_goalline_drives <- df_summary_goalline_drives %>%
   select(-goallinedrive_qb_kneel_end)
 
 
-# Join to original pbp data to have indicator for all plays of any drives that made it near the goal line
-# Filter only plays part of drives that get near goal line
-df_pbp_goalline_drives <- df_allpbp26 %>% 
-  left_join(df_summary_goalline_drives %>% 
-              select(# to join on:
-                game_id, posteam, fixed_drive, 
-                # newly calculated summaries: 
-                fixed_drive_result_score, fixed_drive_result_points,
-                goallinedrive_closestyd, goallinedrive_n_plays_wi10yd),
-            by = join_by(game_id, posteam, fixed_drive)) %>% 
-  relocate(fixed_drive, fixed_drive_result_score, fixed_drive_result_points,
-           goallinedrive_closestyd, goallinedrive_n_plays_wi10yd, 
-           .after = drive) %>% 
-  # Keep only drives within 10 yards (that didn't end in kneel down)
-    # aka those in the df_summary_goalline_drives
-  filter(!is.na(goallinedrive_n_plays_wi10yd)) 
+    #---
+    # Not used... attaching to full pbp data
+    #---
+        # ### Do not need this, but in the future may be conceptually interesting
+        # # Join to original pbp data to have indicator for all plays of any drives that made it near the goal line
+        # # Filter only plays part of drives that get near goal line
+        # df_pbp_goalline_drives <- df_allpbp26 %>% 
+        #   left_join(df_summary_goalline_drives %>% 
+        #               select(# to join on:
+        #                 game_id, posteam, fixed_drive, 
+        #                 # newly calculated summaries: 
+        #                 fixed_drive_result_score, fixed_drive_result_points,
+        #                 goallinedrive_closestyd, goallinedrive_n_plays_wi10yd),
+        #             by = join_by(game_id, posteam, fixed_drive)) %>% 
+        #   relocate(fixed_drive, fixed_drive_result_score, fixed_drive_result_points,
+        #            goallinedrive_closestyd, goallinedrive_n_plays_wi10yd, 
+        #            .after = drive) %>% 
+        #   # Keep only drives within 10 yards (that didn't end in kneel down)
+        #     # aka those in the df_summary_goalline_drives
+        #   filter(!is.na(goallinedrive_n_plays_wi10yd)) 
+    #---
+    # END: Not used...
+    #---
 
-
-
-# # df_summary_goalline_drives variables of interest:
-# drive_ended_with_off_score
-# fixed_drive_result_score
-# fixed_drive_result_points
-# goallinedrive_closestyd 
-# goallinedrive_n_plays_wi10yd
 
 ```
 
@@ -356,7 +354,7 @@ df_summary_goalline_drives %>%
 Overall, even the worst teams are more often than not going to walk away from a close to goal drive with points (that is, greater than 50% of the time).\
 But the worst teams at close to goal drive scoring are the Titans and Eagles, with the Bears not far behind as the third worst and scoring just 71.4% of the time. 
 
-But scoring a touchdown is much better than settling for a field goal, so we could also think of the average points a team scores on a close to goal drive.^[No points and field goals are obviously 0 and 3, respectively, but I will count a touchdown as 7 points which assumes a successful extra point attempt (because it is by far the most common follow up scenario)]
+But scoring a touchdown is much better than settling for a field goal, so we could also think of the average points a team scores on a close to goal drive.^[No points and field goals are obviously 0 and 3, respectively, but I will count a touchdown as 7 points which assumes a successful extra point attempt (because it is by far the most common follow up scenario). I am not looking at the actual follow up, because situational football would heavily influence when a team might go for a 2 point conversion, which has higher failure to convert rates.]
 
 This story is slightly different, and dramatically so for some teams: The Dolphins, for example, have scored 100% of the time they've made it within 10 yards — but they are usually settling for field goals and end up as the worst at average points for close to goal drives. 
 
@@ -450,7 +448,7 @@ So, yes, the Bears are still doing quite bad at getting points on close to goal 
 
 The Bears have tied the Saints for the most drives within 10 yards of goal (14 drives for each team) — but the Saints have always managed to score. The Bears 4 drives inside the 10 that resulted in no points is the single worst in the NFL — the Titans, Eagles, and Packers follow, each with 3 trips within 10 yards of goal that have ended without points. 
 
-```{r}
+```{r plot-count-anyscore}
 #| fig-width: 12
 #| fig-asp: 1.2
 #| output-width: "100%"
@@ -543,12 +541,12 @@ The Bear managed to get to the 1 yard line and end up with no points on 3 differ
 
 The drive that made it to the 5 yard line was the week 2 Vikings match up where Caleb Williams may(?) have been about to score before going down with a non-contract hamstring injury, and the subsequent field goal attempt was blocked.
 
-At least the Eagles failure at the 1 yard line was against the Bears defense, with a pick of QB Dalton by rookie Thieneman. Let's take some solace in that? 🤷😂
+At least the Eagles failure at the 1 yard line was against the Bears defense, with a pick of QB Dalton by our rookie safety Thieneman. Let's take some solace in that? 🤷😂
 
 :::
 
 
-```{r}
+```{r plot-nopoints-closestyd}
 #| fig-width: 8
 #| fig-asp: 1.2
 #| output-width: "100%"
@@ -649,7 +647,7 @@ df_plot_closestyd_nopoints %>%
 But the Bears also end up at the 1 yard line more often than other teams. Although they have the highest number of no point results from drives that make it to the 1, they also are tied (with the 49ers and Lions) in second place with 5 touchdowns on drives inside the 1 (behind only the Bills with 6), and like only the Broncos and Cowboys they have also successfully kicked a field goal on drives inside the 1. 
 
 
-```{r}
+```{r plot-drives1yd-count-anyscore}
 #| fig-width: 12
 #| fig-asp: 1.2
 #| output-width: "100%"
@@ -734,7 +732,17 @@ df_summary_goalline_drives %>%
 
 ```
 
-So. Room for improvement, we may really need those punch ins for wins in the future. But? At least we're getting down the field. And overall offensive production and points would certainly paint a fuller picture.
+
+So there is definite room for improvement, they may really need to convert those close situations into touchdowns to get wins later in the season. 
+
+But that was all a bit negative, so let's re-frame:\
+The Bear's offense is moving the ball to be able to get down that close so often, and a fuller picture of overall offensive production and points looks pretty good.\
+This game was won with another backup QB (second string was ready to go this week).\
+And so far the defense has been exceeding expectations.
 
 3-1, Bear Down! 🐻⬇️🏈
 
+___
+#### Data citation {#datacitation}
+
+Carl S, Baldwin B, Sharpe L, Ho T, Edwards J (2025). *nflverse: Easily Install and Load the 'nflverse'*. R package version 1.0.3, [https://nflverse.nflverse.com/](https://nflverse.nflverse.com/).
