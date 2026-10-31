@@ -1,0 +1,683 @@
+---
+title: "NFL 2026 Season: Week 7"
+# subtitle: 
+description: "Does dominating offensive snap count or time of possession actually relate to winning?"
+date: 10-31-2026
+categories: [R, Chicago Bears, Offense, Time of Possession, Run]
+draft: false 
+toc: false
+execute:
+  echo: false
+  warning: false
+---
+
+
+```{r}
+#| include: false
+
+
+library(ggtext)
+library(gt)
+library(nflverse)
+library(tidyverse)
+
+#----------------------------------- 
+########## 
+#----------------------------------- 
+# Custom function for NFL theme on graphs 
+# Credit to Brad Congelio: https://bradcongelio.com/nfl-analytics-with-r-book/ 
+  # section "1.3.2 Unique Offensive Line Combinations vs. Win Percentage": 
+  
+nfl_analytics_theme <- function(..., base_size = 12) {
+  
+  theme(
+    text = element_text(family = "Calibri", #family = "Roboto",
+                        size = base_size,
+                        color = "black"),
+    axis.ticks = element_blank(),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(face = "bold"),
+    plot.title.position = "plot",
+    plot.title = element_markdown(size = 16,
+                                  vjust = .02,
+                                  hjust = 0.5),
+    plot.subtitle = element_markdown(hjust = 0.5),
+    plot.caption = element_markdown(size = 8),
+    panel.grid.minor = element_blank(),
+    panel.grid.major =  element_line(color = "#d0d0d0"),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    plot.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_blank(),
+    legend.background = element_rect(color = "#F7F7F7"),
+    legend.key = element_rect(color = "#F7F7F7"),
+    legend.title = element_text(face = "bold"),
+    legend.title.align = 0.5,
+    strip.text = element_text(face = "bold"))
+}
+
+
+# Couple of logos used on graphs later
+bears_wordsmark <- 'https://github.com/nflverse/nflverse-pbp/raw/master/wordmarks/CHI.png'
+
+bears_logo <- 'https://a.espncdn.com/i/teamlogos/nfl/500/chi.png'
+
+
+```
+
+```{r data-pbp-team-records}
+#| include: false
+
+#----------------------------------- 
+# LOAD DATA 
+#----------------------------------- 
+
+nflreadr::.clear_cache()
+
+df_pbp <- nflreadr::load_pbp(2026) %>% 
+  filter(week < 8)
+
+df_schedules <- nflreadr::load_schedules(seasons = 2026) %>% 
+  filter(week < 8)
+
+#----------------------------------- 
+# SET UP - Offensive Plays and Time of Possession 
+#----------------------------------- 
+# Offensive plays and Time of possession and use slightly different definitions
+
+#----
+### PBP for only offensive plays 
+#----
+  # Exclude overtime
+  # Could:   filter(play_type %in% c("run", "pass")) %>% 
+  # But to match other stats, let's including kneels and spikes
+  # Exclude kickoff, punts, kickoff, two_point attempts, extra points, field goals
+   # df_pbp_original %>% count(play_type)
+
+df_pbp_off <- df_pbp %>% 
+  # exclude overtime
+  filter(game_half != "Overtime") %>% 
+  filter(week < 8) %>% 
+  filter(play_type %in% c("run", "pass", "qb_kneel", "qb_spike")) %>% 
+  filter(two_point_attempt == 0)
+
+
+#----
+### PBP for only time of possession
+#----
+   # Exclude overtime
+   # lead to include time that ran off after a play (not just time at the start of the play)
+     # Change of possession (punt, turnover), TOP still goes to team that started with the ball
+     # EXCEPT: kickoffs (and free kicks after safety) go to the receiving team
+      # No onside recovery examples yet in 2026 to work through
+        # kickoff_attempt
+        # own_kickoff_recovery
+        # return_team
+  # I'm slightly mismatching what I see in a search, not sure why...
+  # https://www.nflgsis.com/gsis/documentation/stadiumguides/guide_for_statisticians.pdf 
+  # comparing my calculations versus nflverse included variable: drive_time_of_possession
+
+df_pbp_possession <- df_pbp %>% 
+  # exclude overtime
+  filter(game_half != "Overtime") %>%   
+  filter(week < 8) %>% 
+  # couple format options
+  mutate(drive_time_of_possession_ms = lubridate::ms(drive_time_of_possession),
+         drive_time_of_possession_sec = lubridate::period_to_seconds(drive_time_of_possession_ms)) %>% 
+  filter(play_type %in% c("run", "pass", "qb_kneel", "qb_spike", 
+                          "punt", 
+                          "field_goal",
+                          "kickoff"
+                          )) %>% 
+  filter(two_point_attempt == 0) 
+
+
+######### ######### ######### ######### ######### ######### ######### #########
+######### SUMMARIES
+# Retaining opponent in case that is later of interest
+
+
+######### ######### ######### #########
+######### Summary by drive
+######### ######### ######### #########
+
+df_offtop_x_drive <- left_join(
+  # offensive plays
+  df_pbp_off %>% 
+    group_by(posteam, defteam, week, drive) %>% 
+    # summary by drive
+    summarize(plays_drive = n(),
+              .groups = "drop"),
+  # time of possession
+  df_pbp_possession %>%
+    group_by(posteam, defteam, week, drive) %>%
+    # summary by drive
+    summarize(top_drive = max(drive_time_of_possession_sec, na.rm = TRUE),
+      plays_drive_topdata = n(),
+              .groups = "drop"),
+  # JOIN
+  by = join_by(posteam, defteam, week, drive)
+)
+
+
+
+######### ######### ######### #########
+######### Roll up to summary by games aka weeks
+######### ######### ######### #########
+
+
+df_offtop_x_week <- left_join(
+  # offensive plays
+    # easier here to just start from original data
+  df_pbp_off %>% 
+    group_by(posteam, defteam, week) %>% 
+    # summary by week/game
+    summarize(plays_week = n(),
+              .groups = "drop"),
+  # time of possession
+    # easier here to start from individual drives
+  df_offtop_x_drive %>% 
+    group_by(posteam, defteam, week) %>% 
+    # summary by week/game
+    summarize(top_week = sum(top_drive),
+              plays_week_topdata = sum(plays_drive_topdata),
+              .groups = "drop"), 
+  # JOIN
+  by = join_by(posteam, defteam, week)
+)
+
+# But let's consider number of plays also as a % of plays in a game (general game speed, weather, etc)
+df_offtop_x_week <- df_offtop_x_week %>% 
+  left_join(df_offtop_x_week %>% 
+              select(defteam = posteam, week, 
+                     opp_plays_week = plays_week),
+            by = join_by(defteam, week)) %>% 
+  mutate(total_off_opp_plays_week = plays_week + opp_plays_week) %>% 
+  mutate(plays_week_prop = plays_week / total_off_opp_plays_week) 
+
+
+######### ######### ######### #########
+######### Roll up to summary by team
+######### ######### ######### #########
+
+
+df_offtop_x_team <- df_offtop_x_week %>% 
+  group_by(posteam) %>% 
+  summarize(games_played = n(),
+         plays_team = sum(plays_week),
+         plays_teamavg_per_week = plays_team / games_played,
+         plays_opp_team = sum(opp_plays_week),
+         total_off_opp_plays_team = plays_team + plays_opp_team,
+         plays_team_prop = plays_team / total_off_opp_plays_team,
+         # time of possession
+         top_team = sum(top_week),
+         top_per_game = top_team / games_played,
+         top_per_game_ms = lubridate::seconds_to_period(top_per_game)
+         ) 
+
+
+
+######### ######### ######### #########
+######### Run / Pass Percentages 
+######### ######### ######### #########
+# Exclude qb_kneel and qb_spike
+# qb_scramble here is counted as run, which for these purposes is what I want... it eats up clock on TOP
+
+
+### by Week/Game
+df_offtop_x_week <- df_offtop_x_week %>% 
+  left_join(
+      df_pbp_off %>% 
+        filter(play_type %in% c("run", "pass")) %>% 
+        group_by(posteam, defteam, week, play_type) %>% 
+        summarize(n = n()) %>% 
+        mutate(prop = n / sum(n)) %>% 
+        ungroup() %>% 
+        pivot_wider(names_from = "play_type", values_from = c("prop", "n")),
+      by = join_by(posteam, defteam, week)
+      )
+
+
+### by Team
+df_offtop_x_team <- df_offtop_x_team %>% 
+  left_join(
+    df_pbp_off %>% 
+        filter(play_type %in% c("run", "pass")) %>% 
+        group_by(posteam, play_type) %>% 
+        summarize(n = n()) %>% 
+        mutate(prop = n / sum(n)) %>% 
+        ungroup() %>% 
+        pivot_wider(names_from = "play_type", values_from = c("prop", "n")),
+    by = join_by(posteam)
+  )
+
+#----------------------------------- 
+# SET UP - Team Records
+#----------------------------------- 
+
+# Results by week
+df_team_results_by_week <- bind_rows(
+  # Home teams win or loss
+  df_schedules %>% 
+    select(season, week, game_type, 
+           team = home_team, opp_team = away_team, 
+           score = home_score, opp_score = away_score,
+           overtime, div_game),
+  # Away team win or loss
+  df_schedules %>% 
+    select(season, week, game_type, 
+           team = away_team, opp_team = home_team,
+           score = away_score, opp_score = home_score,
+           overtime, div_game)
+) %>% 
+  mutate(result = case_when(
+    score > opp_score ~ "W",
+    score < opp_score ~ "L",
+    score == opp_score ~ "T"
+  ),
+  result_for_winperc = case_when(
+    score > opp_score ~ 1,
+    score < opp_score ~ 0,
+    score == opp_score ~ .5
+  )) %>% 
+  select(-season, -game_type)
+
+
+# Overall records as winpct
+df_team_records <- df_team_results_by_week %>%
+    group_by(team) %>%
+    summarize(games = n(),
+              winpct = (sum(result_for_winperc)/games),
+              .groups = "drop")
+
+
+### Connect offensive plays and top to records
+
+df_offtop_x_week <- df_offtop_x_week %>% 
+  left_join(df_team_results_by_week,
+            by = join_by(posteam == team, week))
+
+df_offtop_x_team <- df_offtop_x_team %>% 
+  left_join(df_team_records,
+            by = join_by(posteam == team)) %>% 
+  select(-games)
+
+
+
+```
+
+
+I've been hearing lots of talking points lately about the Bears dominating the time of possessions and number of offensive snaps per game. That was particularly true in week 4 against the Jets, the most lopsided game in terms of both metrics of the whole season. Just one example here:
+
+<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/reel/De2dDFzEwwc/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/reel/De2dDFzEwwc/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">View this post on Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a><p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;"><a href="https://www.instagram.com/reel/De2dDFzEwwc/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">A post shared by 104.3 The Score (@thescorechicago)</a></p></div></blockquote>
+<script async src="//www.instagram.com/embed.js"></script>
+
+
+::: {.callout-note collapse="true"}
+## Nitty-gritty of offensive plays and time of possession
+
+While I have been able to match offensive plays to some stats I see online, I can't quite replicate in the nflverse data the stats I see online for time of possession. However, I don't even know if it's fair to say that different online sources always agree. While the NFL does have a [Guide for Statisticians with official definitions](https://www.nflgsis.com/gsis/documentation/stadiumguides/guide_for_statisticians.pdf) any code actually trying to implement that may hit some issues when dealing with the rare and odd plays.\
+(Likely candidates for discrepancies: kickoffs in particular are supposed to be awarded to the team that ends up with the ball — usually the receiving team, barring a turnover — and the Bears in particular did turnover the ball on a kickoff against Atlanta. In addition, penalties on kickoffs that may be accepted or declined can make time of possession messy. It's worth noting that punts are supposed to be counted for time of possession to the team who starts the snap with the ball, so the kicking team, and thus the two muffed punts recovered by the Bears should not actually impact that calculation — but side note to shout out Tory Taylor with the banana ball.)
+
+Ultimately, it just wasn't worth it to me to invest the time to capture a very small number of messy plays that are probably driving the differences (i.e., Online I'm seeing Bear's average time of possession as 35:30 through week 7, but I'm finding 35:17; for second place Minnesota 32:43 versus my values of 32:23). I have been able to match the general offensive snaps I am seeing online (i.e., Bears with 505 total or 72.14 per game). 
+
+For all of these calculation, I am excluding overtime, focusing only on the original 4 quarters. 
+
+For offensive plays, I am using nflverse variable play_type of "run", "pass", "qb_kneel", "qb_spike", but excluding two point conversions, and summing the number of plays across weeks/games and teams. Punts, kickoffs, extra points, and two point conversions are excluded entirely from these calculations (that is, even from the denominator for % of offensive plays between the two teams will add up to 100% as all other plays are excluded). I tend toward relative percentages of each team, simply because overall counts could reflect other factors including weather that may dictate certain kinds of paces or run vs pass decisions (i.e., I'm not formally checking for this — that could be done and could be interesting — but I might suspect that more extreme weather may change the overall number of snaps for both teams).
+
+For time of possession, I am using nflverse variable drive_time_of_possession and summing all drives across weeks/games and teams.
+
+:::
+
+If I break it down by games, the Bears have controlled offensive snap counts in every game — including the two they lost. 
+
+```{r graph-bears-off}
+#| out-width: "100%"
+
+
+### Offensive Play % - Graph
+df_offtop_x_week %>% 
+  filter(posteam == "CHI") %>% 
+  mutate(result = case_when(
+    result == "W" ~ "Won",
+    result == "L" ~ "Loss"
+  )) %>% 
+  ggplot(aes(x = week , y = plays_week_prop, 
+             fill = result)) + 
+  geom_col() + 
+  geom_hline(yintercept = .5, color = "darkgreen") + 
+  nflplotR::geom_nfl_logos(
+    aes(x = week, 
+        y = plays_week_prop, team_abbr = defteam),
+    width = 0.08,
+    inherit.aes = FALSE
+  ) +
+  geom_text(aes(label = paste0(scales::percent(plays_week_prop, accuracy = 0.1),
+                               "\n n = ", plays_week, "\n plays"),
+                y = plays_week_prop - .14),
+          lineheight = 0.85,
+          color = "white",
+          fontface = "bold",
+          size = 5) +
+  scale_fill_manual(values = c("Won" = "#0B162A",
+                         "Loss" = "#C83803")) +
+  scale_x_continuous(breaks = 1:7) +  
+  scale_y_continuous(breaks = seq(.2, .8, by = .1),
+                     labels = scales::percent_format()) +
+  # troubleshooting this to get y axis to zoom as I want:
+  coord_cartesian(ylim = c(.2, .8)) +
+  labs(title = paste0("<img src='", bears_logo,"' width='60' style='vertical-align: bottom;' />",
+                "<img src='", bears_wordsmark,"' width='120' style='vertical-align: bottom;' /> 
+                Percent of All Offensive Snaps"),
+     #subtitle = "here...",
+     x = "Week",
+     y = "% of All Offensive Snaps Per Game",
+     fill = "Game Result") +
+  nfl_analytics_theme() +
+  theme(
+    #axis.text.x = element_blank(),
+    panel.grid.major.x = element_blank(),
+    legend.position = "top",
+    legend.background = element_rect(fill = "transparent"))
+
+```
+
+And while they narrowly missed controlling time of possession in their loss at Green Bay (by just 25 seconds), they still controlled time of possession in their other loss to Minnesota.  
+
+```{r graph-bears-top}
+#| out-width: "100%"
+
+
+### Time of possession - Graph
+df_offtop_x_week %>% 
+  filter(posteam == "CHI") %>% 
+  mutate(result = case_when(
+    result == "W" ~ "Won",
+    result == "L" ~ "Loss"
+  )) %>% 
+  mutate(top_week_label = sprintf("%02d:%02d", top_week %/% 60, top_week %% 60)) %>% 
+  ggplot(aes(x = week , y = top_week, 
+             fill = result)) + 
+  geom_col() + 
+  geom_hline(yintercept = 1800, color = "darkgreen") + 
+  nflplotR::geom_nfl_logos(
+    aes(x = week, 
+        y = top_week, team_abbr = defteam),
+    width = 0.08,
+    inherit.aes = FALSE
+  ) +
+  geom_text(aes(label = top_week_label,
+                y = top_week - 500),
+          lineheight = 0.85,
+          color = "white",
+          fontface = "bold",
+          size = 5) +
+  scale_fill_manual(values = c("Won" = "#0B162A",
+                         "Loss" = "#C83803")) +
+  scale_x_continuous(breaks = 1:7) +  
+  scale_y_continuous(breaks = seq(0, 3600, by = 900), # scales::pretty_breaks(),
+                     labels = function(sec) {
+      sprintf("%02d:%02d", sec %/% 60, sec %% 60)
+    }) +
+  # troubleshooting this to get y axis to zoom as I want:
+  coord_cartesian(ylim = c(0, 3600)) +
+  labs(title = paste0("<img src='", bears_logo,"' width='60' style='vertical-align: bottom;' />",
+                "<img src='", bears_wordsmark,"' width='120' style='vertical-align: bottom;' /> 
+                Time of Possession"),
+     #subtitle = "here...",
+     x = "Week",
+     y = "Time of Possession (of 60:00 game)",
+     fill = "Game Result") +
+  nfl_analytics_theme() +
+  theme(
+    #axis.text.x = element_blank(),
+    panel.grid.major.x = element_blank(),
+    legend.position = "top",
+    legend.background = element_rect(fill = "transparent"))
+
+```
+
+So are offensive snaps and time of possession just a random curiosity because the Bears happen to be historically high in both, or does it really have anything to do with winning football?  
+
+Looking across the 2026 season at the top 10 (actually 11 because of a tie) games in terms of offensive snap percentage, this metric doesn't guarantee a win. 
+
+
+```{r graph-top10-off}
+#| out-width: "100%"
+
+
+
+### Offensive Play % - Graph
+# Set order for graphing
+top10playsgameorder <- df_offtop_x_week %>% 
+  slice_max(order_by = plays_week_prop, n = 10, with_ties = TRUE) %>% 
+  mutate(week_vs = paste0("Week ", week, "\n", posteam, " vs ", defteam)) %>% 
+  pull(week_vs)
+  
+  
+df_offtop_x_week %>% 
+  slice_max(order_by = plays_week_prop, n = 10, with_ties = TRUE) %>% 
+  mutate(result = case_when(
+    result == "W" ~ "Won",
+    result == "L" ~ "Loss"
+  )) %>% 
+  mutate(week_vs = paste0("Week ", week, "\n", posteam, " vs ", defteam) %>% 
+           factor(levels = top10playsgameorder, 
+                  ordered = TRUE)) %>% 
+  ggplot(aes(x = week_vs , y = plays_week_prop, 
+             fill = result)) +   
+  geom_col() + 
+  # geom_hline(yintercept = .5, color = "black") + 
+  nflplotR::geom_nfl_logos(
+    aes(x = week_vs, 
+        y = plays_week_prop, 
+        team_abbr = posteam),
+    width = 0.08,
+    inherit.aes = FALSE
+  ) +
+  geom_text(aes(label = paste0(scales::percent(plays_week_prop, accuracy = 0.1),
+                               "\n n = ", plays_week, "\n plays"),
+                y = plays_week_prop - .12),
+          lineheight = 0.85,
+          color = "white",
+          fontface = "bold",
+          size = 4) +
+  scale_fill_manual(values = c("Won" = "darkgreen",
+                         "Loss" = "darkred")) +
+  scale_y_continuous(breaks = seq(.2, .8, by = .1),
+                     labels = scales::percent_format()) +
+  # troubleshooting this to get y axis to zoom as I want:
+  coord_cartesian(ylim = c(.2, .8)) +
+  labs(title = paste0("Top 10 Games with Highest Percent of All Offensive Snaps"),
+     #subtitle = "here...",
+     caption = "Note a tie at the 10th spot, 11 games are displayed",
+     x = "Game Week and Opponent",
+     y = "% of All Offensive Snaps Per Game",
+     fill = "Game Result") +
+  nfl_analytics_theme() +
+  theme(
+    axis.text.x = element_text(angle = 20,
+                               vjust = .75,
+                               hjust = .5),
+    panel.grid.major.x = element_blank(),
+    legend.position = "top",
+    legend.background = element_rect(fill = "transparent"))
+```
+
+The top games in terms of time of possession also contain some losses, and even among those who did win: Minnesota is an impressive 6-0 to start the season, but a well established story line is that the team is being carried by defensive coordinator Brian Flores's insane defense, while the offense has not yet gotten going. 
+
+```{r graph-top10-top}
+#| out-width: "100%"
+
+### Time of possession - Graph
+
+# Set order for graphing
+top10topgameorder <- df_offtop_x_week %>% 
+  slice_max(order_by = top_week, n = 10, with_ties = TRUE) %>% 
+  mutate(week_vs = paste0("Week ", week, "\n", posteam, " vs ", defteam)) %>% 
+  pull(week_vs)
+
+
+df_offtop_x_week %>% 
+  slice_max(order_by = top_week, n = 10, with_ties = TRUE) %>% 
+  mutate(result = case_when(
+    result == "W" ~ "Won",
+    result == "L" ~ "Loss"
+  )) %>% 
+  mutate(week_vs = paste0("Week ", week, "\n", posteam, " vs ", defteam) %>% 
+           factor(levels = top10topgameorder, 
+                  ordered = TRUE),
+         top_week_label = sprintf("%02d:%02d", top_week %/% 60, top_week %% 60)) %>% 
+  ggplot(aes(x = week_vs , y = top_week, 
+             fill = result)) + 
+  geom_col() + 
+  # geom_hline(yintercept = 1800, color = "darkgreen") + 
+  nflplotR::geom_nfl_logos(
+    aes(x = week_vs, 
+        y = top_week, team_abbr = posteam),
+    width = 0.08,
+    inherit.aes = FALSE
+  ) +
+  geom_text(aes(label = top_week_label,
+                y = top_week - 500),
+          lineheight = 0.85,
+          color = "white",
+          fontface = "bold",
+          size = 5) +
+  scale_fill_manual(values = c("Won" = "darkgreen",
+                         "Loss" = "darkred")) +
+  scale_y_continuous(breaks = seq(0, 3600, by = 900), # scales::pretty_breaks(),
+                     labels = function(sec) {
+      sprintf("%02d:%02d", sec %/% 60, sec %% 60)
+    }) +
+  # troubleshooting this to get y axis to zoom as I want:
+  coord_cartesian(ylim = c(0, 3600)) +
+  labs(title = paste0("Top 10 Games with Highest Time of Possession"),
+     #subtitle = "here...",
+     x = "Game Week and Opponent",
+     y = "Time of Possession (of 60:00 game)",
+     fill = "Game Result") +
+  nfl_analytics_theme() +
+  theme(
+    axis.text.x = element_text(angle = 20,
+                               vjust = 1,
+                               hjust = .5),
+    panel.grid.major.x = element_blank(),
+    legend.position = "top",
+    legend.background = element_rect(fill = "transparent"))
+
+```
+
+So it seems that offensive snaps and time of possession may not necessarily be metrics that really indicate winning or even a strong offense.
+
+Further looking at these offensive snaps and time of possession by all wins and losses: A winning team has less than 1 additional snap than the losing team on average, and less than a 3 minute advantage in time of possession. 
+
+```{r table-winloss-offtop}
+#| out-width: "100%"
+
+
+df_offtop_x_week %>% 
+  filter(result != "T") %>% 
+  mutate(Result = case_when(
+    result == "W" ~ "Won",
+    result == "L" ~ "Loss"
+  )) %>% 
+  group_by(Result) %>% 
+  summarize(n = n(), 
+            `Mean Offensive Plays` = mean(plays_week) %>% round(1),
+            `Mean Offensive Play %` = mean(plays_week_prop),
+            `Mean Run Plays as % of Offense` = mean(prop_run),
+            mean_top = mean(top_week) %>% round(0), 
+            ) %>% 
+  mutate(`Mean Time of Possession` = sprintf("%02d:%02d", mean_top %/% 60, mean_top %% 60)) %>% 
+  select(-mean_top, -n) %>% 
+  relocate(`Mean Run Plays as % of Offense`, .after = `Mean Time of Possession`) %>% 
+  gt() %>% 
+  fmt_percent(
+    columns = c(`Mean Offensive Play %`,
+                `Mean Run Plays as % of Offense`),
+    decimals = 1
+  ) %>% 
+  cols_align(align = "center", 
+             columns = c(`Mean Offensive Plays`,
+                         `Mean Offensive Play %`,
+                         `Mean Time of Possession`,
+                         `Mean Run Plays as % of Offense`)) %>% 
+    # Highlight cells
+  tab_style(
+    style = cell_fill(color = "yellow"),
+    locations = cells_body(
+      columns = c(`Mean Run Plays as % of Offense`),
+      rows = Result == "Loss" #careful, exact match here needed
+    )
+  ) %>% 
+  tab_header(title="Offensive Snaps and Time of Possesion by Wins and Losses (n = 106 games)") %>% 
+  tab_options(table.align = "left") %>% 
+  tab_source_note(source_note = "Note: Excluding 1 tie game")
+```
+
+What does stand out is looking at the run vs pass breakdown on offense.^[For just the purpose of run vs pass breakdown, offensive snaps are further limited: I have excluded QB kneel down and QB spikes as they are not really runs or passes. I will also note that [in contrast to some prior analyses](../2026-10-02-week03), for these purposes I do count QB scrambles as runs.]
+
+Winning teams run the ball more often.\
+Or we could say that losing teams are passing the ball more often.\
+
+In fact, the correlation^[Specifically, a point biserial correlation with a 0/1 variable for loss vs win] of winning with offensive snap percentage is trivially small, winning has a medium sized relationship to time of possession, but winning has a large correlation (*r* = .50) with a greater preference for offensive run plays over pass plays.
+
+```{r table-winloss-cor}
+#| out-width: "100%"
+
+df_offtop_x_week %>% 
+  filter(result != "T") %>% 
+  mutate(result_num = ifelse(result == "W", 1, 0)) %>% 
+  select(result_num, plays_week_prop, top_week, prop_run) %>% 
+  cor() %>% round(2) %>% 
+  as_tibble() %>% 
+  mutate(`Correlation with` = c("Result", "Offensive Play %", "Time of Possession", "Run (vs Pass)")) %>% 
+  filter(`Correlation with` != "Result") %>% 
+  select(`Correlation with`, `Loss/Win` = result_num) %>% 
+  gt() %>% 
+  # fmt_number(
+  #   columns = "Loss/Win",
+  #   decimals = 2,
+  #   #drop_leading_zero = TRUE
+  # ) %>% 
+  cols_label(
+    `Correlation with` = "",
+  ) %>% 
+  cols_align(align = "center", 
+             columns = c(`Loss/Win`)) %>% 
+  # Highlight cells
+  tab_style(
+    style = cell_fill(color = "yellow"),
+    locations = cells_body(
+      columns = c(`Loss/Win`),
+      rows = `Correlation with` == "Run (vs Pass)" #careful, exact match here needed
+      )) %>% 
+  tab_header(title="Correlation with Winning (n = 106 games)") %>% 
+  tab_options(table.align = "left") %>% 
+  tab_source_note(source_note = "Note: Point biserial correlation (excluding 1 tie game)")
+```
+
+
+None of these observations would support framing offensive snaps and time of possession as objectives to try to achieve in order to win. The run relationship in particular could hint at a possible reverse direction of causation: When a team already has a lead and they run to salt the game away ([as the Bears did against the Eagles](../2026-10-02-week03)), or when a team is trailing and they need to pass to try to catch up quickly, especially as time is running out. And using more run plays will tend to increase time of possession. 
+
+::: {style="margin-left: 2em;"}
+
+Some interesting future analyses could consider these metrics of offensive snaps and time of possession by:
+
+- Whether a team is leading or trailing in the score 
+- Quarters in the game
+- Including some context of explosive plays 
+
+(I'll also note that the Bears in particular have been frustrating in [how many plays they have run incredibly close to the goal line, with limited success rates](../2026-10-07-week04))... which would increase offensive snaps and time of possession, but are not really indicating offensive success and helping to score more points to win.\
+
+I do think there are probably some interesting metrics to capture controlling the pace of the game and running sustained drives. And the Bear's numbers are an incredible outlier, so it is interesting. 
+:::
+
+But overall, perhaps just pure measures of offensive snap and time of possession metrics are being a bit overemphasized by analysts.🤷‍♀️
+
+___
+#### Data citation {#datacitation}
+
+Carl S, Baldwin B, Sharpe L, Ho T, Edwards J (2025). *nflverse: Easily Install and Load the 'nflverse'*. R package version 1.0.3, [https://nflverse.nflverse.com/](https://nflverse.nflverse.com/).
+
+
